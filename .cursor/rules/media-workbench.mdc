@@ -1,0 +1,10 @@
+---
+description: Ting-Media 自媒体工作台总约定
+alwaysApply: true
+---
+
+# Ting-Media
+
+- 总项目：短视频 / 图文工作流；展示与录屏默认 **9:16 竖屏**。
+- A 股复盘工具在 `tools/stock-analysis/`。用户要生成股票 HTML 时，按该目录 `AGENTS.md` 与 `scripts/generate_stock_html.py` 执行。
+- 不荐股、不承诺收益；股票模块不授权商用。

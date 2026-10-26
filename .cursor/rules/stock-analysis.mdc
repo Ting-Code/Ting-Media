@@ -1,0 +1,14 @@
+---
+description: 股票复盘 HTML 生成（tools/stock-analysis）
+globs: tools/stock-analysis/**
+alwaysApply: false
+---
+
+# 股票复盘子模块
+
+工作目录：`tools/stock-analysis/`。
+
+1. 读该目录下 `AGENTS.md` 与 `docs/方案.md`。
+2. 运行：`python scripts/generate_stock_html.py <名称或代码>`（先 `pip install -r requirements.txt`）。
+3. 产物在 `tools/stock-analysis/output/`；默认 9:16 竖屏页。
+4. 禁止从零手写无真实数据的整页 HTML。

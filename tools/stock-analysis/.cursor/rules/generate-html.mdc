@@ -1,0 +1,15 @@
+---
+description: 用户要某只股票复盘 HTML 时的强制生成流程
+alwaysApply: true
+---
+
+# 生成复盘 HTML
+
+当用户给出 A 股名称或 6 位代码并要求复盘/出图/出 HTML 时：
+
+1. 先读 `AGENTS.md` 与 `docs/方案.md`（若尚未读过）。
+2. 运行：`python scripts/generate_stock_html.py <名称或代码>`（缺依赖则先 `pip install -r requirements.txt`）。
+3. 不要从零手写无真实数据的整页 HTML；应走 `src/market.py` → `fundamentals.py` → `valuation.py` → `render_report.py`。
+4. 名称未知时用 6 位代码；可按需把常用名写入 `src/codes.py` 的 `NAME_TO_CODE`。
+5. 完成后给出 `output/` 下文件路径，并简要汇报现价、TTM扣非PE、PB、股息率；重申不构成投资建议。
+6. 第一版只做单票；用户要板块时说明尚未实现，勿编造板块聚合结果。

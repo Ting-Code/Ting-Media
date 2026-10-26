@@ -1,0 +1,14 @@
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# generated
+**/output/*
+!**/output/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

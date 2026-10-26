@@ -42,15 +42,12 @@ Ting-Media 希望把经过验证的流程沉淀成 **可复制的资产**，而�
 
 ```text
 Ting-Media/
-├── docs/                  # 方法论文档
-│   ├── workflow/          # 短视频 / 图文工作流
-│   ├── niches/            # 可持续赛道与形式选择
-│   └── tools/             # 剪映、AI、封面等工具用法
-├── templates/             # 可直接复制的模板
-│   ├── scripts/           # 口播稿 / 标题 / 封面文案
-│   ├── checklists/        # 拍摄、剪辑、发布检查表
-│   └── covers/            # 封面结构与文案句式
-├── examples/              # 示例拆解（对标账号结构，不含侵权素材）
+├── AGENTS.md              # 给 AI 的总入口
+├── docs/                  # 方法论文档（规划中）
+├── templates/             # 脚本 / 检查表 / 封面模板（规划中）
+├── tools/
+│   └── stock-analysis/    # A 股单票复盘 HTML（9:16 竖屏）
+├── examples/
 └── README.md
 ```
 
@@ -58,6 +55,24 @@ Ting-Media/
 
 ---
 
+
+## 已接入工具
+
+### `tools/stock-analysis` — A 股单票复盘页
+
+输入股票名称或代码，生成 **9:16 竖屏** 可交互 HTML（行情 K 线 / 季报 / 估值序列），适合录屏做财经复盘短视频。
+
+```bash
+cd tools/stock-analysis
+pip install -r requirements.txt
+python scripts/generate_stock_html.py 宁德时代
+```
+
+说明见 [`tools/stock-analysis/README.md`](tools/stock-analysis/README.md) 与 [`tools/stock-analysis/AGENTS.md`](tools/stock-analysis/AGENTS.md)。
+
+该子模块为个人学习与复盘用途，**不授权商用**。
+
+---
 ## 核心工作流（简版）
 
 ### 短视频（推荐 20–40 秒快节奏口播）
