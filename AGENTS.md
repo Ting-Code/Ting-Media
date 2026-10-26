@@ -2,16 +2,26 @@
 
 本仓库是自媒体（短视频 / 图文）工作台总项目。默认展示与录屏按 **9:16 竖屏**。
 
-## 子模块
+目录规划详见 [`docs/目录规划.md`](docs/目录规划.md)。
 
-| 路径 | 用途 |
-|------|------|
-| `tools/stock-analysis/` | A 股单票复盘 HTML（行情 / 季报 / 估值） |
+## 怎么找东西
 
-做股票复盘页时：先读 `tools/stock-analysis/AGENTS.md`，再运行其中的生成脚本。不要从零手写假数据 HTML。
+| 你要… | 去哪 |
+|--------|------|
+| 跨赛道流程 / 通用模板 | `shared/` |
+| 财经或生活的口播、提示词、检查表 | `niches/finance` 或 `niches/life` |
+| 可运行脚本 | `tools/` |
+| A 股复盘 HTML | `tools/finance/stock-analysis/` |
+
+## 股票复盘
+
+1. 读 `tools/finance/stock-analysis/AGENTS.md`
+2. `cd tools/finance/stock-analysis && pip install -r requirements.txt`
+3. `python scripts/generate_stock_html.py <名称或代码>`
+4. 不要从零手写无真实数据的假 HTML
 
 ## 原则
 
-- 流程与模板沉淀在本仓库；跨项目通用口播技巧可放个人全局 Skill
-- 财经内容：科普 / 复盘口径，不荐股、不承诺收益
-- `tools/stock-analysis` 不授权商用（见该目录 README）
+- 赛道只沉淀内容资产；工具按用途放 `tools/`，不按赛道复制整套代码
+- 财经：科普 / 复盘，不荐股、不承诺收益
+- `tools/finance/stock-analysis` 不授权商用

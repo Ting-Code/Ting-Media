@@ -42,14 +42,21 @@ Ting-Media 希望把经过验证的流程沉淀成 **可复制的资产**，而�
 
 ```text
 Ting-Media/
-├── AGENTS.md              # 给 AI 的总入口
-├── docs/                  # 方法论文档（规划中）
-├── templates/             # 脚本 / 检查表 / 封面模板（规划中）
+├── AGENTS.md
+├── docs/目录规划.md
+├── shared/                # 跨赛道：流程 / 通用模板 / 提示词
+├── niches/
+│   ├── finance/           # 财经内容资产
+│   └── life/              # 生活内容资产
 ├── tools/
-│   └── stock-analysis/    # A 股单票复盘 HTML（9:16 竖屏）
-├── examples/
+│   ├── copywriting/       # 写文案工具（规划）
+│   ├── recording/         # 录屏工具（规划）
+│   └── finance/
+│       └── stock-analysis/  # A 股复盘 HTML（9:16）
 └── README.md
 ```
+
+详见 [`docs/目录规划.md`](docs/目录规划.md)。
 
 当前仓库处于起步阶段，文档与模板将按模块逐步补齐。
 
@@ -58,17 +65,17 @@ Ting-Media/
 
 ## 已接入工具
 
-### `tools/stock-analysis` — A 股单票复盘页
+### `tools/finance/stock-analysis` — A 股单票复盘页
 
 输入股票名称或代码，生成 **9:16 竖屏** 可交互 HTML（行情 K 线 / 季报 / 估值序列），适合录屏做财经复盘短视频。
 
 ```bash
-cd tools/stock-analysis
+cd tools/finance/stock-analysis
 pip install -r requirements.txt
 python scripts/generate_stock_html.py 宁德时代
 ```
 
-说明见 [`tools/stock-analysis/README.md`](tools/stock-analysis/README.md) 与 [`tools/stock-analysis/AGENTS.md`](tools/stock-analysis/AGENTS.md)。
+说明见 [`tools/finance/stock-analysis/README.md`](tools/finance/stock-analysis/README.md) 与 [`tools/finance/stock-analysis/AGENTS.md`](tools/finance/stock-analysis/AGENTS.md)。
 
 该子模块为个人学习与复盘用途，**不授权商用**。
 
