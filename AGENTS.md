@@ -12,13 +12,15 @@
 | 财经或生活的口播、提示词、检查表 | `niches/finance` 或 `niches/life` |
 | 可运行脚本 | `tools/` |
 | A 股复盘 HTML | `tools/finance/stock-analysis/` |
+| 每期录屏产物 | `episodes/<赛道>/日期_主题/` |
 
 ## 股票复盘
 
 1. 读 `tools/finance/stock-analysis/AGENTS.md`
 2. `cd tools/finance/stock-analysis && pip install -r requirements.txt`
-3. `python scripts/generate_stock_html.py <名称或代码>`
-4. 不要从零手写无真实数据的假 HTML
+3. `python scripts/generate_stock_html.py <名称或代码> [--theme 主题] [--date YYYY-MM-DD]`
+4. 产物：`episodes/finance/YYYY-MM-DD_主题/index.html`（见 docs/录屏产物与生成方式.md）
+5. 不要从零手写整页 HTML；母版固定，只变内容/数据
 
 ## 原则
 

@@ -1,42 +1,113 @@
-"""Generate single-stock review HTML."""
+"""Generate single-stock review HTML into episodes/<niche>/YYYY-MM-DD_theme/.
+
+Usage:
+  python scripts/generate_stock_html.py 宁德时代
+  python scripts/generate_stock_html.py 300750 --theme 宁德时代估值复盘
+  python scripts/generate_stock_html.py 宁德时代 --date 2026-10-26 --niche finance
+"""
+
 from __future__ import annotations
+
+import argparse
+import json
 import sys
+from datetime import date, datetime
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+
 from src.codes import resolve_code
+from src.episode_path import episode_dir
 from src.fundamentals import build_fundamental_panel, fetch_dividends
 from src.market import fetch_daily
 from src.render_report import render_html
 from src.valuation import build_valuation_series, current_snapshot
 
-def main():
-    query = sys.argv[1] if len(sys.argv) > 1 else '宁德时代'
-    code, name = resolve_code(query)
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate 9:16 PPT stock review HTML")
+    parser.add_argument("query", nargs="?", default="宁德时代", help="股票名称或代码")
+    parser.add_argument("--theme", default="", help="期节目主题（默认：{名}复盘）")
+    parser.add_argument("--date", default="", help="节目日期 YYYY-MM-DD（默认今天）")
+    parser.add_argument("--niche", default="finance", help="赛道目录名（默认 finance）")
+    args = parser.parse_args()
+
+    code, name = resolve_code(args.query)
     if name == code:
-        name = query
-    print('[1/4] daily', code)
-    daily = fetch_daily(code, start_date='2018-01-01')
-    print('  bars', len(daily), 'last', daily['date'].iloc[-1].date(), 'close', round(float(daily['close'].iloc[-1]), 2))
-    print('[2/4] fundamentals')
+        name = args.query
+    theme = args.theme.strip() or (name + "复盘")
+    day = date.fromisoformat(args.date) if args.date else date.today()
+
+    print("[1/4] daily", code)
+    daily = fetch_daily(code, start_date="2018-01-01")
+    print(
+        "  bars",
+        len(daily),
+        "last",
+        daily["date"].iloc[-1].date(),
+        "close",
+        round(float(daily["close"].iloc[-1]), 2),
+    )
+
+    print("[2/4] fundamentals")
     fundamentals = build_fundamental_panel(code)
     dividends = fetch_dividends(code)
-    print('  quarters', len(fundamentals), 'dividends', len(dividends))
-    print('[3/4] valuation')
+    print("  quarters", len(fundamentals), "dividends", len(dividends))
+
+    print("[3/4] valuation")
     valuation = build_valuation_series(fundamentals, daily, dividends)
     snap = current_snapshot(fundamentals, daily, dividends)
-    pe = snap['pe_ttm_deduct']; pb = snap['pb']; dv = snap['div_yield_pct']
-    print('  points', len(valuation), 'PE', None if pe is None else round(pe,1), 'PB', None if pb is None else round(pb,2), 'div', None if dv is None else round(dv,2))
-    out = ROOT / 'output' / ('%s_%s_复盘.html' % (code, name))
-    print('[4/4] render')
-    path = render_html(name=name, code=code, daily=daily, fundamentals=fundamentals, valuation=valuation, snap=snap, out_path=out)
-    cache = ROOT / 'output' / ('%s_cache' % code)
-    cache.mkdir(parents=True, exist_ok=True)
-    daily.to_csv(cache / 'daily.csv', index=False)
-    fundamentals.to_csv(cache / 'fundamentals.csv', index=False)
-    valuation.to_csv(cache / 'valuation.csv', index=False)
-    print('DONE', path)
-    print('Open in browser:', path.resolve().as_uri())
+    pe, pb, dv = snap["pe_ttm_deduct"], snap["pb"], snap["div_yield_pct"]
+    print(
+        "  points",
+        len(valuation),
+        "PE",
+        None if pe is None else round(pe, 1),
+        "PB",
+        None if pb is None else round(pb, 2),
+        "div",
+        None if dv is None else round(dv, 2),
+    )
 
-if __name__ == '__main__':
+    ep = episode_dir(niche=args.niche, theme=theme, day=day)
+    ep.mkdir(parents=True, exist_ok=True)
+    out = ep / "index.html"
+    cache = ep / "cache"
+    cache.mkdir(parents=True, exist_ok=True)
+
+    print("[4/4] render ->", ep)
+    path = render_html(
+        name=name,
+        code=code,
+        daily=daily,
+        fundamentals=fundamentals,
+        valuation=valuation,
+        snap=snap,
+        out_path=out,
+    )
+    daily.to_csv(cache / "daily.csv", index=False)
+    fundamentals.to_csv(cache / "fundamentals.csv", index=False)
+    valuation.to_csv(cache / "valuation.csv", index=False)
+
+    meta = {
+        "niche": args.niche,
+        "theme": theme,
+        "date": day.isoformat(),
+        "code": code,
+        "name": name,
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "html": "index.html",
+        "format": "9:16-ppt-deck",
+    }
+    (ep / "meta.json").write_text(
+        json.dumps(meta, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    print("DONE", path)
+    print("Open in browser:", path.resolve().as_uri())
+
+
+if __name__ == "__main__":
     main()

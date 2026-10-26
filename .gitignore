@@ -5,9 +5,13 @@ __pycache__/
 venv/
 .env
 
-# generated
+# generated tool caches
 **/output/*
 !**/output/.gitkeep
+
+# 录屏期节目产物（保留说明文件）
+episodes/*
+!episodes/README.md
 
 # OS
 .DS_Store

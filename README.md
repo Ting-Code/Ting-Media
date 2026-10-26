@@ -73,7 +73,10 @@ Ting-Media/
 cd tools/finance/stock-analysis
 pip install -r requirements.txt
 python scripts/generate_stock_html.py 宁德时代
+# -> episodes/finance/YYYY-MM-DD_宁德时代复盘/index.html
 ```
+
+归档与 AI 出页方式见 [docs/录屏产物与生成方式.md](docs/录屏产物与生成方式.md)。
 
 说明见 [`tools/finance/stock-analysis/README.md`](tools/finance/stock-analysis/README.md) 与 [`tools/finance/stock-analysis/AGENTS.md`](tools/finance/stock-analysis/AGENTS.md)。
 
