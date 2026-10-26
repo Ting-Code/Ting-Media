@@ -1,6 +1,6 @@
 # Stock Analysis（Ting-Media 子模块）
 
-> 归属仓库：[Ting-Media](https://github.com/Ting-Code/Ting-Media) → `tools/finance/stock-analysis/`  
+> 归属仓库：[Ting-Media](https://github.com/Ting-Code/Ting-Media) → `tools/stock-analysis/`  
 > 原独立仓库 `Ting-Stock-Analysis` 已归并至此。
 
 

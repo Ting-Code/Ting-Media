@@ -45,7 +45,7 @@ Ting-Media/
 ├── AGENTS.md              # AI 共用上下文
 ├── docs/                  # 公共规范（含 9:16）
 ├── episodes/              # 每期：赛道/日期_主题/
-└── tools/finance/stock-analysis/
+└── tools/stock-analysis/
 ```
 
 详见 [`docs/目录规划.md`](docs/目录规划.md)、[`docs/9-16-录屏规范.md`](docs/9-16-录屏规范.md)。
@@ -57,12 +57,12 @@ Ting-Media/
 
 ## 已接入工具
 
-### `tools/finance/stock-analysis` — A 股单票复盘页
+### `tools/stock-analysis` — A 股单票复盘页
 
 输入股票名称或代码，生成 **9:16 竖屏** 可交互 HTML（行情 K 线 / 季报 / 估值序列），适合录屏做财经复盘短视频。
 
 ```bash
-cd tools/finance/stock-analysis
+cd tools/stock-analysis
 pip install -r requirements.txt
 python scripts/generate_stock_html.py 宁德时代
 # -> episodes/finance/YYYY-MM-DD_宁德时代复盘/index.html
@@ -70,7 +70,7 @@ python scripts/generate_stock_html.py 宁德时代
 
 归档与 AI 出页方式见 [docs/录屏产物与生成方式.md](docs/录屏产物与生成方式.md)。
 
-说明见 [`tools/finance/stock-analysis/README.md`](tools/finance/stock-analysis/README.md) 与 [`tools/finance/stock-analysis/AGENTS.md`](tools/finance/stock-analysis/AGENTS.md)。
+说明见 [`tools/stock-analysis/README.md`](tools/stock-analysis/README.md) 与 [`tools/stock-analysis/AGENTS.md`](tools/stock-analysis/AGENTS.md)。
 
 该子模块为个人学习与复盘用途，**不授权商用**。
 

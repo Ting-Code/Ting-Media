@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
-MEDIA_ROOT = Path(__file__).resolve().parents[4]
+MEDIA_ROOT = Path(__file__).resolve().parents[3]
 
 _BAD = {chr(92), "/", ":", "*", "?", chr(34), "<", ">", "|"}
 

@@ -1,11 +1,11 @@
 ---
-description: Ting-Media 共用上下文（精简）
+description: Ting-Media 共用上下文
 alwaysApply: true
 ---
 
 # Ting-Media
 
-- 先读根目录 `AGENTS.md`。
-- 公共规范只在 `docs/`；每期内容在 `episodes/<赛道>/日期_主题/`；工具代码在 `tools/`（工具自带 docs）。
-- 9:16 PPT 分镜 + 安全区；禁止从零手写整页 HTML。
-- 财经复盘跑 `tools/finance/stock-analysis` 生成脚本；不荐股。
+- 读根目录 `AGENTS.md`。
+- `docs/` 公共规范；`episodes/<赛道>/日期_主题/` 每期内容；`tools/<工具名>/` 公共工具（不按赛道拆）。
+- 9:16 PPT + 安全区；禁止手写整页 HTML。
+- 股票复盘：`tools/stock-analysis`；不荐股。

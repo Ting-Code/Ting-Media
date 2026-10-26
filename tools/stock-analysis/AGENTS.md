@@ -1,6 +1,6 @@
 ## 所在位置
 
-本模块位于 `Ting-Media/tools/finance/stock-analysis/`。请在该目录下安装依赖并运行生成脚本。
+本模块位于 `Ting-Media/tools/stock-analysis/`。请在该目录下安装依赖并运行生成脚本。
 
 # AGENTS.md — 给 AI / 协作者的项目说明书
 
