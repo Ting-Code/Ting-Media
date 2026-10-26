@@ -42,21 +42,13 @@ Ting-Media 希望把经过验证的流程沉淀成 **可复制的资产**，而�
 
 ```text
 Ting-Media/
-├── AGENTS.md
-├── docs/目录规划.md
-├── shared/                # 跨赛道：流程 / 通用模板 / 提示词
-├── niches/
-│   ├── finance/           # 财经内容资产
-│   └── life/              # 生活内容资产
-├── tools/
-│   ├── copywriting/       # 写文案工具（规划）
-│   ├── recording/         # 录屏工具（规划）
-│   └── finance/
-│       └── stock-analysis/  # A 股复盘 HTML（9:16）
-└── README.md
+├── AGENTS.md              # AI 共用上下文
+├── docs/                  # 公共规范（含 9:16）
+├── episodes/              # 每期：赛道/日期_主题/
+└── tools/finance/stock-analysis/
 ```
 
-详见 [`docs/目录规划.md`](docs/目录规划.md)、[`shared/workflow/9-16-录屏规范.md`](shared/workflow/9-16-录屏规范.md)。
+详见 [`docs/目录规划.md`](docs/目录规划.md)、[`docs/9-16-录屏规范.md`](docs/9-16-录屏规范.md)。
 
 当前仓库处于起步阶段，文档与模板将按模块逐步补齐。
 

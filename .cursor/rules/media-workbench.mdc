@@ -1,12 +1,11 @@
 ---
-description: Ting-Media 自媒体工作台总约定
+description: Ting-Media 共用上下文（精简）
 alwaysApply: true
 ---
 
 # Ting-Media
 
-- 总项目：短视频 / 图文；默认 **9:16 竖屏 PPT 分镜**（安全区避开抖音/B站上下 UI）。
-- 规范：`shared/workflow/9-16-录屏规范.md`
-- 目录：`shared/` 跨赛道；`niches/<赛道>/` 内容资产；`tools/` 可运行工具。见 `docs/目录规划.md`。
-- A 股复盘在 `tools/finance/stock-analysis/`。生成 HTML 时读该目录 `AGENTS.md` 并跑脚本。
-- 不荐股、不承诺收益；股票模块不授权商用。
+- 先读根目录 `AGENTS.md`。
+- 公共规范只在 `docs/`；每期内容在 `episodes/<赛道>/日期_主题/`；工具代码在 `tools/`（工具自带 docs）。
+- 9:16 PPT 分镜 + 安全区；禁止从零手写整页 HTML。
+- 财经复盘跑 `tools/finance/stock-analysis` 生成脚本；不荐股。
