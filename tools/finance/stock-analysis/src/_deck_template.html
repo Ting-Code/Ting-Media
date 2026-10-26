@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>__NAME__(__CODE__) 复盘页</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{--bg:#f3efe6;--ink:#1c1917;--muted:#78716c;--card:#fffdf8;--line:#e5ddd0;--accent:#0f766e;--stage:420px;--safe-top:max(12vh,88px);--safe-bottom:max(18vh,140px);--safe-x:4%}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#e8e0d4}
+body{font-family:Segoe UI,PingFang SC,Microsoft YaHei,sans-serif;color:var(--ink);line-height:1.45}
+.shell{height:100dvh;display:flex;align-items:stretch;justify-content:center;gap:12px;padding:0 8px}
+.deck{width:min(100vw,var(--stage));height:100dvh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;position:relative;background:radial-gradient(900px 500px at 50% -8%,#ebe3d6 0%,transparent 55%),var(--bg);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.slide{height:100dvh;min-height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;padding:var(--safe-top) var(--safe-x) var(--safe-bottom);position:relative}
+.slide-inner{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.slide-tag{position:absolute;left:var(--safe-x);right:var(--safe-x);top:calc(var(--safe-top) - 28px);display:flex;justify-content:space-between;color:var(--muted);font-size:.68rem;pointer-events:none}
+h1{font-size:1.45rem;margin:0;line-height:1.2}
+h2{font-size:1.05rem;margin:0;color:var(--accent)}
+.sub{color:var(--muted);font-size:.8rem;margin:0}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 11px}
+.card .label{color:var(--muted);font-size:.72rem}
+.card .value{font-size:1.18rem;font-weight:650;margin-top:3px;word-break:break-all}
+.card .hint{color:var(--muted);font-size:.66rem;margin-top:3px;line-height:1.3}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 6px 4px;flex:1;min-height:0;display:flex;flex-direction:column}
+.note{color:var(--muted);font-size:.72rem;padding:0 8px 4px}
+.disclaimer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--muted);font-size:.78rem;border-left:3px solid var(--accent)}
+.chart-box{flex:1;min-height:0;overflow:hidden}
+.js-plotly-plot,.plotly{max-width:100% !important}
+.safe-guides{pointer-events:none;position:fixed;inset:0;z-index:40;display:none}
+.safe-guides.on{display:block}
+.safe-guides .band-top,.safe-guides .band-bottom{position:absolute;left:50%;transform:translateX(-50%);width:min(100vw,var(--stage));background:rgba(220,38,38,.22);border:1px dashed rgba(185,28,28,.55)}
+.safe-guides .band-top{top:0;height:var(--safe-top)}
+.safe-guides .band-bottom{bottom:0;height:var(--safe-bottom)}
+.safe-guides .label{position:absolute;left:50%;transform:translateX(-50%);width:min(100vw,var(--stage));text-align:center;font-size:.65rem;color:#7f1d1d;padding:4px}
+.safe-guides .label.top{top:4px}
+.safe-guides .label.bottom{bottom:4px}
+.controls{width:52px;display:flex;flex-direction:column;justify-content:center;gap:8px;flex-shrink:0}
+.controls button{width:52px;height:52px;border-radius:14px;border:1px solid var(--line);background:#fffdf8;color:var(--ink);font-size:1.1rem;cursor:pointer;box-shadow:0 6px 16px rgba(28,25,23,.06)}
+.controls button:hover{border-color:var(--accent);color:var(--accent)}
+.controls .page{text-align:center;font-size:.7rem;color:var(--muted);line-height:1.2;padding:4px 0}
+.controls .tiny{height:auto;min-height:36px;font-size:.62rem;padding:6px 4px;line-height:1.2}
+@media (max-width:520px){.controls{position:fixed;right:6px;bottom:calc(var(--safe-bottom) + 8px);z-index:30}.shell{padding:0}}
+</style></head><body>
+<div class="safe-guides" id="safeGuides" aria-hidden="true">
+<div class="band-top"></div><div class="label top">顶部易遮挡（标题/关注）</div>
+<div class="band-bottom"></div><div class="label bottom">底部易遮挡（点赞/评论/分享）</div>
+</div>
+<div class="shell"><div class="deck" id="deck">
+<section class="slide" data-page="1" id="slide-cover">
+<div class="slide-tag"><span>竖屏 9:16 · PPT 分镜</span><span>__ASOF__</span></div>
+<div class="slide-inner">
+<h1>__NAME__ <span style="font-weight:500;color:var(--muted);font-size:.7em">(__CODE__)</span></h1>
+<p class="sub">单票复盘 · 前复权 · 估值锚定：季报发布日次月月末收盘</p>
+<div class="cards">
+<div class="card"><div class="label">现价</div><div class="value">__PRICE__</div><div class="hint">最新交易日收盘</div></div>
+<div class="card"><div class="label">动态PE · TTM扣非</div><div class="value">__PE__</div><div class="hint">历史分位 __PE_PCT__</div></div>
+<div class="card"><div class="label">市净率 PB</div><div class="value">__PB__</div><div class="hint">历史分位 __PB_PCT__</div></div>
+<div class="card"><div class="label">股息率</div><div class="value">__DIV__</div><div class="hint">近12月现金分红/现价 · 分位 __DIV_PCT__</div></div>
+</div></div></section>
+<section class="slide" data-page="2" id="slide-kline">
+<div class="slide-tag"><span>2 / A 行情</span><span>可切日周月季</span></div>
+<div class="slide-inner"><h2>行情 K 线</h2><div class="panel"><div class="note">重点在中间安全带</div><div class="chart-box">__K__</div></div></div></section>
+<section class="slide" data-page="3" id="slide-fund">
+<div class="slide-tag"><span>3 / B 财报</span><span>单季拆分</span></div>
+<div class="slide-inner"><h2>季度营收与利润</h2><div class="panel"><div class="note">累计已拆单季 · 扣非=归母扣非</div><div class="chart-box">__F__</div></div></div></section>
+<section class="slide" data-page="4" id="slide-val">
+<div class="slide-tag"><span>4 / C 估值</span><span>红虚线=当前PE</span></div>
+<div class="slide-inner"><h2>估值序列 vs 现价</h2><div class="panel"><div class="note">锚定=NOTICE次月月末收盘</div><div class="chart-box">__V__</div></div></div></section>
+<section class="slide" data-page="5" id="slide-end">
+<div class="slide-tag"><span>5 / 结尾</span><span>可口述带过</span></div>
+<div class="slide-inner"><h2>说明</h2>
+<div class="disclaimer">仅供学习与复盘展示，不构成投资建议。数据来自 BaoStock / 东财(AkShare)，请以官方披露为准。</div>
+<p class="sub">录屏：空格/↓ 下一页 · ↑ 上一页 · G 安全区示意</p>
+</div></section></div>
+<div class="controls" aria-label="翻页">
+<button type="button" id="btnPrev" title="上一页">↑</button>
+<div class="page"><span id="pageNum">1</span><br>/ <span id="pageTotal">5</span></div>
+<button type="button" id="btnNext" title="下一页">↓</button>
+<button type="button" class="tiny" id="btnGuide" title="安全区">安全区</button>
+</div></div>
+</body></html>

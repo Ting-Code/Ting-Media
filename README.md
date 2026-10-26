@@ -56,7 +56,7 @@ Ting-Media/
 └── README.md
 ```
 
-详见 [`docs/目录规划.md`](docs/目录规划.md)。
+详见 [`docs/目录规划.md`](docs/目录规划.md)、[`shared/workflow/9-16-录屏规范.md`](shared/workflow/9-16-录屏规范.md)。
 
 当前仓库处于起步阶段，文档与模板将按模块逐步补齐。
 

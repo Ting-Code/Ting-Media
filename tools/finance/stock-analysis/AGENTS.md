@@ -39,7 +39,7 @@ python scripts/generate_stock_html.py <名称或6位代码>
 | 渲染 | HTML 母版 + Plotly 交互图 | `src/render_report.py` |
 | 入口 | CLI | `scripts/generate_stock_html.py` |
 
-HTML 只是**展示壳**，默认按 **9:16 竖屏**排版（短视频截图友好）。数据、计算、（未来）文案解读应保持模块分离；禁止把整套逻辑糊进单文件静态页后丢弃管线。
+HTML 只是**展示壳**：默认 **9:16 PPT 分镜**（空格/方向键切页），内容在抖音/B站上下安全区外。规范见仓库 `shared/workflow/9-16-录屏规范.md`。数据、计算、（未来）文案解读应保持模块分离；禁止把整套逻辑糊进单文件静态页后丢弃管线。
 
 ## 已锁定口径（改之前先问用户）
 
