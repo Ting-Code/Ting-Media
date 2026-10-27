@@ -5,6 +5,7 @@ alwaysApply: true
 
 # Ting-Media
 
-- 读 `AGENTS.md` 与 `docs/目录规划.md`。
-- 工具规范在各自 `tools/<名>/docs/`；取数 `stock-data`，出页 `stock-analysis`。
-- 禁止手写整页 HTML；不荐股。
+- 读 `AGENTS.md`、`docs/目录规划.md`。
+- 金融分析：先查现有 `tools/` 能力并调用；反复出现再封装，避免冗余。
+- 一期节目：用工具出 HTML，按规范写入 `episodes/<赛道>/日期_主题/`；禁止手写整页 HTML。
+- 不荐股。
