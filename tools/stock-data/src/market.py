@@ -7,7 +7,7 @@ from datetime import datetime
 import baostock as bs
 import pandas as pd
 
-from .codes import to_baostock
+from codes import to_baostock
 
 
 def fetch_daily(

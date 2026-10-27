@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from .market import next_month_end_anchor
+from market import next_month_end_anchor
 
 
 def trailing_dividend_per_share(dividends: pd.DataFrame, asof: pd.Timestamp) -> float:

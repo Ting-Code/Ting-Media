@@ -5,7 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import akshare as ak
 
-from .codes import to_baostock
+from codes import to_baostock
 
 
 def _em_symbol(code: str) -> str:

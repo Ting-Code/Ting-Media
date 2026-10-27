@@ -5,8 +5,11 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.offline import plot as plot_offline
-from .market import resample_ohlcv
-from .valuation import percentile
+from _pathsetup import ensure_stock_data_on_path
+
+ensure_stock_data_on_path()
+from market import resample_ohlcv  # noqa: E402
+from valuation import percentile  # noqa: E402
 
 def _kline_figure(daily: pd.DataFrame, title: str) -> go.Figure:
     periods = [('日线', 'D'), ('周线', 'W'), ('月线', 'M'), ('季线', 'Q')]

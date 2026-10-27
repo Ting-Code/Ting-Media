@@ -6,6 +6,6 @@ alwaysApply: true
 # Ting-Media
 
 - 读根目录 `AGENTS.md`。
-- `docs/` 公共规范；`episodes/<赛道>/日期_主题/` 每期内容；`tools/<工具名>/` 公共工具（不按赛道拆）。
-- 9:16 PPT + 安全区；禁止手写整页 HTML。
-- 股票复盘：`tools/stock-analysis`；不荐股。
+- `docs/` 公共规范；`episodes/<赛道>/日期_主题/` 每期内容；`tools/<工具名>/` 公共工具。
+- 取数用 `tools/stock-data`；出录屏页用 `tools/stock-analysis`（会调取数工具）。
+- 9:16 PPT + 安全区；禁止手写整页 HTML；不荐股。

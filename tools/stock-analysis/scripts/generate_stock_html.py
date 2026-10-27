@@ -1,4 +1,4 @@
-"""Generate single-stock review HTML into episodes/<niche>/YYYY-MM-DD_theme/.
+"""Generate episode HTML using stock-data + local deck renderer.
 
 Usage:
   python scripts/generate_stock_html.py 宁德时代
@@ -15,14 +15,18 @@ from datetime import date, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "src"))
 
-from src.codes import resolve_code
-from src.episode_path import episode_dir
-from src.fundamentals import build_fundamental_panel, fetch_dividends
-from src.market import fetch_daily
-from src.render_report import render_html
-from src.valuation import build_valuation_series, current_snapshot
+from _pathsetup import ensure_stock_data_on_path
+
+ensure_stock_data_on_path()
+
+from codes import resolve_code
+from episode_path import episode_dir
+from fundamentals import build_fundamental_panel, fetch_dividends
+from market import fetch_daily
+from render_report import render_html
+from valuation import build_valuation_series, current_snapshot
 
 
 def main() -> None:
@@ -99,9 +103,10 @@ def main() -> None:
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "html": "index.html",
         "format": "9:16-ppt-deck",
+        "data_tool": "tools/stock-data",
     }
     (ep / "meta.json").write_text(
-        json.dumps(meta, ensure_ascii=False, indent=2) + "\n",
+        json.dumps(meta, ensure_ascii=False, indent=2) + chr(10),
         encoding="utf-8",
     )
 
