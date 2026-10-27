@@ -5,52 +5,122 @@
 <title>__NAME__(__CODE__)</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
-:root{--bg:#f3efe6;--ink:#1c1917;--muted:#78716c;--card:#fffdf8;--line:#e5ddd0;--accent:#0f766e;--stage:420px;--safe-top:max(12vh,88px);--safe-bottom:max(18vh,140px);--safe-x:4%}
+:root{
+  --od-bg:#1e2227;--od-panel:#282c34;--od-panel-2:#2c313c;--od-line:#3e4451;
+  --od-fg:#abb2bf;--od-muted:#5c6370;--od-soft:#9da5b4;
+  --od-blue:#61afef;--od-cyan:#56b6c2;--od-purple:#c678dd;--od-green:#98c379;--od-orange:#d19a66;--od-red:#e06c75;
+  --phone-h:min(853px, calc(100dvh - 48px));--phone-w:calc(var(--phone-h) * 9 / 16);
+  --safe-top:14%;--safe-bottom:32%;--safe-left:1.2%;--safe-right:1.2%;
+}
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#e8e0d4}
-body{font-family:Segoe UI,PingFang SC,Microsoft YaHei,sans-serif;color:var(--ink);line-height:1.45}
-.shell{height:100dvh;display:flex;align-items:stretch;justify-content:center;gap:12px;padding:0 8px}
-.deck{width:min(100vw,var(--stage));height:100dvh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;position:relative;background:radial-gradient(900px 500px at 50% -8%,#ebe3d6 0%,transparent 55%),var(--bg);border-left:1px solid var(--line);border-right:1px solid var(--line)}
-.slide{height:100dvh;min-height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;padding:var(--safe-top) var(--safe-x) var(--safe-bottom);position:relative}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--od-bg)}
+body{font-family:Consolas,"Cascadia Code","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--od-fg);line-height:1.5}
+.workbench{height:100dvh;max-height:100dvh;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:20px;padding:24px 16px;overflow:hidden}
+.stage-col{display:flex;align-items:center;flex-shrink:0}
+.phone{width:var(--phone-w);height:var(--phone-h);flex:0 0 auto;border-radius:16px;overflow:hidden;position:relative;background:var(--od-panel);border:1px solid var(--od-line);box-shadow:0 0 0 1px #15181c, 0 14px 40px rgba(0,0,0,.4)}
+.deck{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;
+  background:radial-gradient(700px 420px at 50% -10%,#323844 0%,transparent 55%),var(--od-panel);
+  scrollbar-width:none;-ms-overflow-style:none}
+.deck::-webkit-scrollbar{width:0;height:0;display:none}
+.slide{height:100%;min-height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);position:relative;color:var(--od-fg)}
 .slide-inner{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:10px}
-.slide-tag{position:absolute;left:var(--safe-x);right:var(--safe-x);top:calc(var(--safe-top) - 28px);display:flex;justify-content:space-between;color:var(--muted);font-size:.68rem;pointer-events:none}
-h1{font-size:1.45rem;margin:0;line-height:1.2}
-h2{font-size:1.05rem;margin:0;color:var(--accent)}
-.sub{color:var(--muted);font-size:.8rem;margin:0}
+.slide-tag{position:absolute;left:var(--safe-left);right:var(--safe-right);top:calc(var(--safe-top) - 2.2%);display:flex;justify-content:space-between;color:var(--od-muted);font-size:.99rem;pointer-events:none;letter-spacing:.02em}
+h1.phone-title{font-size:2.2rem;margin:0;line-height:1.25;color:#e6e6e6;font-weight:650}
+h1.phone-title span{color:var(--od-muted)!important}
+h2{font-size:1.7rem;margin:0;color:var(--od-blue);font-weight:600}
+.sub{color:var(--od-muted);font-size:1.25rem;margin:0}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 11px}
-.card .label{color:var(--muted);font-size:.72rem}
-.card .value{font-size:1.18rem;font-weight:650;margin-top:3px;word-break:break-all}
-.card .hint{color:var(--muted);font-size:.66rem;margin-top:3px;line-height:1.3}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 6px 4px;flex:1;min-height:0;display:flex;flex-direction:column}
-.note{color:var(--muted);font-size:.72rem;padding:0 8px 4px}
-.disclaimer{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--muted);font-size:.78rem;border-left:3px solid var(--accent)}
+.card{background:var(--od-panel-2);border:1px solid var(--od-line);border-radius:10px;padding:10px 11px}
+.card .label{color:var(--od-cyan);font-size:1.05rem}
+.card .value{font-size:1.85rem;font-weight:650;margin-top:3px;word-break:break-all;color:#e6e6e6}
+.card .hint{color:var(--od-muted);font-size:.96rem;margin-top:3px;line-height:1.3}
+.panel{background:var(--od-panel-2);border:1px solid var(--od-line);border-radius:12px;padding:8px 6px 4px;flex:1;min-height:0;display:flex;flex-direction:column}
+.note{color:var(--od-muted);font-size:1.05rem;padding:0 8px 4px}
+.disclaimer{background:var(--od-panel-2);border:1px solid var(--od-line);border-radius:10px;padding:16px;color:var(--od-soft);font-size:1.14rem;border-left:3px solid var(--od-blue)}
 .chart-box{flex:1;min-height:0;overflow:hidden}
+
+.slide-chart .panel{border-radius:10px}
+
+.slide-chart{padding-left:1%;padding-right:1%}
+.slide-chart .panel{
+  border:1px solid rgba(62,68,81,.7);
+  border-radius:6px;
+  padding:0;
+}
+.slide-chart .chart-box{width:100%;margin:0}
+.slide-chart .slide-inner{justify-content:flex-start;gap:2px}
+.slide-chart h2{font-size:.95rem;flex:0 0 auto;margin:0;padding:0 2px}
+.slide-chart .note{display:none}
+.slide-chart .panel{padding:0;flex:1;min-height:0}
+.slide-chart .chart-box{flex:1;min-height:0;position:relative}
+.slide-chart .chart-box .js-plotly-plot,
+.slide-chart .chart-box .plot-container,
+.slide-chart .chart-box .svg-container{width:100%!important;height:100%!important}
+
 .js-plotly-plot,.plotly{max-width:100% !important}
-.safe-guides{pointer-events:none;position:fixed;inset:0;z-index:40;display:none}
+.safe-guides{pointer-events:none;position:absolute;inset:0;z-index:40;display:none;border-radius:inherit;overflow:hidden}
 .safe-guides.on{display:block}
-.safe-guides .band-top,.safe-guides .band-bottom{position:absolute;left:50%;transform:translateX(-50%);width:min(100vw,var(--stage));background:rgba(220,38,38,.22);border:1px dashed rgba(185,28,28,.55)}
-.safe-guides .band-top{top:0;height:var(--safe-top)}
-.safe-guides .band-bottom{bottom:0;height:var(--safe-bottom)}
-.safe-guides .label{position:absolute;left:50%;transform:translateX(-50%);width:min(100vw,var(--stage));text-align:center;font-size:.65rem;color:#7f1d1d;padding:4px}
-.safe-guides .label.top{top:4px}
-.safe-guides .label.bottom{bottom:4px}
-.controls{width:52px;display:flex;flex-direction:column;justify-content:center;gap:8px;flex-shrink:0}
-.controls button{width:52px;height:52px;border-radius:14px;border:1px solid var(--line);background:#fffdf8;color:var(--ink);font-size:1.1rem;cursor:pointer;box-shadow:0 6px 16px rgba(28,25,23,.06)}
-.controls button:hover{border-color:var(--accent);color:var(--accent)}
-.controls .page{text-align:center;font-size:.7rem;color:var(--muted);line-height:1.2;padding:4px 0}
-.controls .tiny{height:auto;min-height:36px;font-size:.62rem;padding:6px 4px;line-height:1.2}
-@media (max-width:520px){.controls{position:fixed;right:6px;bottom:calc(var(--safe-bottom) + 8px);z-index:30}.shell{padding:0}}
+.safe-guides .band{position:absolute;background:rgba(224,108,117,.22);border:1px dashed rgba(224,108,117,.55)}
+.safe-guides .band-top{top:0;left:0;right:0;height:var(--safe-top)}
+.safe-guides .band-bottom{bottom:0;left:0;right:0;height:var(--safe-bottom)}
+.safe-guides .band-left{top:var(--safe-top);bottom:var(--safe-bottom);left:0;width:var(--safe-left)}
+.safe-guides .band-right{top:var(--safe-top);bottom:var(--safe-bottom);right:0;width:var(--safe-right)}
+.safe-guides .label{position:absolute;font-size:.58rem;color:var(--od-red);line-height:1.25;text-align:center;padding:2px 4px}
+.safe-guides .label.top{top:6px;left:0;right:0}
+.safe-guides .label.bottom{bottom:8px;left:var(--safe-left);right:var(--safe-right)}
+.safe-guides .label.right{top:42%;right:2px;writing-mode:vertical-rl;text-orientation:mixed}
+.script-rail{flex:0 0 560px;width:560px;height:var(--phone-h);max-height:var(--phone-h);display:flex;flex-direction:column;gap:10px;padding:0;overflow:hidden;box-sizing:border-box}
+.script-rail .rail-head{flex-shrink:0;padding:2px 2px 0}
+.script-rail .rail-head .eyebrow{font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;color:var(--od-purple);margin:0 0 4px}
+.script-rail .rail-head h1{font-size:1.75rem;margin:0;font-weight:600;color:#e6e6e6}
+.script-rail .rail-head .meta{margin:6px 0 0;font-size:1.25rem;color:var(--od-muted)}
+.script-list{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;padding:2px 6px 4px 0;display:flex;flex-direction:column;align-items:stretch;gap:8px;scrollbar-width:thin;scrollbar-color:#4b5263 transparent}
+.script-list::-webkit-scrollbar{width:5px}
+.script-list::-webkit-scrollbar-track{background:transparent}
+.script-list::-webkit-scrollbar-thumb{background:#4b5263;border-radius:999px}
+.script-card{flex:0 0 auto;height:auto;min-height:0;overflow:visible;background:var(--od-panel);border:1px solid var(--od-line);border-radius:8px;padding:18px 20px;color:var(--od-fg);cursor:pointer;transition:border-color .15s,background .15s}
+.script-card:hover{background:var(--od-panel-2);border-color:#4b5263}
+.script-card.active{background:#2f3541;border-color:var(--od-blue);box-shadow:inset 3px 0 0 var(--od-blue)}
+.script-card .idx{font-size:1.12rem;color:var(--od-cyan);margin:0 0 4px}
+.script-card .title{font-size:1.8rem;font-weight:600;margin:0 0 8px;color:#e6e6e6}
+.script-card .body{font-size:1.65rem;line-height:1.55;color:var(--od-soft);margin:0;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+.pager{width:64px;flex-shrink:0;height:var(--phone-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px 0;box-sizing:border-box}
+.pager .page-label{font-size:1.4rem;color:#e6e6e6;text-align:center;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.02em;margin-bottom:2px}
+.pager button.nav{
+  width:52px;height:52px;border-radius:10px;border:1px solid var(--od-line);
+  background:var(--od-panel);color:var(--od-fg);font-size:1rem;cursor:pointer;
+}
+.pager button.nav:hover{border-color:var(--od-blue);color:var(--od-blue)}
+.pager button.guide{
+  margin-top:4px;width:52px;min-height:40px;border-radius:8px;border:1px solid var(--od-line);
+  background:transparent;color:var(--od-muted);font-size:.72rem;line-height:1.2;cursor:pointer;padding:6px 2px;
+}
+.pager button.guide:hover,.pager button.guide.on{border-color:var(--od-red);color:var(--od-red)}
+@media (max-width:900px){
+  .workbench{flex-wrap:wrap;padding:10px;gap:10px}
+  .stage-col{order:1;justify-content:center;width:100%}
+  .script-rail{order:2;flex:1 1 auto;width:auto;max-width:none;height:auto;max-height:40dvh}
+  .pager{order:3}
+  .phone{width:min(360px, 70vw);height:calc(min(360px, 70vw) * 16 / 9)}
+}
 </style></head><body>
-<div class="safe-guides" id="safeGuides" aria-hidden="true">
-<div class="band-top"></div><div class="label top">顶部易遮挡（标题/关注）</div>
-<div class="band-bottom"></div><div class="label bottom">底部易遮挡（点赞/评论/分享）</div>
-</div>
-<div class="shell"><div class="deck" id="deck">
-<section class="slide" data-page="1" id="slide-cover">
-<div class="slide-tag"><span>竖屏 9:16 · PPT 分镜</span><span>__ASOF__</span></div>
+<div class="workbench">
+  <div class="stage-col">
+    <div class="phone" id="phone">
+      <div class="safe-guides" id="safeGuides" aria-hidden="true">
+        <div class="band band-top"></div>
+        <div class="band band-bottom"></div>
+        <div class="band band-left"></div>
+        <div class="band band-right"></div>
+        <div class="label top">顶栏 · 状态/频道</div>
+        <div class="label bottom">底栏遮挡带</div>
+        <div class="label right">右缘</div>
+      </div>
+      <div class="deck" id="deck">
+<section class="slide" id="slide-cover" data-page="1" data-title="封面要点" data-script="开场报名称与代码。&#10;点四个卡片：现价、动态市盈、市净、股息率。&#10;强调：数据仅供参考，先看结构再讲细节。">
+<div class="slide-tag"><span>1 / 封面</span><span>__ASOF__</span></div>
 <div class="slide-inner">
-<h1>__NAME__ <span style="font-weight:500;color:var(--muted);font-size:.7em">(__CODE__)</span></h1>
+<h1 class="phone-title">__NAME__ <span style="font-weight:500;color:var(--muted);font-size:.7em">(__CODE__)</span></h1>
 <p class="sub">前复权 · 指标锚定：季报发布日次月月末收盘</p>
 <div class="cards">
 <div class="card"><div class="label">现价</div><div class="value">__PRICE__</div><div class="hint">最新交易日收盘</div></div>
@@ -58,25 +128,39 @@ h2{font-size:1.05rem;margin:0;color:var(--accent)}
 <div class="card"><div class="label">市净率 PB</div><div class="value">__PB__</div><div class="hint">历史分位 __PB_PCT__</div></div>
 <div class="card"><div class="label">股息率</div><div class="value">__DIV__</div><div class="hint">近12月现金分红/现价 · 分位 __DIV_PCT__</div></div>
 </div></div></section>
-<section class="slide" data-page="2" id="slide-kline">
+<section class="slide slide-chart" id="slide-kline" data-page="2" data-title="行情结构" data-script="切到 K 线页，先停两秒让画面稳住。&#10;说明时间跨度：从上市以来到最新交易日，默认日线。&#10;再依次点周 / 月 / 季，看结构有没有变化——只描述高低与节奏。&#10;口播提示：语速放慢，手指别挡到中间安全带。&#10;本页不加结论，下一页再看财务趋势。">
 <div class="slide-tag"><span>2 / A 行情</span><span>可切日周月季</span></div>
-<div class="slide-inner"><h2>行情 K 线</h2><div class="panel"><div class="note">重点在中间安全带</div><div class="chart-box">__K__</div></div></div></section>
-<section class="slide" data-page="3" id="slide-fund">
+<div class="slide-inner"><h2>行情 K 线</h2><div class="panel"><div class="note">重点放在中间安全带</div><div class="chart-box">__K__</div></div></div></section>
+<section class="slide slide-chart" id="slide-fund" data-page="3" data-title="财务趋势" data-script="看单季营收与利润曲线。&#10;说明：累计已拆成单季，方便看趋势。&#10;指出最近几季变化，不做预测。">
 <div class="slide-tag"><span>3 / B 财报</span><span>单季拆分</span></div>
 <div class="slide-inner"><h2>季度营收与利润</h2><div class="panel"><div class="note">累计已拆单季 · 扣非=归母扣非</div><div class="chart-box">__F__</div></div></div></section>
-<section class="slide" data-page="4" id="slide-val">
-<div class="slide-tag"><span>4 / C 估值</span><span>红虚线=当前PE</span></div>
-<div class="slide-inner"><h2>估值序列 vs 现价</h2><div class="panel"><div class="note">锚定=NOTICE次月月末收盘</div><div class="chart-box">__V__</div></div></div></section>
-<section class="slide" data-page="5" id="slide-end">
+<section class="slide slide-chart" id="slide-val" data-page="4" data-title="指标序列" data-script="讲锚定口径：季报发布日后次月月末收盘。&#10;对照红虚线（当前市盈）与历史序列。&#10;只比较位置，不给操作建议。">
+<div class="slide-tag"><span>4 / C 指标</span><span>红虚线=当前PE</span></div>
+<div class="slide-inner"><h2>指标序列 vs 现价</h2><div class="panel"><div class="note">锚定=NOTICE次月月末收盘</div><div class="chart-box">__V__</div></div></div></section>
+<section class="slide" id="slide-end" data-page="5" data-title="收尾说明" data-script="重申：生成数据仅供参考。&#10;邀请观众自己核对官方披露。&#10;结束本页。">
 <div class="slide-tag"><span>5 / 结尾</span><span>可口述带过</span></div>
 <div class="slide-inner"><h2>说明</h2>
 <div class="disclaimer">生成数据仅供参考，不构成任何决策依据。数据来自第三方公开源，请以官方披露为准。</div>
-<p class="sub">录屏：空格/↓ 下一页 · ↑ 上一页 · G 安全区示意</p>
-</div></section></div>
-<div class="controls" aria-label="翻页">
-<button type="button" id="btnPrev" title="上一页">↑</button>
-<div class="page"><span id="pageNum">1</span><br>/ <span id="pageTotal">5</span></div>
-<button type="button" id="btnNext" title="下一页">↓</button>
-<button type="button" class="tiny" id="btnGuide" title="安全区">安全区</button>
-</div></div>
+<p class="sub">快捷键：空格/↓ 下一页 · ↑ 上一页 · G 安全区</p>
+</div></section>
+      </div>
+    </div>
+  </div>
+  <aside class="script-rail" aria-label="script">
+    <div class="rail-head">
+      <p class="eyebrow">Script</p>
+      <h1>__NAME__ <span style="font-weight:500;opacity:.7;font-size:.75em">(__CODE__)</span></h1>
+      <p class="meta">数据截至 __ASOF__ · 左录屏 / 中文案 / 右翻页</p>
+    </div>
+    <div class="script-list" id="scriptList"></div>
+  </aside>
+  
+  <nav class="pager" aria-label="pager">
+    <div class="page-label" id="pageLabel">1/5</div>
+    <button type="button" class="nav" id="btnPrev" title="prev">↑</button>
+    <button type="button" class="nav" id="btnNext" title="next">↓</button>
+    <button type="button" class="guide" id="btnGuide" title="safe">安全区</button>
+  </nav>
+
+</div>
 </body></html>

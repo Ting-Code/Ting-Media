@@ -1,6 +1,9 @@
 # AGENTS.md — tools/stock-analysis
 
-录屏用 **9:16 PPT 数据页** 生成器。取数请用 `tools/stock-data`（本工具会调用它）。
+录屏 HTML 生成器。取数：`tools/stock-data`。
+
+- **视觉契约**：[`docs/9-16-录屏规范.md`](docs/9-16-录屏规范.md)（实现：`src/_deck_template.html` / `_deck_nav.js` / `render_report.py`）
+- **换期只换内容**，不改母版版式
 
 ```bash
 cd tools/stock-analysis
@@ -9,8 +12,4 @@ pip install -r ../stock-data/requirements.txt
 python scripts/generate_stock_html.py <名称或代码> [--theme 主题] [--date YYYY-MM-DD] [--niche finance]
 ```
 
-| 本工具 | `tools/stock-data` |
-|--------|-------------------|
-| PPT 母版、安全区、切页、Plotly 出页 | 行情 / 财务指标 / 指标序列 |
-
-生成数据仅供参考；不授权商用；请勿滥用。细则见 `docs/`。
+生成数据仅供参考；不授权商用。

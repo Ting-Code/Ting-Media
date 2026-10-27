@@ -1,15 +1,11 @@
 ---
-description: 用户要某标的录屏 HTML 时的强制生成流程
+description: stock-analysis 出页流程与视觉契约
 alwaysApply: true
 ---
 
-# 生成录屏 HTML
+# stock-analysis
 
-当用户给出名称或 6 位代码并要求出图/出 HTML 时：
-
-1. 先读本工具 `AGENTS.md`。
-2. 运行：`python scripts/generate_stock_html.py <名称或代码>`（缺依赖则先安装 requirements）。
-3. 不要从零手写无真实数据的整页 HTML；走现有流水线（经 `stock-data` 取数 → 本工具出页）。
-4. 名称未知时用 6 位代码；可按需补充 `stock-data` 的名称映射。
-5. 完成后给出产物路径；重申生成数据仅供参考。
-6. 第一版只做单标的；用户要聚合板块时说明尚未实现，勿编造。
+- 视觉已定稿：`docs/9-16-录屏规范.md` + `src/_deck_template.html`。换期只换数据/口播。
+- 出页：`python scripts/generate_stock_html.py <名称或代码>`；禁止手写整页 HTML。
+- 取数走 `tools/stock-data`；勿单期改主题/三栏布局/安全区。
+- 生成数据仅供参考；单标的；板块未实现勿编造。

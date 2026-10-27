@@ -24,7 +24,7 @@ def _kline_figure(daily: pd.DataFrame, title: str) -> go.Figure:
         fig.add_trace(go.Candlestick(x=df['date'], open=df['open'], high=df['high'], low=df['low'], close=df['close'], name='K-' + label, increasing_line_color='#ef5350', decreasing_line_color='#26a69a', visible=(i == 0)), row=1, col=1)
         fig.add_trace(go.Bar(x=df['date'], y=df['volume'], name='V-' + label, marker_color=colors, opacity=0.8, visible=(i == 0), showlegend=False), row=2, col=1)
         buttons.append(dict(label=label, method='update', args=[{'visible': visible}]))
-    fig.update_layout(title=title, template='plotly_white', height=400, margin=dict(l=18, r=8, t=40, b=12), xaxis_rangeslider_visible=False, hovermode='x unified', dragmode='pan', updatemenus=[dict(type='buttons', direction='right', x=0, y=1.16, xanchor='left', buttons=buttons)])
+    fig.update_layout(title=None, template='plotly_dark', height=640, margin=dict(l=4, r=4, t=4, b=2), xaxis_rangeslider_visible=False, hovermode='x unified', dragmode='pan', updatemenus=[dict(type='buttons', direction='right', x=0, y=1.08, xanchor='left', buttons=buttons)])
     fig.update_yaxes(title_text='价格', row=1, col=1)
     fig.update_yaxes(title_text='成交量', row=2, col=1)
     return fig
@@ -36,7 +36,7 @@ def _fundamental_figure(fundamentals: pd.DataFrame) -> go.Figure:
     fig.add_trace(go.Bar(x=df['REPORT_DATE'], y=df['revenue_q'] / 1e8, name='单季营收(亿)', marker_color='#42a5f5', opacity=0.85))
     fig.add_trace(go.Scatter(x=df['REPORT_DATE'], y=df['deduct_np_q'] / 1e8, name='单季扣非(亿)', mode='lines+markers', yaxis='y2', line=dict(color='#ef6c00', width=2)))
     fig.add_trace(go.Scatter(x=df['REPORT_DATE'], y=df['parent_np_q'] / 1e8, name='单季归母净利(亿)', mode='lines+markers', yaxis='y2', line=dict(color='#7e57c2', width=1.5, dash='dot')))
-    fig.update_layout(title='上市以来季度盈利（累计报表已拆单季）', template='plotly_white', height=320, margin=dict(l=18, r=24, t=36, b=12), yaxis=dict(title='营收(亿元)'), yaxis2=dict(title='利润(亿元)', overlaying='y', side='right'), legend=dict(orientation='h', y=1.08), hovermode='x unified')
+    fig.update_layout(title=None, template='plotly_dark', height=560, margin=dict(l=6, r=6, t=6, b=4), yaxis=dict(title='营收(亿元)'), yaxis2=dict(title='利润(亿元)', overlaying='y', side='right'), legend=dict(orientation='h', y=1.0, x=0, font=dict(size=10), bgcolor='rgba(0,0,0,0)'), hovermode='x unified')
     return fig
 
 
@@ -47,7 +47,7 @@ def _valuation_figure(val: pd.DataFrame, snap: dict) -> go.Figure:
     fig.add_trace(go.Scatter(x=val['anchor_date'], y=val['div_yield_pct'], mode='lines+markers', name='股息率%', line=dict(color='#26a69a', width=1.5, dash='dot')), secondary_y=True)
     if snap.get('pe_ttm_deduct') is not None:
         fig.add_hline(y=snap['pe_ttm_deduct'], line_dash='dash', line_color='#c62828', annotation_text='当前PE %.1f' % snap['pe_ttm_deduct'], secondary_y=False)
-    fig.update_layout(title='估值序列：季报发布日后次月月末收盘锚定', template='plotly_white', height=320, margin=dict(l=18, r=24, t=36, b=12), legend=dict(orientation='h', y=1.08), hovermode='x unified')
+    fig.update_layout(title=None, template='plotly_dark', height=560, margin=dict(l=6, r=6, t=6, b=4), legend=dict(orientation='h', y=1.0, x=0, font=dict(size=10), bgcolor='rgba(0,0,0,0)'), hovermode='x unified')
     fig.update_yaxes(title_text='PE', secondary_y=False)
     fig.update_yaxes(title_text='PB / 股息率%', secondary_y=True)
     return fig
@@ -75,9 +75,9 @@ def render_html(*, name, code, daily, fundamentals, valuation, snap, out_path):
     pe_pct = percentile(valuation["pe_ttm_deduct"], snap.get("pe_ttm_deduct"))
     pb_pct = percentile(valuation["pb"], snap.get("pb"))
     div_pct = percentile(valuation["div_yield_pct"], snap.get("div_yield_pct"))
-    k_html = plot_offline(_kline_figure(daily, "%s(%s)" % (name, code)), output_type="div", include_plotlyjs=False)
-    f_html = plot_offline(_fundamental_figure(fundamentals), output_type="div", include_plotlyjs=False)
-    v_html = plot_offline(_valuation_figure(valuation, snap), output_type="div", include_plotlyjs=False)
+    k_html = plot_offline(_kline_figure(daily, "%s(%s)" % (name, code)), output_type="div", include_plotlyjs=False, config={"displayModeBar": False, "responsive": True})
+    f_html = plot_offline(_fundamental_figure(fundamentals), output_type="div", include_plotlyjs=False, config={"displayModeBar": False, "responsive": True})
+    v_html = plot_offline(_valuation_figure(valuation, snap), output_type="div", include_plotlyjs=False, config={"displayModeBar": False, "responsive": True})
     asof = pd.Timestamp(snap["asof"]).strftime("%Y-%m-%d")
     html = _load_deck_template()
     reps = {

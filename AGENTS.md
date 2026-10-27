@@ -6,14 +6,12 @@
 
 ```text
 Ting-Media/
-├── AGENTS.md                 # 本文件：约定与工作流（权威）
-├── episodes/<赛道>/YYYY-MM-DD_主题/   # 每期产物
-└── tools/<工具名>/           # 可运行工具；赛道只用于 episodes 归档
-    ├── stock-data/           # 公开市场取数 / 指标序列
-    └── stock-analysis/       # 9:16 PPT 录屏 HTML
+├── AGENTS.md
+├── episodes/<赛道>/YYYY-MM-DD_主题/
+└── tools/
+    ├── stock-data/
+    └── stock-analysis/   # 录屏 HTML；视觉规范已定稿
 ```
-
-可选的细规范若存在，在对应 `tools/<名>/docs/`；**不必维护公共 docs/**。
 
 ## 两条工作流
 
@@ -21,15 +19,14 @@ Ting-Media/
 
 1. 先看现有工具能否覆盖（`stock-data` / `stock-analysis`）。
 2. **有能力就直接调用**。
-3. **同一类需求反复出现**再封装进 `tools/`；不要一提新需求就新建工具。
-4. 单次临时分析：对话/脚本即可，不必先建目录。
+3. **同一类需求反复出现**再封装；不要一提新需求就新建工具。
 
-### 2）生成一期节目（数据 + 图 → HTML → 归档）
+### 2）生成一期节目
 
-1. 用对应工具取数、出图并生成 HTML（`stock-analysis` → 内部用 `stock-data`）。
-2. 写入：`episodes/<赛道>/YYYY-MM-DD_主题/index.html`。
-3. **禁止**从零手写整页 HTML；母版固定，只变内容/数据。
-4. 竖屏约 9:16；安全区大致顶 12% / 底 18%（具体以 `stock-analysis` 母版为准）。
+1. 跑 `tools/stock-analysis` 流水线（内部用 `stock-data`）。
+2. 写入 `episodes/<赛道>/YYYY-MM-DD_主题/index.html`。
+3. **禁止**手写整页 HTML。布局 / 大小 / 主题以  
+   `tools/stock-analysis/docs/9-16-录屏规范.md` 与母版为准——**换期只换内容**。
 
 ```bash
 cd tools/stock-analysis
@@ -40,4 +37,4 @@ python scripts/generate_stock_html.py <名称或代码> [--theme 主题] [--date
 
 ## 合规
 
-生成数据仅供参考，不构成决策依据；相关工具不授权商用；请勿滥用。
+生成数据仅供参考，不构成决策依据；不授权商用；请勿滥用。
