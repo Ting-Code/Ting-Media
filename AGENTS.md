@@ -35,6 +35,12 @@ pip install -r ../stock-data/requirements.txt
 python scripts/generate_stock_html.py <名称或代码> [--theme 主题] [--date YYYY-MM-DD] [--niche finance]
 ```
 
+## 已定稿规范（勿擅自改画法）
+
+- 录屏视觉：`tools/stock-analysis/docs/9-16-录屏规范.md` + deck 母版
+- 估值取数与 **PE 分析图**：`tools/stock-data/docs/数据源规范.md`  
+  单股/板块同一套：PE、PB、股价（或点位）**各用独立纵轴**，刻度可隐藏、悬浮看真值；禁止共用绝对刻度、禁止末点=100 归一
+
 ## 合规
 
 生成数据仅供参考，不构成决策依据；不授权商用；请勿滥用。

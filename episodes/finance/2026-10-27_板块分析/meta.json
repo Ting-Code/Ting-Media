@@ -1,0 +1,68 @@
+{
+  "niche": "finance",
+  "theme": "板块分析",
+  "date": "2026-10-27",
+  "format": "9:16-ppt-deck",
+  "layout": "cover + one_page_per_sector + end",
+  "sectors": [
+    {
+      "id": "hstech",
+      "title": "恒生科技",
+      "code": "HSTECH",
+      "pe": 25.04201396316997,
+      "pb": 2.282181356669415,
+      "price": 3857.53003,
+      "n": 20,
+      "w_cov": 75.88999999999999
+    },
+    {
+      "id": "hki",
+      "title": "港股通互联网",
+      "code": "HSIII",
+      "pe": 21.121911397036104,
+      "pb": 2.21124667477056,
+      "price": 1925.76,
+      "n": 11,
+      "w_cov": 51.63
+    },
+    {
+      "id": "sse",
+      "title": "上证指数",
+      "code": "000001",
+      "pe": 10.79,
+      "pb": 1.24,
+      "price": 3697.52,
+      "n": 88,
+      "w_cov": 100.0
+    },
+    {
+      "id": "cyb",
+      "title": "创业板",
+      "code": "399006",
+      "pe": 24.08,
+      "pb": 4.66,
+      "price": 2638.231,
+      "n": 67,
+      "w_cov": 100.0
+    },
+    {
+      "id": "star",
+      "title": "科创板",
+      "code": "000688",
+      "pe": 96.03,
+      "pb": 6.72,
+      "price": 1252.278,
+      "n": 28,
+      "w_cov": 100.0
+    }
+  ],
+  "pe_method": "mixed_see_sector_notes",
+  "sector_pe_notes": {
+    "hstech": "hk_basic_eps_ann_weight_avg + index_or_synth_price",
+    "hki": "hk_internet_subset_eps_ann_weight_avg + hsiii_or_synth_price",
+    "sse": "legulegu_sse50_ttm_pe_pb + sse_index_000001",
+    "cyb": "legulegu_cyb50_ttm_pe_pb + cyb_index_399006",
+    "star": "legulegu_star_board_pe_pb + star50_000688"
+  },
+  "generated_at": "2026-10-27T17:33:53"
+}

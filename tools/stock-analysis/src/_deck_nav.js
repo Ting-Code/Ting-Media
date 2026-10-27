@@ -33,7 +33,10 @@
     const h = Math.max(140, Math.floor(box.clientHeight));
     box.querySelectorAll(".js-plotly-plot").forEach(function (p) {
       try {
-        Plotly.relayout(p, { width: w, height: h, autosize: false });
+        // Keep current x/y ranges while only syncing size.
+        var layout = p.layout || {};
+        var patch = { width: w, height: h, autosize: false };
+        Plotly.relayout(p, patch);
       } catch (err) {}
     });
   }
@@ -103,6 +106,17 @@
       });
       setActive(best);
     }, 80);
+  });
+    // Prevent deck page-flip while zooming chart (bubble after Plotly).
+  document.querySelectorAll(".chart-box").forEach(function (box) {
+    box.addEventListener(
+      "wheel",
+      function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      { passive: false }
+    );
   });
   window.addEventListener("resize", function () {
     fitPlots(slides[index]);
