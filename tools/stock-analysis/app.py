@@ -20,12 +20,12 @@ from codes import resolve_code
 from market import fetch_daily
 from chart import build_kline_figure
 
-st.set_page_config(page_title="A股交互K线", layout="wide")
-st.title("A股交互 K 线图（试验）")
+st.set_page_config(page_title="交互K线（试验）", layout="wide")
+st.title("交互 K 线图（试验）")
 st.caption("正式录屏请用 scripts/generate_stock_html.py")
 
 with st.sidebar:
-    q = st.text_input("股票", value="600519")
+    q = st.text_input("代码或名称", value="600519")
     today = date.today()
     start = st.date_input("开始", value=today - timedelta(days=365 * 3))
     end = st.date_input("结束", value=today)

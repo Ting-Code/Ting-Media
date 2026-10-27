@@ -22,7 +22,7 @@ def _to_baostock_code(code: str) -> str:
 
     digits = "".join(ch for ch in raw if ch.isdigit())
     if len(digits) != 6:
-        raise ValueError(f"无效股票代码: {code}")
+        raise ValueError(f"无效代码: {code}")
 
     if digits.startswith(("5", "6", "9")):
         return f"sh.{digits}"

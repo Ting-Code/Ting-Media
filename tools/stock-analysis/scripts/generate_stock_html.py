@@ -1,9 +1,9 @@
 """Generate episode HTML using stock-data + local deck renderer.
 
 Usage:
-  python scripts/generate_stock_html.py 宁德时代
-  python scripts/generate_stock_html.py 300750 --theme 宁德时代估值复盘
-  python scripts/generate_stock_html.py 宁德时代 --date 2026-10-26 --niche finance
+  python scripts/generate_stock_html.py <名称或代码>
+  python scripts/generate_stock_html.py 300750 --theme 主题
+  python scripts/generate_stock_html.py 300750 --date YYYY-MM-DD --niche finance
 """
 
 from __future__ import annotations
@@ -30,9 +30,9 @@ from valuation import build_valuation_series, current_snapshot
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate 9:16 PPT stock review HTML")
-    parser.add_argument("query", nargs="?", default="宁德时代", help="股票名称或代码")
-    parser.add_argument("--theme", default="", help="期节目主题（默认：{名}复盘）")
+    parser = argparse.ArgumentParser(description="Generate 9:16 PPT episode HTML")
+    parser.add_argument("query", nargs="?", default="300750", help="名称或代码")
+    parser.add_argument("--theme", default="", help="期节目主题（默认：{名}）")
     parser.add_argument("--date", default="", help="节目日期 YYYY-MM-DD（默认今天）")
     parser.add_argument("--niche", default="finance", help="赛道目录名（默认 finance）")
     args = parser.parse_args()
@@ -40,7 +40,7 @@ def main() -> None:
     code, name = resolve_code(args.query)
     if name == code:
         name = args.query
-    theme = args.theme.strip() or (name + "复盘")
+    theme = args.theme.strip() or name
     day = date.fromisoformat(args.date) if args.date else date.today()
 
     print("[1/4] daily", code)

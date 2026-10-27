@@ -1,18 +1,17 @@
-# python
+# Python / 环境（不入库）
 __pycache__/
 *.py[cod]
+*.egg-info/
 .venv/
 venv/
 .env
-
-# generated tool caches
-**/output/*
-!**/output/.gitkeep
-
-# 录屏期节目产物（保留说明文件）
-episodes/*
-!episodes/README.md
+.env.*
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# 工具本地临时 / 中间产物（正式节目在 episodes/）
+**/scripts/_tmp_*
+tools/**/output/

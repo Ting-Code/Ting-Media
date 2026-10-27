@@ -22,7 +22,7 @@ NAME_TO_CODE = {
 def to_baostock(code: str) -> str:
     digits = "".join(ch for ch in code if ch.isdigit())
     if len(digits) != 6:
-        raise ValueError(f"无效股票代码: {code}")
+        raise ValueError(f"无效代码: {code}")
     if digits.startswith(("5", "6", "9")):
         return f"sh.{digits}"
     if digits.startswith(("4", "8")):
@@ -62,7 +62,7 @@ def resolve_code(query: str) -> tuple[str, str]:
     """Return (6-digit code, display name)."""
     q = query.strip()
     if not q:
-        raise ValueError("股票名称或代码不能为空")
+        raise ValueError("名称或代码不能为空")
 
     key = q.lower()
     if key in NAME_TO_CODE:
@@ -79,6 +79,6 @@ def resolve_code(query: str) -> tuple[str, str]:
         return found
 
     raise ValueError(
-        f"无法识别股票: {query}。"
+        f"无法识别: {query}。"
         "请改用 6 位代码（如 300750），或在 src/codes.py 的 NAME_TO_CODE 中补充名称映射。"
     )
