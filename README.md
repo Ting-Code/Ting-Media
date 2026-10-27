@@ -48,7 +48,7 @@ Ting-Media/
 └── tools/stock-analysis/（调用 tools/stock-data）
 ```
 
-详见 [`docs/目录规划.md`](docs/目录规划.md)、[`docs/9-16-录屏规范.md`](docs/9-16-录屏规范.md)。
+详见 [`docs/目录规划.md`](docs/目录规划.md)、[`tools/stock-analysis/docs/9-16-录屏规范.md`](tools/stock-analysis/docs/9-16-录屏规范.md)。
 
 当前仓库处于起步阶段，文档与模板将按模块逐步补齐。
 
@@ -69,7 +69,7 @@ python scripts/generate_stock_html.py 宁德时代
 # -> episodes/finance/YYYY-MM-DD_宁德时代复盘/index.html
 ```
 
-归档与 AI 出页方式见 [docs/录屏产物与生成方式.md](docs/录屏产物与生成方式.md)。
+目录与产物约定见 [docs/目录规划.md](docs/目录规划.md)；录屏页规范见工具内 docs。
 
 说明见 [`tools/stock-analysis/（调用 tools/stock-data）README.md`](tools/stock-analysis/（调用 tools/stock-data）README.md) 与 [`tools/stock-analysis/（调用 tools/stock-data）AGENTS.md`](tools/stock-analysis/（调用 tools/stock-data）AGENTS.md)。
 

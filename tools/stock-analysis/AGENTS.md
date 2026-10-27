@@ -20,4 +20,4 @@ python scripts/generate_stock_html.py <名称或代码> [--theme 主题] [--date
 | PPT 母版、安全区、切页、Plotly 出页 | 行情/季报/分红/估值序列 |
 | `docs/方案.md`（分析块与出页） | `docs/数据源规范.md` |
 
-禁止从零手写整页 HTML。规范见仓库 `docs/9-16-录屏规范.md`。
+禁止从零手写整页 HTML。规范见`docs/9-16-录屏规范.md`（本工具）。
