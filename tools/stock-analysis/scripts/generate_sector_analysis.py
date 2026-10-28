@@ -87,6 +87,7 @@ def load_hstech_sector():
     w_cov = float(last["w_cov"])
     return {
         "id": "hstech",
+        "kind": "market",
         "title": "恒生科技",
         "code": "HSTECH",
         "asof": pd.Timestamp(index_daily["date"].iloc[-1]).strftime("%Y-%m-%d"),
@@ -120,6 +121,7 @@ def load_hki_sector():
     asof = pd.Timestamp(last["anchor_date"]).strftime("%Y-%m-%d")
     return {
         "id": "hki",
+        "kind": "market",
         "title": "港股通互联网",
         "code": "HSIII",
         "asof": asof,
@@ -161,6 +163,7 @@ def load_sse_sector():
     n_pb = int(val["pb"].notna().sum())
     return {
         "id": "sse",
+        "kind": "market",
         "title": "上证指数",
         "code": "000001",
         "asof": pd.Timestamp(index_daily["date"].iloc[-1]).strftime("%Y-%m-%d"),
@@ -203,6 +206,7 @@ def load_cyb_sector():
     n_pb = int(val["pb"].notna().sum())
     return {
         "id": "cyb",
+        "kind": "market",
         "title": "创业板",
         "code": "399006",
         "asof": pd.Timestamp(index_daily["date"].iloc[-1]).strftime("%Y-%m-%d"),
@@ -246,6 +250,7 @@ def load_star_sector():
     n_pb = int(val["pb"].notna().sum())
     return {
         "id": "star",
+        "kind": "market",
         "title": "科创板",
         "code": "000688",
         "asof": pd.Timestamp(index_daily["date"].iloc[-1]).strftime("%Y-%m-%d"),
@@ -268,6 +273,244 @@ def load_star_sector():
         ),
     }
 
+
+
+
+def _load_lg_index_sector(
+    *,
+    sid: str,
+    title: str,
+    code: str,
+    note_pe: str,
+    script_extra: str = "",
+):
+    """Generic: official index daily + legulegu 滚动市盈率/市净率."""
+    val_path = CACHE / f"{sid}_sector_valuation.csv"
+    idx_path = CACHE / f"{sid}_index_daily.csv"
+    if not val_path.exists() or not idx_path.exists():
+        raise SystemExit(f"missing {sid} cache")
+    val = pd.read_csv(val_path, parse_dates=["quarter_end", "anchor_date"])
+    index_daily = pd.read_csv(idx_path, parse_dates=["date"])
+    last = val.dropna(subset=["pe"]).iloc[-1]
+    pe = float(last["pe"]) if pd.notna(last["pe"]) else None
+    pb = float(last["pb"]) if pd.notna(last["pb"]) else None
+    price = float(last["price"]) if pd.notna(last["price"]) else float(
+        index_daily.iloc[-1]["close"]
+    )
+    n_pe = int(val["pe"].notna().sum())
+    n_pb = int(val["pb"].notna().sum())
+    script = (
+        f"板块：{title}。&#10;"
+        f"点位用官方指数；PE/PB用乐咕{note_pe}滚动。&#10;"
+        "指数加权近似，不是等权平均。"
+    )
+    if script_extra:
+        script = script_extra
+    return {
+        "id": sid,
+        "title": title,
+        "code": code,
+        "kind": "market",
+        "asof": pd.Timestamp(index_daily["date"].iloc[-1]).strftime("%Y-%m-%d"),
+        "price": price,
+        "pe": pe,
+        "pb": pb,
+        "pe_pct": percentile(val["pe"], pe),
+        "pb_pct": percentile(val["pb"], pb),
+        "n": n_pe,
+        "w_cov": 100.0,
+        "val": val,
+        "script": script,
+        "note": (
+            f"点位={title} · PE/PB=乐咕{note_pe}滚动 · 有效PE点 {n_pe} · PB点 {n_pb}"
+        ),
+    }
+
+
+def load_hs300_sector():
+    return _load_lg_index_sector(
+        sid="hs300", title="沪深300", code="000300", note_pe="沪深300"
+    )
+
+
+# 申万一级行业（乐咕 sw-industry-2021：加权滚动PE / 加权PB / 指数点位）
+SW_L1 = [
+    ("801010", "农林牧渔"),
+    ("801030", "基础化工"),
+    ("801040", "钢铁"),
+    ("801050", "有色金属"),
+    ("801080", "电子"),
+    ("801880", "汽车"),
+    ("801110", "家用电器"),
+    ("801120", "食品饮料"),
+    ("801130", "纺织服饰"),
+    ("801140", "轻工制造"),
+    ("801150", "医药生物"),
+    ("801160", "公用事业"),
+    ("801170", "交通运输"),
+    ("801180", "房地产"),
+    ("801200", "商贸零售"),
+    ("801210", "社会服务"),
+    ("801780", "银行"),
+    ("801790", "非银金融"),
+    ("801230", "综合"),
+    ("801710", "建筑材料"),
+    ("801720", "建筑装饰"),
+    ("801730", "电力设备"),
+    ("801890", "机械设备"),
+    ("801740", "国防军工"),
+    ("801750", "计算机"),
+    ("801760", "传媒"),
+    ("801770", "通信"),
+    ("801950", "煤炭"),
+    ("801960", "石油石化"),
+    ("801970", "环保"),
+    ("801980", "美容护理"),
+]
+
+
+_LG_CTX = None  # lazy: (token, sess_kw, requests_mod)
+
+
+def _lg_token_and_session(*, refresh: bool = False):
+    """乐咕 token + cookie/csrf（与 akshare 同源）；进程内复用，避免反复打 overview。"""
+    global _LG_CTX
+    if _LG_CTX is not None and not refresh:
+        return _LG_CTX
+    from datetime import date
+    import time
+
+    import py_mini_racer
+    import requests
+    from akshare.stock_feature.stock_a_indicator import get_cookie_csrf
+    from akshare.stock_feature.stock_a_pe_and_pb import hash_code
+
+    js = py_mini_racer.MiniRacer()
+    js.eval(hash_code)
+    token = js.call("hex", date.today().isoformat()).lower()
+    last_err = None
+    for attempt in range(5):
+        try:
+            sess_kw = get_cookie_csrf(
+                url="https://legulegu.com/stockdata/sw-industry-overview"
+            )
+            _LG_CTX = (token, sess_kw, requests)
+            return _LG_CTX
+        except Exception as e:
+            last_err = e
+            wait = 8 * (attempt + 1)
+            print("  lg session retry %d after %ss (%s)" % (attempt + 1, wait, e), flush=True)
+            time.sleep(wait)
+    raise last_err
+
+
+def fetch_sw_industry_valuation(code6: str, *, freq: str = "week") -> pd.DataFrame:
+    """拉取申万一级行业 PE/PB/点位周线，写成与其它板块一致的估值表。"""
+    import time
+
+    url = "https://legulegu.com/api/stockdata/sw-industry-2021"
+    industry_code = "%s.SI" % code6
+    last_err = None
+    for attempt in range(5):
+        token, sess_kw, requests = _lg_token_and_session(refresh=attempt > 0)
+        try:
+            r = requests.get(
+                url,
+                params={"token": token, "industryCode": industry_code, "freq": freq},
+                timeout=60,
+                **sess_kw,
+            )
+            if r.status_code == 429:
+                raise RuntimeError("429 Too Many Requests")
+            r.raise_for_status()
+            data = r.json().get("data") or []
+            if not data:
+                raise RuntimeError("empty sw industry data for %s" % industry_code)
+            raw = pd.DataFrame(data)
+            raw["date"] = pd.to_datetime(raw["date"])
+            out = pd.DataFrame(
+                {
+                    "quarter_end": raw["date"],
+                    "anchor_date": raw["date"],
+                    "price": pd.to_numeric(raw["indexClose"], errors="coerce"),
+                    "pe": pd.to_numeric(raw["addTtmPe"], errors="coerce"),
+                    "pb": pd.to_numeric(raw["addPb"], errors="coerce"),
+                }
+            )
+            out = (
+                out.dropna(subset=["pe"])
+                .sort_values("anchor_date")
+                .reset_index(drop=True)
+            )
+            time.sleep(0.8)
+            return out
+        except Exception as e:
+            last_err = e
+            wait = 10 * (attempt + 1)
+            print("  fetch retry %d %s wait %ss" % (attempt + 1, industry_code, wait), flush=True)
+            time.sleep(wait)
+            _lg_token_and_session(refresh=True)
+    raise last_err
+
+
+def ensure_sw_industry_caches(*, force: bool = False) -> None:
+    CACHE.mkdir(parents=True, exist_ok=True)
+    _lg_token_and_session()  # warm once
+    for code6, name in SW_L1:
+        sid = "sw%s" % code6
+        dest = CACHE / ("%s_sector_valuation.csv" % sid)
+        if dest.exists() and not force:
+            continue
+        print("fetch sw %s %s ..." % (name, code6), flush=True)
+        val = fetch_sw_industry_valuation(code6)
+        val.to_csv(dest, index=False)
+        print(
+            "  saved %s n=%d pe=%.2f" % (dest.name, len(val), float(val.iloc[-1]["pe"])),
+            flush=True,
+        )
+
+
+def load_sw_industry_sector(code6: str, title: str):
+    sid = "sw%s" % code6
+    val_path = CACHE / ("%s_sector_valuation.csv" % sid)
+    if not val_path.exists():
+        raise SystemExit("missing %s cache; run ensure_sw_industry_caches" % sid)
+    val = pd.read_csv(val_path, parse_dates=["quarter_end", "anchor_date"])
+    last = val.dropna(subset=["pe"]).iloc[-1]
+    pe = float(last["pe"]) if pd.notna(last["pe"]) else None
+    pb = float(last["pb"]) if pd.notna(last["pb"]) else None
+    price = float(last["price"]) if pd.notna(last["price"]) else None
+    n_pe = int(val["pe"].notna().sum())
+    n_pb = int(val["pb"].notna().sum())
+    asof = pd.Timestamp(last["anchor_date"]).strftime("%Y-%m-%d")
+    return {
+        "id": sid,
+        "title": title,
+        "code": "%s.SI" % code6,
+        "asof": asof,
+        "price": price,
+        "pe": pe,
+        "pb": pb,
+        "pe_pct": percentile(val["pe"], pe),
+        "pb_pct": percentile(val["pb"], pb),
+        "n": n_pe,
+        "w_cov": 100.0,
+        "val": val,
+        "kind": "industry",
+        "script": (
+            "板块：申万一级·%s。&#10;"
+            "点位用申万行业指数；PE/PB用乐咕加权滚动。&#10;"
+            "口径与沪深300乐咕滚动一致，看分位即可。"
+        ) % title,
+        "note": (
+            "点位=申万%s · PE/PB=乐咕加权滚动(2021分类) · 有效PE点 %d · PB点 %d"
+            % (title, n_pe, n_pb)
+        ),
+    }
+
+
+def load_all_sw_industry_sectors():
+    return [load_sw_industry_sector(code6, title) for code6, title in SW_L1]
 
 
 def _padded_range(series, pad=0.08):
@@ -450,17 +693,51 @@ def sector_slide(sector, page, chart_html):
 
 
 def cover_slide(sectors, asof, page):
-    names = "、".join(s["title"] for s in sectors)
+    market = [s for s in sectors if s.get("kind") != "industry"]
+    industries = [s for s in sectors if s.get("kind") == "industry"]
     q = chr(34)
     cards = []
-    for s in sectors:
-        cards.append("<div class=" + q + "card" + q + "><div class=" + q + "label" + q + ">" + html_lib.escape(s["title"]) + "</div><div class=" + q + "value" + q + ">" + _fmt(s["pe"], 1) + "</div><div class=" + q + "hint" + q + ">PE · PB " + _fmt(s["pb"], 2) + "</div></div>")
+    for s in market:
+        cards.append(
+            "<div class=" + q + "card" + q + "><div class=" + q + "label" + q + ">"
+            + html_lib.escape(s["title"])
+            + "</div><div class=" + q + "value" + q + ">"
+            + _fmt(s["pe"], 1)
+            + "</div><div class=" + q + "hint" + q + ">PE · PB "
+            + _fmt(s["pb"], 2)
+            + "</div></div>"
+        )
+    if industries:
+        pe_vals = [s["pe"] for s in industries if s.get("pe") is not None]
+        avg_pe = sum(pe_vals) / len(pe_vals) if pe_vals else None
+        cards.append(
+            "<div class=" + q + "card" + q + "><div class=" + q + "label" + q + ">申万一级行业</div>"
+            "<div class=" + q + "value" + q + ">" + str(len(industries)) + "</div>"
+            "<div class=" + q + "hint" + q + ">页 · 均PE "
+            + _fmt(avg_pe, 1) + "</div></div>"
+        )
+    m_names = "、".join(s["title"] for s in market)
+    sub = m_names
+    if industries:
+        sub += " + 申万一级×%d" % len(industries)
     parts = []
-    parts.append("<section class=" + q + "slide" + q + " id=" + q + "slide-cover" + q + " data-page=" + q + str(page) + q + " data-title=" + q + "板块分析" + q + " data-script=" + q + "本期主题：板块分析。&#10;依次过各板块一页：点位、加权PE/PB、分位。&#10;数据仅供参考，不构成决策依据。" + q + ">")
-    parts.append("<div class=" + q + "slide-tag" + q + "><span>" + str(page) + " / 封面</span><span>" + asof + "</span></div>")
+    parts.append(
+        "<section class=" + q + "slide" + q + " id=" + q + "slide-cover" + q
+        + " data-page=" + q + str(page) + q + " data-title=" + q + "板块分析" + q
+        + " data-script=" + q
+        + "本期主题：板块分析。&#10;先过宽基/主题，再逐个申万一级行业：点位、加权PE/PB、分位。&#10;数据仅供参考。"
+        + q + ">"
+    )
+    parts.append(
+        "<div class=" + q + "slide-tag" + q + "><span>" + str(page)
+        + " / 封面</span><span>" + asof + "</span></div>"
+    )
     parts.append("<div class=" + q + "slide-inner" + q + ">")
     parts.append("<h1 class=" + q + "phone-title" + q + ">板块分析</h1>")
-    parts.append("<p class=" + q + "sub" + q + ">本期：" + html_lib.escape(names) + " · 每板块一页 · 上季盈利年化 + 本季末价</p>")
+    parts.append(
+        "<p class=" + q + "sub" + q + ">本期：" + html_lib.escape(sub)
+        + " · 每板块一页</p>"
+    )
     parts.append("<div class=" + q + "cards" + q + ">" + "".join(cards) + "</div>")
     parts.append("</div></section>")
     return chr(10).join(parts) + chr(10)
@@ -520,6 +797,8 @@ def render(sectors):
             "sse": "legulegu_sse50_ttm_pe_pb + sse_index_000001",
             "cyb": "legulegu_cyb50_ttm_pe_pb + cyb_index_399006",
             "star": "legulegu_star_board_pe_pb + star50_000688",
+            "hs300": "legulegu_hs300_ttm_pe_pb + index_000300",
+            "sw_l1": "legulegu_sw_industry_2021_addTtmPe_addPb_indexClose",
         },
         "generated_at": datetime.now().isoformat(timespec="seconds"),
     }
@@ -529,7 +808,16 @@ def render(sectors):
 
 def main():
     ensure_cache_from_old()
-    sectors = [load_hstech_sector(), load_hki_sector(), load_sse_sector(), load_cyb_sector(), load_star_sector()]
+    ensure_sw_industry_caches()
+    sectors = [
+        load_hstech_sector(),
+        load_hki_sector(),
+        load_sse_sector(),
+        load_cyb_sector(),
+        load_star_sector(),
+        load_hs300_sector(),
+        *load_all_sw_industry_sectors(),
+    ]
     path = render(sectors)
     print("DONE", path)
     print(path.resolve().as_uri())
