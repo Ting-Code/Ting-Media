@@ -96,6 +96,15 @@ h2{font-size:1.7rem;margin:0;color:var(--od-blue);font-weight:600}
   background:transparent;color:var(--od-muted);font-size:.72rem;line-height:1.2;cursor:pointer;padding:6px 2px;
 }
 .pager button.guide:hover,.pager button.guide.on{border-color:var(--od-red);color:var(--od-red)}
+.pager button.flip{
+  margin-top:4px;width:52px;min-height:40px;border-radius:8px;border:1px solid var(--od-line);
+  background:transparent;color:var(--od-muted);font-size:.72rem;line-height:1.2;cursor:pointer;padding:6px 2px;
+}
+.pager button.flip:hover,.pager button.flip.on{border-color:var(--od-purple);color:var(--od-purple)}
+/* 左右对调：口播左 · 录屏中 · 翻页右（默认仍是左录屏） */
+.workbench.layout-flip .stage-col{order:2}
+.workbench.layout-flip .script-rail{order:1}
+.workbench.layout-flip .pager{order:3}
 @media (max-width:900px){
   .workbench{flex-wrap:wrap;padding:10px;gap:10px}
   .stage-col{order:1;justify-content:center;width:100%}
@@ -150,7 +159,7 @@ h2{font-size:1.7rem;margin:0;color:var(--od-blue);font-weight:600}
     <div class="rail-head">
       <p class="eyebrow">Script</p>
       <h1>__NAME__ <span style="font-weight:500;opacity:.7;font-size:.75em">(__CODE__)</span></h1>
-      <p class="meta">数据截至 __ASOF__ · 左录屏 / 中文案 / 右翻页</p>
+      <p class="meta">数据截至 __ASOF__ · 左录屏 / 中文案 / 右翻页 · L 左右对调</p>
     </div>
     <div class="script-list" id="scriptList"></div>
   </aside>
@@ -160,6 +169,7 @@ h2{font-size:1.7rem;margin:0;color:var(--od-blue);font-weight:600}
     <button type="button" class="nav" id="btnPrev" title="prev">↑</button>
     <button type="button" class="nav" id="btnNext" title="next">↓</button>
     <button type="button" class="guide" id="btnGuide" title="safe">安全区</button>
+    <button type="button" class="flip" id="btnFlip" title="swap layout">左右</button>
   </nav>
 
 </div>

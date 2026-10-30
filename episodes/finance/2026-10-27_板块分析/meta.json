@@ -66,6 +66,166 @@
       "w_cov": 100.0
     },
     {
+      "id": "thm801081",
+      "title": "半导体",
+      "code": "801081.SI",
+      "pe": 46.6,
+      "pb": 8.28,
+      "price": 7529.46,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801084",
+      "title": "光模块",
+      "code": "801084.SI",
+      "pe": 35.39,
+      "pb": 2.31,
+      "price": 1548.88,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm851024",
+      "title": "光通信设备",
+      "code": "851024.SI",
+      "pe": 43.07,
+      "pb": 9.2,
+      "price": 31692.61,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm851041",
+      "title": "AI应用软件",
+      "code": "851041.SI",
+      "pe": 49.85,
+      "pb": 4.98,
+      "price": 4417.39,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801104",
+      "title": "软件开发",
+      "code": "801104.SI",
+      "pe": 50.87,
+      "pb": 4.52,
+      "price": 5347.86,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801103",
+      "title": "IT服务",
+      "code": "801103.SI",
+      "pe": 58.2,
+      "pb": 3.22,
+      "price": 4285.78,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801085",
+      "title": "消费电子",
+      "code": "801085.SI",
+      "pe": 25.19,
+      "pb": 4.06,
+      "price": 8549.78,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801102",
+      "title": "通信设备",
+      "code": "801102.SI",
+      "pe": 42.44,
+      "pb": 7.25,
+      "price": 7055.19,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm850818",
+      "title": "半导体设备",
+      "code": "850818.SI",
+      "pe": 67.27,
+      "pb": 8.71,
+      "price": 53505.84,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm850822",
+      "title": "印制电路板",
+      "code": "850822.SI",
+      "pe": 40.33,
+      "pb": 6.75,
+      "price": 14121.15,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801083",
+      "title": "电子元件",
+      "code": "801083.SI",
+      "pe": 40.41,
+      "pb": 6.39,
+      "price": 16943.48,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801101",
+      "title": "计算机设备",
+      "code": "801101.SI",
+      "pe": 23.66,
+      "pb": 3.11,
+      "price": 2577.02,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801078",
+      "title": "自动化设备",
+      "code": "801078.SI",
+      "pe": 61.68,
+      "pb": 6.02,
+      "price": 17476.88,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801737",
+      "title": "电池",
+      "code": "801737.SI",
+      "pe": 15.78,
+      "pb": 2.38,
+      "price": 16267.99,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801735",
+      "title": "光伏设备",
+      "code": "801735.SI",
+      "pe": 24.1,
+      "pb": 2.73,
+      "price": 4270.41,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
+      "id": "thm801738",
+      "title": "电网设备",
+      "code": "801738.SI",
+      "pe": 25.07,
+      "pb": 2.46,
+      "price": 4698.23,
+      "n": 255,
+      "w_cov": 100.0
+    },
+    {
       "id": "sw801010",
       "title": "农林牧渔",
       "code": "801010.SI",
@@ -384,7 +544,8 @@
     "cyb": "legulegu_cyb50_ttm_pe_pb + cyb_index_399006",
     "star": "legulegu_star_board_pe_pb + star50_000688",
     "hs300": "legulegu_hs300_ttm_pe_pb + index_000300",
-    "sw_l1": "legulegu_sw_industry_2021_addTtmPe_addPb_indexClose"
+    "sw_l1": "legulegu_sw_industry_2021_addTtmPe_addPb_indexClose",
+    "sw_themes": "legulegu_sw_l2_l3_addTtmPe_addPb_indexClose"
   },
-  "generated_at": "2026-10-28T11:08:37"
+  "generated_at": "2026-10-29T14:13:48"
 }

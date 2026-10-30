@@ -368,6 +368,27 @@ SW_L1 = [
     ("801980", "美容护理"),
 ]
 
+# 热门细分（申万二/三级）：半导体、光模块相关、应用软件等
+# title=口播名；sw_name=申万官方名（写入 note）
+SW_THEMES = [
+    ("801081", "半导体", "半导体"),
+    ("801084", "光模块", "光学光电子"),  # 无独立光模块指数，用光学光电子近似
+    ("851024", "光通信设备", "通信网络设备及器件"),
+    ("851041", "AI应用软件", "垂直应用软件"),
+    ("801104", "软件开发", "软件开发"),
+    ("801103", "IT服务", "IT服务Ⅱ"),
+    ("801085", "消费电子", "消费电子"),
+    ("801102", "通信设备", "通信设备"),
+    ("850818", "半导体设备", "半导体设备"),
+    ("850822", "印制电路板", "印制电路板"),
+    ("801083", "电子元件", "元件"),
+    ("801101", "计算机设备", "计算机设备"),
+    ("801078", "自动化设备", "自动化设备"),
+    ("801737", "电池", "电池"),
+    ("801735", "光伏设备", "光伏设备"),
+    ("801738", "电网设备", "电网设备"),
+]
+
 
 _LG_CTX = None  # lazy: (token, sess_kw, requests_mod)
 
@@ -456,7 +477,13 @@ def fetch_sw_industry_valuation(code6: str, *, freq: str = "week") -> pd.DataFra
 def ensure_sw_industry_caches(*, force: bool = False) -> None:
     CACHE.mkdir(parents=True, exist_ok=True)
     _lg_token_and_session()  # warm once
-    for code6, name in SW_L1:
+    jobs = [(c, n) for c, n in SW_L1]
+    jobs += [(c, t) for c, t, _ in SW_THEMES]
+    seen = set()
+    for code6, name in jobs:
+        if code6 in seen:
+            continue
+        seen.add(code6)
         sid = "sw%s" % code6
         dest = CACHE / ("%s_sector_valuation.csv" % sid)
         if dest.exists() and not force:
@@ -470,7 +497,14 @@ def ensure_sw_industry_caches(*, force: bool = False) -> None:
         )
 
 
-def load_sw_industry_sector(code6: str, title: str):
+def load_sw_industry_sector(
+    code6: str,
+    title: str,
+    *,
+    kind: str = "industry",
+    sw_name: str | None = None,
+    level_label: str = "一级",
+):
     sid = "sw%s" % code6
     val_path = CACHE / ("%s_sector_valuation.csv" % sid)
     if not val_path.exists():
@@ -483,8 +517,12 @@ def load_sw_industry_sector(code6: str, title: str):
     n_pe = int(val["pe"].notna().sum())
     n_pb = int(val["pb"].notna().sum())
     asof = pd.Timestamp(last["anchor_date"]).strftime("%Y-%m-%d")
+    official = sw_name or title
+    note_extra = ""
+    if sw_name and sw_name != title:
+        note_extra = "（申万·%s）" % sw_name
     return {
-        "id": sid,
+        "id": sid if kind == "industry" else ("thm%s" % code6),
         "title": title,
         "code": "%s.SI" % code6,
         "asof": asof,
@@ -496,21 +534,42 @@ def load_sw_industry_sector(code6: str, title: str):
         "n": n_pe,
         "w_cov": 100.0,
         "val": val,
-        "kind": "industry",
+        "kind": kind,
         "script": (
-            "板块：申万一级·%s。&#10;"
+            "板块：申万%s·%s%s。&#10;"
             "点位用申万行业指数；PE/PB用乐咕加权滚动。&#10;"
-            "口径与沪深300乐咕滚动一致，看分位即可。"
-        ) % title,
+            "看历史分位，不做操作建议。"
+        )
+        % (
+            level_label,
+            title,
+            ("／" + sw_name) if (sw_name and sw_name != title) else "",
+        ),
         "note": (
-            "点位=申万%s · PE/PB=乐咕加权滚动(2021分类) · 有效PE点 %d · PB点 %d"
-            % (title, n_pe, n_pb)
+            "点位=申万%s%s · PE/PB=乐咕加权滚动(2021) · 有效PE点 %d · PB点 %d"
+            % (official, note_extra, n_pe, n_pb)
         ),
     }
 
 
 def load_all_sw_industry_sectors():
-    return [load_sw_industry_sector(code6, title) for code6, title in SW_L1]
+    return [
+        load_sw_industry_sector(code6, title, kind="industry", level_label="一级")
+        for code6, title in SW_L1
+    ]
+
+
+def load_all_sw_theme_sectors():
+    return [
+        load_sw_industry_sector(
+            code6,
+            title,
+            kind="theme",
+            sw_name=sw_name,
+            level_label="细分",
+        )
+        for code6, title, sw_name in SW_THEMES
+    ]
 
 
 def _padded_range(series, pad=0.08):
@@ -693,7 +752,8 @@ def sector_slide(sector, page, chart_html):
 
 
 def cover_slide(sectors, asof, page):
-    market = [s for s in sectors if s.get("kind") != "industry"]
+    market = [s for s in sectors if s.get("kind") == "market"]
+    themes = [s for s in sectors if s.get("kind") == "theme"]
     industries = [s for s in sectors if s.get("kind") == "industry"]
     q = chr(34)
     cards = []
@@ -707,25 +767,36 @@ def cover_slide(sectors, asof, page):
             + _fmt(s["pb"], 2)
             + "</div></div>"
         )
-    if industries:
-        pe_vals = [s["pe"] for s in industries if s.get("pe") is not None]
+
+    def _group_card(label, items):
+        pe_vals = [s["pe"] for s in items if s.get("pe") is not None]
         avg_pe = sum(pe_vals) / len(pe_vals) if pe_vals else None
-        cards.append(
-            "<div class=" + q + "card" + q + "><div class=" + q + "label" + q + ">申万一级行业</div>"
-            "<div class=" + q + "value" + q + ">" + str(len(industries)) + "</div>"
-            "<div class=" + q + "hint" + q + ">页 · 均PE "
-            + _fmt(avg_pe, 1) + "</div></div>"
+        return (
+            "<div class=" + q + "card" + q + "><div class=" + q + "label" + q + ">"
+            + label
+            + "</div><div class=" + q + "value" + q + ">"
+            + str(len(items))
+            + "</div><div class=" + q + "hint" + q + ">页 · 均PE "
+            + _fmt(avg_pe, 1)
+            + "</div></div>"
         )
+
+    if themes:
+        cards.append(_group_card("热门细分", themes))
+    if industries:
+        cards.append(_group_card("申万一级", industries))
     m_names = "、".join(s["title"] for s in market)
     sub = m_names
+    if themes:
+        sub += " + 细分×%d" % len(themes)
     if industries:
-        sub += " + 申万一级×%d" % len(industries)
+        sub += " + 一级×%d" % len(industries)
     parts = []
     parts.append(
         "<section class=" + q + "slide" + q + " id=" + q + "slide-cover" + q
         + " data-page=" + q + str(page) + q + " data-title=" + q + "板块分析" + q
         + " data-script=" + q
-        + "本期主题：板块分析。&#10;先过宽基/主题，再逐个申万一级行业：点位、加权PE/PB、分位。&#10;数据仅供参考。"
+        + "本期主题：板块分析。&#10;先过宽基，再过热门细分（半导/光模块/应用软件等），最后申万一级。&#10;数据仅供参考。"
         + q + ">"
     )
     parts.append(
@@ -799,6 +870,7 @@ def render(sectors):
             "star": "legulegu_star_board_pe_pb + star50_000688",
             "hs300": "legulegu_hs300_ttm_pe_pb + index_000300",
             "sw_l1": "legulegu_sw_industry_2021_addTtmPe_addPb_indexClose",
+            "sw_themes": "legulegu_sw_l2_l3_addTtmPe_addPb_indexClose",
         },
         "generated_at": datetime.now().isoformat(timespec="seconds"),
     }
@@ -816,6 +888,7 @@ def main():
         load_cyb_sector(),
         load_star_sector(),
         load_hs300_sector(),
+        *load_all_sw_theme_sectors(),
         *load_all_sw_industry_sectors(),
     ]
     path = render(sectors)

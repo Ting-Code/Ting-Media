@@ -73,6 +73,24 @@
     guides.classList.toggle("on");
     btnGuide.classList.toggle("on", guides.classList.contains("on"));
   });
+  var workbench = document.querySelector(".workbench");
+  var btnFlip = document.getElementById("btnFlip");
+  var FLIP_KEY = "ting-deck-layout-flip";
+  function applyFlip(on) {
+    if (!workbench) return;
+    workbench.classList.toggle("layout-flip", !!on);
+    if (btnFlip) btnFlip.classList.toggle("on", !!on);
+    try {
+      localStorage.setItem(FLIP_KEY, on ? "1" : "0");
+    } catch (err) {}
+  }
+  function toggleFlip() {
+    applyFlip(!(workbench && workbench.classList.contains("layout-flip")));
+  }
+  if (btnFlip) btnFlip.addEventListener("click", toggleFlip);
+  try {
+    if (localStorage.getItem(FLIP_KEY) === "1") applyFlip(true);
+  } catch (err) {}
   window.addEventListener("keydown", function (e) {
     if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " " || e.key === "ArrowRight") {
       e.preventDefault();
@@ -83,6 +101,9 @@
     } else if (e.key === "g" || e.key === "G") {
       guides.classList.toggle("on");
       btnGuide.classList.toggle("on", guides.classList.contains("on"));
+    } else if (e.key === "l" || e.key === "L") {
+      e.preventDefault();
+      toggleFlip();
     } else if (e.key === "Home") {
       e.preventDefault();
       go(0);
