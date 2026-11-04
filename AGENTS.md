@@ -10,7 +10,8 @@ Ting-Media/
 ├── episodes/<赛道>/YYYY-MM-DD_主题/
 └── tools/
     ├── stock-data/
-    └── stock-analysis/   # 录屏 HTML；视觉规范已定稿
+    ├── stock-analysis/   # 录屏 HTML；视觉规范已定稿
+    └── platform-trends/  # 跨平台热榜；免 Key 三家
 ```
 
 ## 两条工作流
@@ -33,6 +34,20 @@ cd tools/stock-analysis
 pip install -r requirements.txt
 pip install -r ../stock-data/requirements.txt
 python scripts/generate_stock_html.py <名称或代码> [--theme 主题] [--date YYYY-MM-DD] [--niche finance]
+```
+
+
+### 3）跨平台热度（平台上什么在火）
+
+免 Key 拉 B站热门作品、微博热搜、抖音热词；汇总赛道与话题。小红书 / 视频号未接入。规范见 `tools/platform-trends/docs/数据源规范.md`。
+
+**默认只给数据摘要**。未明确说要录屏节目时，不要出 HTML；需要录屏时再加 `--html`。
+
+```bash
+cd tools/platform-trends
+pip install -r requirements.txt
+python scripts/analyze_trends.py
+# 录屏节目才加：--html --theme 今日热度
 ```
 
 ## 已定稿规范（勿擅自改画法）

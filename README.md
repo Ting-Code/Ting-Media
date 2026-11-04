@@ -16,7 +16,8 @@ Ting-Media/
 ├── episodes/<赛道>/YYYY-MM-DD_主题/
 └── tools/
     ├── stock-data/       # 公开市场取数 / 指标序列
-    └── stock-analysis/   # 9:16 录屏页
+    ├── stock-analysis/   # 9:16 录屏页
+    └── platform-trends/  # 跨平台热榜（B站/微博/抖音）
 ```
 
 ### 示例
@@ -27,6 +28,15 @@ pip install -r requirements.txt
 pip install -r ../stock-data/requirements.txt
 python scripts/generate_stock_html.py <名称或代码>
 # -> episodes/<赛道>/YYYY-MM-DD_主题/index.html
+```
+
+
+跨平台热度（B站作品 / 微博热搜 / 抖音热词；默认只出数据摘要）：
+
+```bash
+cd tools/platform-trends
+pip install -r requirements.txt
+python scripts/analyze_trends.py
 ```
 
 ## 声明

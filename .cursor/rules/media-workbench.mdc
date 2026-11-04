@@ -9,3 +9,5 @@ alwaysApply: true
 - 金融分析：先查现有 `tools/` 并调用；反复出现再封装。
 - 一期节目：跑 `stock-analysis` 出 HTML → `episodes/...`；视觉已定稿（见该工具 `docs/9-16-录屏规范.md`），只换内容。
 - 禁止手写整页 HTML；生成数据仅供参考。
+- 跨平台热度：用 `tools/platform-trends`（B站/微博/抖音免 Key）；**默认只汇总数据**。未明确要求录屏节目时不要出 HTML；要录屏再 `--html`。
+- 通用：用户没说「录屏 / 出一期 / 做节目」时，分析类任务只给数据结论，不要默认生成竖屏 HTML。
