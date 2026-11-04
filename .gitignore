@@ -15,3 +15,10 @@ desktop.ini
 # 工具本地临时 / 中间产物（正式节目在 episodes/）
 **/scripts/_tmp_*
 tools/**/output/
+
+# 临时分析产物（根目录）
+_*.csv
+_*.json
+
+# 节目数据缓存（可重生，不入库）
+episodes/**/cache/
