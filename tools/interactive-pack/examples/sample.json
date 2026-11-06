@@ -1,0 +1,24 @@
+{
+  "title": "今日跨平台热度速览",
+  "subtitle": "离线互动页示例 · 非投资建议",
+  "brand": "Ting Media",
+  "cta": "左右滑翻页 · 点条目展开",
+  "sections": [
+    {
+      "heading": "怎么用",
+      "body": "本页由 interactive-pack 生成，可上传抖音互动空间 / B站 Toy / 小红书小工具。",
+      "items": [
+        {"title": "三端交集", "meta": "common", "text": "外置 JS/CSS，无网络、无 CDN、无 eval。"},
+        {"title": "体积", "meta": "≤8MB", "text": "按抖音 zip 上限控总量；入口 HTML 尽量 <1MB。"}
+      ]
+    },
+    {
+      "heading": "示例话题",
+      "body": "把 platform-trends 或人工整理的 JSON 塞进来即可换内容。",
+      "items": [
+        {"title": "示例 A", "meta": "热", "text": "替换为真实条目。"},
+        {"title": "示例 B", "meta": "升", "text": "替换为真实条目。"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+name: v1_tech
+
+tdx:
+  vipdoc: "D:/app/tdx/vipdoc"
+  max_bars: 120
+
+universe:
+  boards: [main, chinext, star, bse]
+  exclude_st: true
+  exclude_index: true
+
+filters:
+  - id: above_ma
+    params: { ma: 20 }
+  - id: ma_stack
+    params: { short: 5, mid: 10, long: 20 }
+  # 基本面放最后：先过技术面，再拉/读财报缓存
+  - id: profitable
+    params: { field: parent }
+
+rank:
+  by: [amount_yi, pct_chg_5d]
+  ascending: [false, false]
+
+output:
+  top: 100

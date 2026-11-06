@@ -1,3 +1,4 @@
-baostock>=0.8.9
 pandas>=2.0.0
 akshare>=1.14.0
+pytdx>=1.72
+pyarrow>=14.0.0

@@ -12,13 +12,22 @@ venv/
 Thumbs.db
 desktop.ini
 
-# 工具本地临时 / 中间产物（正式节目在 episodes/）
+# 工具本地临时
 **/scripts/_tmp_*
 tools/**/output/
+/output/
 
-# 临时分析产物（根目录）
+# 金融原始数据缓存（内化在 stock-data）
+/tools/stock-data/cache/*
+!/tools/stock-data/cache/README.md
+
+# 分析/选股结果缓存（仓库根 cache/<分析名>/；成片在 episodes/）
+/cache/*
+!/cache/README.md
+
+# 兼容旧期次内 cache（可重生，不入库）
+episodes/**/cache/
+
+# 根目录散落临时文件
 _*.csv
 _*.json
-
-# 节目数据缓存（可重生，不入库）
-episodes/**/cache/

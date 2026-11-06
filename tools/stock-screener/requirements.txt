@@ -1,0 +1,4 @@
+pandas>=2.0.0
+pyyaml>=6.0
+numpy>=1.24.0
+# 取数依赖：pip install -r ../stock-data/requirements.txt

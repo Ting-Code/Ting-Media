@@ -19,7 +19,7 @@ NAME_TO_CODE = {
 }
 
 
-def to_baostock(code: str) -> str:
+def to_exchange(code: str) -> str:
     digits = "".join(ch for ch in code if ch.isdigit())
     if len(digits) != 6:
         raise ValueError(f"无效代码: {code}")
@@ -82,3 +82,4 @@ def resolve_code(query: str) -> tuple[str, str]:
         f"无法识别: {query}。"
         "请改用 6 位代码（如 300750），或在 src/codes.py 的 NAME_TO_CODE 中补充名称映射。"
     )
+

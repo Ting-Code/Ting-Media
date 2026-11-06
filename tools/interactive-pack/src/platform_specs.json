@@ -1,0 +1,64 @@
+{
+  "douyin": {
+    "label": "抖音互动空间",
+    "upload": "https://vcreate.douyin.com/",
+    "entry": "index.html",
+    "zip_max_mb": 8,
+    "entry_html_max_mb": null,
+    "allow_inline_script": true,
+    "allow_inline_style": true,
+    "allow_multi_file": true,
+    "allow_network": false,
+    "allow_external_cdn": false,
+    "allow_external_nav": false,
+    "notes": [
+      "纯离线；禁止 fetch/XHR/WebSocket/CDN",
+      "zip 根或子目录均可，须含 index.html",
+      "可粘贴单文件 HTML 或上传 zip",
+      "内测常见上限：约 100 作品/账号、单作品约 100 人同时在线（以页面为准）"
+    ]
+  },
+  "bilibili": {
+    "label": "B站 Toy",
+    "upload": "https://www.bilibili.com/toy/intro",
+    "entry": "index.html",
+    "zip_max_mb": null,
+    "entry_html_max_mb": 1,
+    "any_html_warn_mb": 12,
+    "allow_inline_script": true,
+    "allow_inline_style": true,
+    "allow_multi_file": true,
+    "allow_network": false,
+    "allow_external_cdn": false,
+    "allow_external_nav": false,
+    "notes": [
+      "入口 index.html 解压后须 <= 1MB（硬限制）",
+      "资源用相对路径；避免根绝对路径 /xxx",
+      "可用官方 toy CLI：目录 / 单 HTML / zip",
+      "页跑在 /toy/<slug>/ 子路径下，绝对路径易坏"
+    ]
+  },
+  "xhs": {
+    "label": "小红书小工具",
+    "upload": "创作后台 Builder / 小工具上传页（以站内入口为准）",
+    "entry": "index.html",
+    "zip_max_mb": 10,
+    "entry_html_max_mb": null,
+    "allow_inline_script": false,
+    "allow_inline_event_handlers": false,
+    "allow_inline_style": true,
+    "allow_multi_file": true,
+    "allow_network": false,
+    "allow_external_cdn": false,
+    "allow_external_nav": false,
+    "allow_eval": false,
+    "allow_iframe": false,
+    "compat": "Chrome 61 / Android 8.1 基线",
+    "notes": [
+      "脚本必须外置 .js，禁止内联 script 与 onclick=",
+      "禁止 eval / new Function / WASM / iframe",
+      "资源全部打包；zip 常见上限约 5–10MB（以上传页为准）",
+      "开发口令以上传页当前 Skill 为准，勿沿用旧口令"
+    ]
+  }
+}

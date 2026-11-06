@@ -7,7 +7,10 @@ alwaysApply: true
 
 - 读 `AGENTS.md`。
 - 金融分析：先查现有 `tools/` 并调用；反复出现再封装。
-- 一期节目：跑 `stock-analysis` 出 HTML → `episodes/...`；视觉已定稿（见该工具 `docs/9-16-录屏规范.md`），只换内容。
+- 一期节目：跑 `screen-pack` 出 HTML → `episodes/...`；视觉已定稿（见该工具 `docs/9-16-录屏规范.md`），只换内容。
 - 禁止手写整页 HTML；生成数据仅供参考。
 - 跨平台热度：用 `tools/platform-trends`（B站/微博/抖音免 Key）；**默认只汇总数据**。未明确要求录屏节目时不要出 HTML；要录屏再 `--html`。
 - 通用：用户没说「录屏 / 出一期 / 做节目」时，分析类任务只给数据结论，不要默认生成竖屏 HTML。
+- 互动离线 HTML：用 `tools/interactive-pack`（抖音/B站Toy/小红书规范）；与 9:16 录屏母版分开，不要用手写整页应付上传。
+- 取数：`tools/stock-data`（通达信行情直读不缓存；**仅财报**进 `tools/stock-data/cache/`）；选股与 PE/基本面分析：`tools/stock-screener`。
+- 一期成片：`episodes/<赛道>/YYYY-MM-DD_主题/`；分析/选股结果缓存：仓库根 `cache/<分析名>/`。

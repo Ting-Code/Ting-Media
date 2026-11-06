@@ -1,0 +1,25 @@
+# 通达信 KDJ：J<13 + 市值区间（去亏损暂不加）
+# 市值请按需改 min_yi / max_yi（亿元）；删掉某一端即不限制该端
+name: v1_kdj_j13
+
+tdx:
+  vipdoc: "D:/app/tdx/vipdoc"
+  max_bars: 60
+
+universe:
+  boards: [main, chinext, star, bse]
+  exclude_st: true
+  exclude_index: true
+
+filters:
+  - id: kdj_j_below
+    params: { max: 13 }
+  - id: market_cap
+    params: { min_yi: 50 }
+
+rank:
+  by: [market_cap_yi, amount_yi]
+  ascending: [false, false]
+
+output:
+  top: 200

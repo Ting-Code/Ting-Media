@@ -1,4 +1,4 @@
-"""9:16 deck for platform trends. Chrome from stock-analysis master."""
+"""9:16 deck for platform trends. Chrome from screen-pack master."""
 from __future__ import annotations
 import re
 from pathlib import Path
@@ -6,8 +6,8 @@ from analyze import TrendReport
 from render_slides import build_slides, esc
 
 TOOLS = Path(__file__).resolve().parents[2]
-DECK_HTML = TOOLS / "stock-analysis" / "src" / "_deck_template.html"
-DECK_JS = TOOLS / "stock-analysis" / "src" / "_deck_nav.js"
+DECK_HTML = TOOLS / "screen-pack" / "src" / "_deck_template.html"
+DECK_JS = TOOLS / "screen-pack" / "src" / "_deck_nav.js"
 PLOTLY_CDN = "https://cdn.plot.ly/plotly-2.35.2.min.js"
 
 def render_html(*, theme: str, asof: str, report: TrendReport, out_path: Path) -> Path:
@@ -21,7 +21,7 @@ def render_html(*, theme: str, asof: str, report: TrendReport, out_path: Path) -
 
 def _chrome() -> tuple[str, str]:
     if not DECK_HTML.is_file() or not DECK_JS.is_file():
-        raise RuntimeError("\u627e\u4e0d\u5230 stock-analysis \u5f55\u5c4f\u6bcd\u7248")
+        raise RuntimeError("\u627e\u4e0d\u5230 screen-pack \u5f55\u5c4f\u6bcd\u7248")
     template = DECK_HTML.read_text(encoding="utf-8")
     match = re.search(r"<style>(.*?)</style>", template, re.S)
     if not match or "--od-bg:#1e2227" not in match.group(1):

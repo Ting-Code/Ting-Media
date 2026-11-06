@@ -1,0 +1,33 @@
+# 红放绿缩异动 → 放量上穿MA60 → 回调只守启动前最低点（可不破MA60；不看MA10）
+name: v1_ma10_ma60_break
+
+tdx:
+  vipdoc: "D:/app/tdx/vipdoc"
+  max_bars: 200
+
+universe:
+  boards: [main, chinext, star, bse]
+  exclude_st: true
+  exclude_index: true
+
+filters:
+  - id: ma10_ma60_volume_breakout
+    params:
+      ma_slow: 60
+      pre_days: 20
+      breakout_lookback: 25
+      surge_days: 8
+      min_breakout_pct: 2.0
+      min_breakout_vol_ratio: 1.5
+      red_green_vol_ratio: 1.15
+      require_above_ma60: false
+      # 迈瑞等强势续放量票：近量可高于破位日（破位日量*1.8）
+      max_pullback_vol_ratio: 1.8
+      pullback_days: 3
+
+rank:
+  by: [amount_yi, pct_chg_5d]
+  ascending: [false, false]
+
+output:
+  top: 200

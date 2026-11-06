@@ -16,14 +16,16 @@ Ting-Media/
 ├── episodes/<赛道>/YYYY-MM-DD_主题/
 └── tools/
     ├── stock-data/       # 公开市场取数 / 指标序列
-    ├── stock-analysis/   # 9:16 录屏页
-    └── platform-trends/  # 跨平台热榜（B站/微博/抖音）
+    ├── screen-pack/    # 9:16 录屏页
+    ├── stock-screener/    # 全 A 技术面选股
+    ├── platform-trends/   # 跨平台热榜（B站/微博/抖音）
+    └── interactive-pack/  # 互动离线 HTML（抖音/B站Toy/小红书）
 ```
 
 ### 示例
 
 ```bash
-cd tools/stock-analysis
+cd tools/screen-pack
 pip install -r requirements.txt
 pip install -r ../stock-data/requirements.txt
 python scripts/generate_stock_html.py <名称或代码>
@@ -37,6 +39,17 @@ python scripts/generate_stock_html.py <名称或代码>
 cd tools/platform-trends
 pip install -r requirements.txt
 python scripts/analyze_trends.py
+```
+
+
+
+互动离线包（写入同一期 `episodes/<赛道>/YYYY-MM-DD_主题/`）：
+
+```bash
+cd tools/interactive-pack
+python scripts/cli.py --platform common generate 
+  --content examples/sample.json 
+  --theme 今日热度速览 --date 2026-11-05 --niche finance
 ```
 
 ## 声明

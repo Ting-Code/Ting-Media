@@ -17,7 +17,7 @@ from datetime import date, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT.parent / "stock-analysis" / "src"))
+sys.path.insert(0, str(ROOT.parent / "screen-pack" / "src"))
 sys.path.insert(0, str(ROOT / "src"))
 
 from analyze import FetchResult, TrendReport, analyze  # noqa: E402
@@ -125,12 +125,12 @@ def write_cache(report: TrendReport, out_dir: Path, *, asof: str, platforms: lis
     return path
 
 def write_html(*, theme: str, day: date, niche: str, report: TrendReport, asof: str, platforms: list[str], media_root: Path | None) -> Path:
-    from episode_path import episode_dir
+    from episode_path import episode_cache_dir, episode_dir
     from render_report import render_html
 
     ep = episode_dir(niche=niche, theme=theme, day=day, media_root=media_root)
     ep.mkdir(parents=True, exist_ok=True)
-    cache = ep / "cache"
+    cache = episode_cache_dir(theme=theme, day=day, media_root=media_root)
     cache.mkdir(parents=True, exist_ok=True)
     write_cache(report, cache, asof=asof, platforms=platforms)
     out = render_html(theme=theme, asof=asof, report=report, out_path=ep / "index.html")
@@ -144,6 +144,7 @@ def write_html(*, theme: str, day: date, niche: str, report: TrendReport, asof: 
         "html": "index.html",
         "format": "9:16-ppt-deck",
         "data_tool": "tools/platform-trends",
+        "cache": "cache/" + cache.name,
         "summary": report.summary,
     }
     (ep / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + chr(10), encoding="utf-8")
@@ -154,8 +155,10 @@ def run(*, platforms: list[str], top_n: int, write_json: bool, html: bool, theme
     report = analyze(results)
     asof = datetime.now().strftime("%Y-%m-%d %H:%M")
     print_summary(report, asof=asof, top_n=top_n)
-    if write_json:
-        out_dir = ROOT / "output" / day.isoformat()
+    if write_json and not html:
+        from episode_path import cache_dir
+
+        out_dir = cache_dir(f"trends_{day.isoformat()}", media_root=media_root)
         path = write_cache(report, out_dir, asof=asof, platforms=platforms)
         print("[json]", path)
     if html:
@@ -168,7 +171,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="跨平台热度：B站/微博/抖音（免 Key）；默认只摘要数据")
     parser.add_argument("--platform", default="bilibili,weibo,douyin", help="comma list: bilibili,weibo,douyin")
     parser.add_argument("--top", type=int, default=10, help="each platform top N in console")
-    parser.add_argument("--json", action="store_true", help="write analysis JSON under output/")
+    parser.add_argument("--json", action="store_true", help="write analysis JSON under cache/trends_YYYY-MM-DD/")
     parser.add_argument("--html", action="store_true", help="also write 9:16 episode HTML (recording only)")
     parser.add_argument("--theme", default="今日热度", help="episode theme (with --html)")
     parser.add_argument("--date", default="", help="archive date YYYY-MM-DD")
