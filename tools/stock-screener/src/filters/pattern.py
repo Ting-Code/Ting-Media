@@ -165,137 +165,108 @@ def ma10_ma60_volume_breakout(row: dict[str, Any], params: dict[str, Any]) -> bo
 @register("accumulation_shrink_hold")
 def accumulation_shrink_hold(row: dict[str, Any], params: dict[str, Any]) -> bool:
     """
-    建仓缩量回踩（建仓中 / 建仓完成未起爆；排山顶诱多）：
-      1) 前期箱体建仓（可多次上下沿反复）+ 点火/放量证据
-      2) 相对箱体有过放量冲高
-      3) 已缩量回踩，低点守住成本锚（VWAP；不必回到中轴以下）
-      4) 现价仍在箱内或刚贴箱（未主升起爆）
-      5) 落在箱体上沿且站上 VWAP（排箱底弱势假建仓）
-      6) 峰值相对箱顶温和抬升（有试探、非山顶高潮）
-      7) 排除贴死高点未缩量、下跌中继、深砸假缩量
+    建仓缩量（量价齐升干净、回调缩量、不破低）：
+      Path A — 冲高后缩量回踩、现价仍在箱内（起爆前短窗）
+      Path B — 箱体仍在构筑：箱末贴近今日、相对箱内缩量、守成本/下沿
+    弱建仓可留；剔除下跌中继、顶部深砸、拉升波后出货。
     """
     df = row.get("_bars")
     if df is None or not isinstance(df, pd.DataFrame) or df.empty:
         return False
+    if _accum_path_markup_shrink(row, df, params):
+        return True
+    if _accum_path_inbox(row, df, params):
+        return True
+    return False
 
-    box_min_days = int(params.get("box_min_days", 20))
-    box_max_days = int(params.get("box_max_days", 50))
-    box_width_min = float(params.get("box_width_min", 0.08))
-    box_width_max = float(params.get("box_width_max", 0.22))
-    min_up_dn_vol = float(params.get("min_up_dn_vol", 1.1))
-    min_swings = int(params.get("min_swings", 2))
-    # 箱内反复：触及上沿后回落到该分位即计一次（默认 0.7，不必跌破中轴）
-    swing_reset_pos = float(params.get("swing_reset_pos", 0.70))
-    ignite_vol_ratio = float(params.get("ignite_vol_ratio", 2.5))
-    box_vs_quiet = float(params.get("box_vs_quiet", 1.15))
-    quiet_days = int(params.get("quiet_days", 20))
-    peak_lookback = int(params.get("peak_lookback", 30))
-    lift_days = int(params.get("lift_days", 10))
-    pullback_days = int(params.get("pullback_days", 5))
-    max_pull_vol_ratio = float(params.get("max_pull_vol_ratio", 0.55))
-    min_off_peak = float(params.get("min_off_peak", 0.03))
-    cost_slack = float(params.get("cost_slack", 0.03))
-    max_above_box = float(params.get("max_above_box", 0.08))
-    # 冲高相对箱顶最大偏离；过大视为一波流高潮而非建仓后温和脱离
-    max_peak_above_box = float(params.get("max_peak_above_box", 0.12))
-    min_peak_above_box = float(params.get("min_peak_above_box", 0.0))
-    # 建仓池：未起爆 + 箱上沿 + 站上成本未远离（回测用来压山顶诱多、抬破箱率）
-    max_close_above_box = float(params.get("max_close_above_box", 0.0))
-    min_box_pos = float(params.get("min_box_pos", 0.75))
-    min_dist_cost = float(params.get("min_dist_cost", 0.03))
-    max_dist_cost = float(params.get("max_dist_cost", 0.12))
-    near_high_pct = float(params.get("near_high_pct", 0.95))
-    exclude_vol_vs_lift = float(params.get("exclude_vol_vs_lift", 0.9))
-    # 防顶部：峰到回踩低点的最大回撤（过大=砸下来后的假缩量）
-    max_peak_drawdown = float(params.get("max_peak_drawdown", 0.20))
-    # 防下跌中继：收盘在下行 MA60 下方，或均线下创新低
-    reject_downtrend_relay = bool(params.get("reject_downtrend_relay", True))
+
+def _accum_reject_downtrend(
+    close: pd.Series,
+    low: pd.Series,
+    c0: float,
+    pull_low: float,
+    pullback_days: int,
+    params: dict[str, Any],
+) -> bool:
+    """True = should reject."""
+    if not bool(params.get("reject_downtrend_relay", True)):
+        return False
+    n = len(close)
     ma60_slope_lookback = int(params.get("ma60_slope_lookback", 10))
     ma60_slope_tol = float(params.get("ma60_slope_tol", 0.005))
-    # 回踩期最低价不得跌破建仓箱下沿
-    reject_break_box_low = bool(params.get("reject_break_box_low", True))
-
-    need = quiet_days + box_max_days + peak_lookback + 5
-    if len(df) < need:
+    if n < 60 + ma60_slope_lookback:
         return False
+    ma60 = float(close.iloc[-60:].mean())
+    ma60_prev = float(close.iloc[-60 - ma60_slope_lookback : -ma60_slope_lookback].mean())
+    ma60_down = ma60 < ma60_prev * (1.0 - ma60_slope_tol)
+    if c0 < ma60 and ma60_down:
+        return True
+    prior_slice_end = max(0, n - max(pullback_days, 5))
+    prior_slice_start = max(0, prior_slice_end - 60)
+    if prior_slice_end > prior_slice_start:
+        prior_low = float(low.iloc[prior_slice_start:prior_slice_end].min())
+        if c0 < ma60 and pull_low <= prior_low * 1.001:
+            return True
+    return False
 
-    close = df["close"].astype(float)
-    high = df["high"].astype(float)
-    low = df["low"].astype(float)
-    vol = df["volume"].astype(float)
-    amount = df["amount"].astype(float)
 
-    c0 = float(close.iloc[-1])
-    n = len(df)
+def _accum_fill_meta(
+    row: dict[str, Any],
+    *,
+    bl: float,
+    bh: float,
+    vwap: float,
+    cost: float,
+    pull_vol_ratio: float,
+    swings: int,
+    peak: float,
+    pull_low: float,
+    markup_vol: float,
+    peak_dd: float,
+    box_pos: float,
+    peak_above: float,
+    dist_cost: float,
+    path: str,
+) -> None:
+    row["pattern_box_low"] = bl
+    row["pattern_box_high"] = bh
+    row["pattern_vwap"] = vwap
+    row["pattern_cost_anchor"] = cost
+    row["pattern_pull_vol_ratio"] = float(pull_vol_ratio)
+    row["pattern_swing_count"] = int(swings)
+    row["pattern_peak"] = peak
+    row["pattern_pull_low"] = pull_low
+    row["pattern_markup_vol"] = markup_vol
+    row["pattern_peak_drawdown"] = float(peak_dd)
+    row["pattern_box_pos"] = float(box_pos)
+    row["pattern_peak_above_box"] = float(peak_above)
+    row["pattern_dist_cost"] = float(dist_cost)
+    row["pattern_peak_ext"] = float(peak / bh - 1.0) if bh else None
+    row["pattern_path"] = path
 
-    # --- 在回看窗内找「放量冲高段」（最高 lift_days 均量），再相对它缩量 ---
-    win0 = max(0, n - peak_lookback)
-    search_lo = win0 + lift_days - 1
-    search_hi = n - pullback_days - 1  # 冲高段须结束在回踩窗之前
-    if search_hi < search_lo:
-        return False
 
-    roll = vol.rolling(lift_days, min_periods=lift_days).mean()
-    seg = roll.iloc[search_lo : search_hi + 1]
-    if seg.isna().all():
-        return False
-    markup_end = search_lo + int(seg.to_numpy().argmax())
-    markup_start = markup_end - lift_days + 1
-    markup_vol = float(roll.iloc[markup_end])
-    if markup_vol <= 0:
-        return False
 
-    peak_i = markup_start + int(high.iloc[markup_start : markup_end + 1].to_numpy().argmax())
-    peak = float(high.iloc[peak_i])
-    # 冲高后至今的绝对高点（含二次冲高）
-    peak_after = float(high.iloc[markup_start:].max())
-    peak = max(peak, peak_after)
-
-    if c0 >= peak * (1.0 - min_off_peak):
-        return False
-
-    recent_vol = float(vol.iloc[-pullback_days:].mean())
-    pull_vol_ratio = recent_vol / markup_vol
-
-    hi20 = float(high.iloc[-20:].max())
-    near_high = hi20 > 0 and c0 >= hi20 * near_high_pct
-    if pull_vol_ratio >= exclude_vol_vs_lift:
-        return False
-    if near_high:
-        return False
-    if pull_vol_ratio > max_pull_vol_ratio:
-        return False
-
-    if markup_end >= n - 1:
-        return False
-    pull_low = float(low.iloc[markup_end:].min())
-
-    # --- 防顶部：高峰后深砸再缩量（非浅回踩建仓）---
-    peak_dd = (peak - pull_low) / peak if peak > 0 else 1.0
-    if peak_dd > max_peak_drawdown:
-        return False
-
-    # --- 防下跌中继：空头均线下的缩量歇脚 / 创新低 ---
-    if reject_downtrend_relay and n >= 60 + ma60_slope_lookback:
-        ma60 = float(close.iloc[-60:].mean())
-        ma60_prev = float(close.iloc[-60 - ma60_slope_lookback : -ma60_slope_lookback].mean())
-        ma60_down = ma60 < ma60_prev * (1.0 - ma60_slope_tol)
-        if c0 < ma60 and ma60_down:
-            return False
-        prior_slice_end = max(0, n - max(pullback_days, 5))
-        prior_slice_start = max(0, prior_slice_end - 60)
-        if prior_slice_end > prior_slice_start:
-            prior_low = float(low.iloc[prior_slice_start:prior_slice_end].min())
-            if c0 < ma60 and pull_low <= prior_low * 1.001:
-                return False
-
-    # --- 冲高前寻找建仓箱（箱结束日可早于冲高起点若干日，避免粘上拉升段）---
-    box_end_gap = int(params.get("box_end_gap", 15))
-    box_end_hi = markup_start
-    box_end_lo = max(box_min_days + quiet_days, markup_start - box_end_gap)
-    if box_end_hi < box_min_days + quiet_days:
-        return False
-
+def _accum_find_box(
+    high: pd.Series,
+    low: pd.Series,
+    close: pd.Series,
+    vol: pd.Series,
+    amount: pd.Series,
+    box_end_hi: int,
+    box_end_lo: int,
+    quiet_days: int,
+    box_min_days: int,
+    box_max_days: int,
+    box_width_min: float,
+    box_width_max: float,
+    min_up_dn_vol: float,
+    min_swings: int,
+    swing_reset_pos: float,
+    ignite_vol_ratio: float,
+    box_vs_quiet: float,
+    markup_start: int | None,
+    markup_end: int | None,
+) -> dict[str, Any] | None:
     best = None
     for box_end in range(box_end_hi, box_end_lo - 1, -2):
         max_blen = min(box_max_days, box_end - quiet_days)
@@ -315,7 +286,6 @@ def accumulation_shrink_hold(row: dict[str, Any], params: dict[str, Any]) -> boo
             width = bh / bl - 1.0
             if width < box_width_min or width > box_width_max:
                 continue
-
             up = (seg_c >= seg_c.shift(1)).fillna(True)
             up_vols = seg_v[up]
             dn_vols = seg_v[~up]
@@ -325,21 +295,17 @@ def accumulation_shrink_hold(row: dict[str, Any], params: dict[str, Any]) -> boo
             dn_avg = float(dn_vols.mean()) if not dn_vols.empty else up_avg * 0.5
             if dn_avg <= 0 or up_avg < dn_avg * min_up_dn_vol:
                 continue
-
             vwap = float(seg_a.sum() / seg_v.sum()) if float(seg_v.sum()) > 0 else float(seg_c.mean())
-            # 成本锚用 VWAP；守住即可，回踩不必到中轴以下
             cost = vwap
-
             pos = (seg_c.astype(float) - bl) / (bh - bl)
             swings = 0
             touched_high = False
-            for p in pos.tolist():
-                if p >= 0.90:
+            for pv in pos.tolist():
+                if pv >= 0.90:
                     touched_high = True
-                elif touched_high and p <= swing_reset_pos:
+                elif touched_high and pv <= swing_reset_pos:
                     swings += 1
                     touched_high = False
-
             quiet = vol.iloc[b0 - quiet_days : b0]
             quiet_avg = float(quiet.mean()) if len(quiet) == quiet_days else 0.0
             box_avg = float(seg_v.mean())
@@ -353,15 +319,16 @@ def accumulation_shrink_hold(row: dict[str, Any], params: dict[str, Any]) -> boo
             need_swings = 1 if ignite_ok else min_swings
             if swings < need_swings:
                 continue
-
-            lift_high = float(high.iloc[markup_start : markup_end + 1].max())
-            if lift_high < bl + 0.5 * (bh - bl):
-                continue
-
+            if markup_start is not None and markup_end is not None:
+                lift_high = float(high.iloc[markup_start : markup_end + 1].max())
+                if lift_high < bl + 0.5 * (bh - bl):
+                    continue
             score = swings * 2.0 + (1.5 if ignite_ok else 0.0) + up_avg / dn_avg
-            score -= abs(width - 0.12) * 5
-            # 偏好箱体紧贴冲高前
-            score -= 0.03 * (markup_start - box_end)
+            score -= abs(width - 0.15) * 4
+            if markup_start is not None:
+                score -= 0.03 * (markup_start - box_end)
+            else:
+                score -= 0.05 * (box_end_hi - box_end)
             cand = {
                 "bh": bh,
                 "bl": bl,
@@ -369,17 +336,108 @@ def accumulation_shrink_hold(row: dict[str, Any], params: dict[str, Any]) -> boo
                 "cost": cost,
                 "swings": swings,
                 "score": score,
+                "box_avg": box_avg,
+                "b0": b0,
+                "box_end": box_end,
+                "ignite_ok": ignite_ok,
+                "up_dn": up_avg / dn_avg if dn_avg else 0.0,
             }
             if best is None or cand["score"] > best["score"]:
                 best = cand
+    return best
 
+
+def _accum_path_markup_shrink(row: dict[str, Any], df: pd.DataFrame, params: dict[str, Any]) -> bool:
+    box_min_days = int(params.get("box_min_days", 20))
+    box_max_days = int(params.get("box_max_days", 50))
+    box_width_min = float(params.get("box_width_min", 0.08))
+    box_width_max = float(params.get("box_width_max", 0.22))
+    min_up_dn_vol = float(params.get("min_up_dn_vol", 1.1))
+    min_swings = int(params.get("min_swings", 2))
+    swing_reset_pos = float(params.get("swing_reset_pos", 0.70))
+    ignite_vol_ratio = float(params.get("ignite_vol_ratio", 2.5))
+    box_vs_quiet = float(params.get("box_vs_quiet", 1.15))
+    quiet_days = int(params.get("quiet_days", 20))
+    peak_lookback = int(params.get("peak_lookback", 30))
+    lift_days = int(params.get("lift_days", 10))
+    pullback_days = int(params.get("pullback_days", 5))
+    max_pull_vol_ratio = float(params.get("max_pull_vol_ratio", 0.55))
+    min_off_peak = float(params.get("min_off_peak", 0.03))
+    cost_slack = float(params.get("cost_slack", 0.03))
+    max_peak_above_box = float(params.get("max_peak_above_box", 0.12))
+    min_peak_above_box = float(params.get("min_peak_above_box", 0.0))
+    max_close_above_box = float(params.get("max_close_above_box", 0.0))
+    min_box_pos = float(params.get("min_box_pos", 0.75))
+    min_dist_cost = float(params.get("min_dist_cost", 0.03))
+    max_dist_cost = float(params.get("max_dist_cost", 0.12))
+    near_high_pct = float(params.get("near_high_pct", 0.95))
+    exclude_vol_vs_lift = float(params.get("exclude_vol_vs_lift", 0.9))
+    max_peak_drawdown = float(params.get("max_peak_drawdown", 0.20))
+    reject_break_box_low = bool(params.get("reject_break_box_low", True))
+    need = quiet_days + box_max_days + peak_lookback + 5
+    if len(df) < need:
+        return False
+    close = df["close"].astype(float)
+    high = df["high"].astype(float)
+    low = df["low"].astype(float)
+    vol = df["volume"].astype(float)
+    amount = df["amount"].astype(float)
+    c0 = float(close.iloc[-1])
+    n = len(df)
+    win0 = max(0, n - peak_lookback)
+    search_lo = win0 + lift_days - 1
+    search_hi = n - pullback_days - 1
+    if search_hi < search_lo:
+        return False
+    roll = vol.rolling(lift_days, min_periods=lift_days).mean()
+    seg = roll.iloc[search_lo : search_hi + 1]
+    if seg.isna().all():
+        return False
+    markup_end = search_lo + int(seg.to_numpy().argmax())
+    markup_start = markup_end - lift_days + 1
+    markup_vol = float(roll.iloc[markup_end])
+    if markup_vol <= 0:
+        return False
+    peak_i = markup_start + int(high.iloc[markup_start : markup_end + 1].to_numpy().argmax())
+    peak = float(high.iloc[peak_i])
+    peak_after = float(high.iloc[markup_start:].max())
+    peak = max(peak, peak_after)
+    if c0 >= peak * (1.0 - min_off_peak):
+        return False
+    recent_vol = float(vol.iloc[-pullback_days:].mean())
+    pull_vol_ratio = recent_vol / markup_vol
+    hi20 = float(high.iloc[-20:].max())
+    near_high = hi20 > 0 and c0 >= hi20 * near_high_pct
+    if pull_vol_ratio >= exclude_vol_vs_lift:
+        return False
+    if near_high:
+        return False
+    if pull_vol_ratio > max_pull_vol_ratio:
+        return False
+    if markup_end >= n - 1:
+        return False
+    pull_low = float(low.iloc[markup_end:].min())
+    peak_dd = (peak - pull_low) / peak if peak > 0 else 1.0
+    if peak_dd > max_peak_drawdown:
+        return False
+    if _accum_reject_downtrend(close, low, c0, pull_low, pullback_days, params):
+        return False
+    box_end_gap = int(params.get("box_end_gap", 15))
+    box_end_hi = markup_start
+    box_end_lo = max(box_min_days + quiet_days, markup_start - box_end_gap)
+    if box_end_hi < box_min_days + quiet_days:
+        return False
+    best = _accum_find_box(
+        high, low, close, vol, amount,
+        box_end_hi, box_end_lo, quiet_days, box_min_days, box_max_days,
+        box_width_min, box_width_max, min_up_dn_vol, min_swings, swing_reset_pos,
+        ignite_vol_ratio, box_vs_quiet, markup_start, markup_end,
+    )
     if best is None:
         return False
-
     cost = best["cost"]
     bh = best["bh"]
     bl = best["bl"]
-
     if pull_low < cost * (1.0 - cost_slack):
         return False
     if c0 < cost * (1.0 - cost_slack):
@@ -388,50 +446,123 @@ def accumulation_shrink_hold(row: dict[str, Any], params: dict[str, Any]) -> boo
         return False
     if reject_break_box_low and pull_low < bl:
         return False
-
-    # 关键：现价必须仍在建仓箱内（已越箱=拉升波/出货段，不是待起爆建仓）
     if c0 > bh * (1.0 + max_close_above_box):
         return False
-
-    # 峰值相对箱顶：只允许温和试探；过大=高潮拉升已发生
     peak_above = peak / bh - 1.0 if bh > 0 else 0.0
     if peak_above > max_peak_above_box:
         return False
-    # min_peak_above_box 默认 0：不强迫冲高（弱建仓可保留）
     if peak_above < min_peak_above_box:
         return False
-
     box_pos = (c0 - bl) / (bh - bl) if bh > bl else 0.0
     if box_pos < min_box_pos:
         return False
-
     dist_cost = c0 / cost - 1.0 if cost > 0 else 0.0
-    # min_dist_cost=0 时允许贴成本（浮点略负不误杀）；>0 才要求明显站上成本
     if min_dist_cost > 0 and dist_cost < min_dist_cost:
         return False
     if dist_cost > max_dist_cost:
         return False
-
-    # 防拉升波后出货：峰值已明显越出箱顶，再缩量回落（旧箱被甩在下面）
-    # 箱内温和试探（peak_above 小）不触发，避免误杀好样本
     climax_left_box = float(params.get("climax_left_box", 0.10))
     if peak_above > climax_left_box and peak_dd > float(params.get("climax_pull_dd", 0.10)):
         return False
+    _accum_fill_meta(
+        row, bl=bl, bh=bh, vwap=best["vwap"], cost=cost,
+        pull_vol_ratio=pull_vol_ratio, swings=best["swings"], peak=peak,
+        pull_low=pull_low, markup_vol=markup_vol, peak_dd=peak_dd,
+        box_pos=box_pos, peak_above=peak_above, dist_cost=dist_cost, path="markup_shrink",
+    )
+    return True
 
-    row["pattern_box_low"] = bl
-    row["pattern_box_high"] = bh
-    row["pattern_vwap"] = best["vwap"]
-    row["pattern_cost_anchor"] = cost
-    row["pattern_pull_vol_ratio"] = float(pull_vol_ratio)
-    row["pattern_swing_count"] = int(best["swings"])
-    row["pattern_peak"] = peak
-    row["pattern_pull_low"] = pull_low
-    row["pattern_markup_vol"] = markup_vol
-    row["pattern_peak_drawdown"] = float(peak_dd)
-    row["pattern_box_pos"] = float(box_pos)
-    row["pattern_peak_above_box"] = float(peak_above)
-    row["pattern_dist_cost"] = float(dist_cost)
-    row["pattern_peak_ext"] = float(peak / bh - 1.0) if bh else None
+
+def _accum_path_inbox(row: dict[str, Any], df: pd.DataFrame, params: dict[str, Any]) -> bool:
+    """箱体仍在构筑：箱末贴近今日，相对箱内均量缩量，守成本与下沿。"""
+    if not bool(params.get("enable_inbox_path", True)):
+        return False
+    box_min_days = int(params.get("inbox_box_min_days", params.get("box_min_days", 20)))
+    box_max_days = int(params.get("inbox_box_max_days", 70))
+    box_width_min = float(params.get("box_width_min", 0.08))
+    box_width_max = float(params.get("inbox_box_width_max", 0.40))
+    min_up_dn_vol = float(params.get("inbox_min_up_dn_vol", 1.20))
+    min_swings = int(params.get("inbox_min_swings", 1))
+    swing_reset_pos = float(params.get("swing_reset_pos", 0.70))
+    ignite_vol_ratio = float(params.get("ignite_vol_ratio", 2.0))
+    box_vs_quiet = float(params.get("inbox_box_vs_quiet", 1.05))
+    quiet_days = int(params.get("quiet_days", 20))
+    pullback_days = int(params.get("pullback_days", 5))
+    max_vol_vs_box = float(params.get("inbox_max_vol_vs_box", 0.78))
+    cost_slack = float(params.get("cost_slack", 0.05))
+    max_close_above_box = float(params.get("max_close_above_box", 0.02))
+    min_box_pos = float(params.get("inbox_min_box_pos", 0.40))
+    max_box_pos = float(params.get("inbox_max_box_pos", 0.92))
+    min_dist_cost = float(params.get("inbox_min_dist_cost", -0.03))
+    max_dist_cost = float(params.get("inbox_max_dist_cost", 0.12))
+    max_peak_drawdown = float(params.get("inbox_max_peak_drawdown", 0.22))
+    reject_break_box_low = bool(params.get("reject_break_box_low", True))
+    box_tail_gap = int(params.get("inbox_box_tail_gap", 3))
+    need = quiet_days + box_max_days + 5
+    if len(df) < need:
+        return False
+    close = df["close"].astype(float)
+    high = df["high"].astype(float)
+    low = df["low"].astype(float)
+    vol = df["volume"].astype(float)
+    amount = df["amount"].astype(float)
+    c0 = float(close.iloc[-1])
+    n = len(df)
+    box_end_hi = n
+    box_end_lo = max(box_min_days + quiet_days, n - box_tail_gap)
+    best = _accum_find_box(
+        high, low, close, vol, amount,
+        box_end_hi, box_end_lo, quiet_days, box_min_days, box_max_days,
+        box_width_min, box_width_max, min_up_dn_vol, min_swings, swing_reset_pos,
+        ignite_vol_ratio, box_vs_quiet, None, None,
+    )
+    if best is None:
+        return False
+    bh = best["bh"]
+    bl = best["bl"]
+    cost = best["cost"]
+    box_avg = best["box_avg"]
+    if box_avg <= 0:
+        return False
+    recent_vol = float(vol.iloc[-pullback_days:].mean())
+    pull_vol_ratio = recent_vol / box_avg
+    if pull_vol_ratio > max_vol_vs_box:
+        return False
+    hi20 = float(high.iloc[-20:].max())
+    near_high_pct = float(params.get("near_high_pct", 0.95))
+    if hi20 > 0 and c0 >= hi20 * near_high_pct and pull_vol_ratio > 0.90:
+        return False
+    pull_low = float(low.iloc[-pullback_days:].min())
+    # 箱内路径：回撤相对「近端高点」而非箱顶绝对高（宽箱天然深）
+    local_peak = float(high.iloc[-max(pullback_days * 3, 15):].max())
+    peak = float(high.iloc[best["b0"] : best["box_end"]].max())
+    peak_dd = (local_peak - pull_low) / local_peak if local_peak > 0 else 1.0
+    if peak_dd > max_peak_drawdown:
+        return False
+    if _accum_reject_downtrend(close, low, c0, pull_low, pullback_days, params):
+        return False
+    if c0 < bl:
+        return False
+    if reject_break_box_low and pull_low < bl:
+        return False
+    # 箱内：不破箱下沿即可；收盘仍须守住成本锚（回踩低点可低于 VWAP）
+    if c0 < cost * (1.0 - cost_slack):
+        return False
+    if c0 > bh * (1.0 + max_close_above_box):
+        return False
+    box_pos = (c0 - bl) / (bh - bl) if bh > bl else 0.0
+    if box_pos < min_box_pos or box_pos > max_box_pos:
+        return False
+    dist_cost = c0 / cost - 1.0 if cost > 0 else 0.0
+    if dist_cost < min_dist_cost or dist_cost > max_dist_cost:
+        return False
+    peak_above = peak / bh - 1.0 if bh > 0 else 0.0
+    _accum_fill_meta(
+        row, bl=bl, bh=bh, vwap=best["vwap"], cost=cost,
+        pull_vol_ratio=pull_vol_ratio, swings=best["swings"], peak=peak,
+        pull_low=pull_low, markup_vol=box_avg, peak_dd=peak_dd,
+        box_pos=box_pos, peak_above=peak_above, dist_cost=dist_cost, path="inbox",
+    )
     return True
 
 
