@@ -45,6 +45,7 @@ def main() -> None:
 
     print("[1/4] daily", code)
     daily = fetch_daily(code, start_date="2018-01-01")
+    daily_val = fetch_daily(code, start_date="2018-01-01", adjust="bfq")
     print(
         "  bars",
         len(daily),
@@ -60,8 +61,8 @@ def main() -> None:
     print("  quarters", len(fundamentals), "dividends", len(dividends))
 
     print("[3/4] valuation")
-    valuation = build_valuation_series(fundamentals, daily, dividends)
-    snap = current_snapshot(fundamentals, daily, dividends)
+    valuation = build_valuation_series(fundamentals, daily_val, dividends)
+    snap = current_snapshot(fundamentals, daily_val, dividends)
     pe, pb, dv = snap["pe_ttm_deduct"], snap["pb"], snap["div_yield_pct"]
     print(
         "  points",

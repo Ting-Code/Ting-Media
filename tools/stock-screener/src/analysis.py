@@ -51,12 +51,33 @@ def build_fundamental_panel(code: str, *, refresh: bool = False) -> pd.DataFrame
     return df.reset_index()
 
 
-def trailing_dividend_per_share(dividends: pd.DataFrame, asof: pd.Timestamp) -> float:
-    if dividends.empty:
+def completed_quarter_ends(asof: pd.Timestamp, n: int = 4) -> list[pd.Timestamp]:
+    """股价日之前已经结束的最近 n 个报告期季末。当季未结束时从上季末起算。"""
+    asof = pd.Timestamp(asof).normalize()
+    period = asof.to_period("Q")
+    this_end = period.to_timestamp(how="end").normalize()
+    if asof < this_end:
+        period = period - 1
+    return [(period - i).to_timestamp(how="end").normalize() for i in range(n - 1, -1, -1)]
+
+
+def four_quarter_dividend_per_share(dividends: pd.DataFrame, asof: pd.Timestamp) -> float:
+    """最近四个已结束报告期里、已经除息的每股现金（税前）。
+
+    分红表来自东财定期报告期，不含特别分红。
+    需要列 report_date, ex_date, cash_per_share。某季没有实施分红则不加。
+    """
+    if dividends is None or dividends.empty or "report_date" not in dividends.columns:
         return 0.0
-    start = asof - pd.DateOffset(months=12)
-    sub = dividends[(dividends["ex_date"] > start) & (dividends["ex_date"] <= asof)]
-    return float(sub["cash_per_share"].sum()) if not sub.empty else 0.0
+    ends = {d.strftime("%Y%m%d") for d in completed_quarter_ends(asof, 4)}
+    report = pd.to_datetime(dividends["report_date"], errors="coerce").dt.strftime("%Y%m%d")
+    ex = pd.to_datetime(dividends["ex_date"], errors="coerce")
+    cash = pd.to_numeric(dividends["cash_per_share"], errors="coerce")
+    asof_n = pd.Timestamp(asof).normalize()
+    mask = report.isin(ends) & ex.notna() & (ex.dt.normalize() <= asof_n) & (cash > 0)
+    if not mask.any():
+        return 0.0
+    return float(cash[mask].sum())
 
 
 def _prev_quarter_end(q_end: pd.Timestamp) -> pd.Timestamp:
@@ -123,7 +144,7 @@ def build_valuation_series(
             continue
         pe = (price / ((deduct_q * 4) / shares)) if deduct_q > 0 else None
         pb = (price / (equity / shares)) if equity > 0 else None
-        dps = trailing_dividend_per_share(dividends, price_date)
+        dps = four_quarter_dividend_per_share(dividends, price_date)
         rows.append(
             {
                 "quarter_end": q_end,
@@ -173,6 +194,47 @@ def current_snapshot(
         "div_yield_pct": row.get("div_yield_pct"),
         "report_date": row.get("prev_report_date"),
     }
+
+
+def a_share_dividend_yield(prices: pd.DataFrame, dividends: pd.DataFrame) -> pd.DataFrame:
+    """全 A 股息率。最近四个已结束报告期的已实施每股现金 / 该股最新不复权收盘价。
+
+    prices 列：code, asof, close。
+    dividends 列：code, report_date, cash_per_share, ex_date。来自东财定期报告期，不含特别分红。
+    四个季度按全市场最常见的行情日对齐。除权除息日晚于该股自己的行情日则不计入。
+    """
+    columns = ["code", "asof", "close", "dps", "div_yield_pct", "quarters"]
+    if prices is None or prices.empty:
+        return pd.DataFrame(columns=columns)
+    result = prices.copy()
+    result["code"] = result["code"].astype(str).str.zfill(6)
+    result["asof"] = pd.to_datetime(result["asof"]).dt.normalize()
+    result["close"] = pd.to_numeric(result["close"], errors="coerce")
+    asof_mode = result["asof"].mode().iloc[0]
+    keys = [q.strftime("%Y%m%d") for q in completed_quarter_ends(asof_mode, 4)]
+    for key in keys:
+        result[f"dps_{key}"] = 0.0
+    if dividends is not None and not dividends.empty:
+        div = dividends.copy()
+        div["code"] = div["code"].astype(str).str.zfill(6)
+        div["report_key"] = pd.to_datetime(div["report_date"], errors="coerce").dt.strftime("%Y%m%d")
+        div["ex_date"] = pd.to_datetime(div["ex_date"], errors="coerce")
+        div["cash_per_share"] = pd.to_numeric(div["cash_per_share"], errors="coerce")
+        div = div[div["report_key"].isin(keys) & div["ex_date"].notna() & (div["cash_per_share"] > 0)]
+        asof_map = result.drop_duplicates("code").set_index("code")["asof"]
+        div["price_asof"] = div["code"].map(asof_map)
+        div = div[div["price_asof"].notna() & (div["ex_date"].dt.normalize() <= div["price_asof"])]
+        if not div.empty:
+            cash = div.groupby(["code", "report_key"])["cash_per_share"].sum().unstack("report_key")
+            for key in keys:
+                if key in cash.columns:
+                    result[f"dps_{key}"] = result["code"].map(cash[key]).fillna(0.0)
+    dps_cols = [f"dps_{key}" for key in keys]
+    result["dps"] = result[dps_cols].sum(axis=1)
+    result["quarters"] = ",".join(keys)
+    result["div_yield_pct"] = result["dps"] / result["close"] * 100
+    result.loc[~(result["close"] > 0), "div_yield_pct"] = pd.NA
+    return result.sort_values(["div_yield_pct", "code"], ascending=[False, True]).reset_index(drop=True)
 
 
 def percentile(series: pd.Series, value: float | None) -> float | None:

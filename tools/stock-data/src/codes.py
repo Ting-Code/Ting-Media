@@ -23,6 +23,8 @@ def to_exchange(code: str) -> str:
     digits = "".join(ch for ch in code if ch.isdigit())
     if len(digits) != 6:
         raise ValueError(f"无效代码: {code}")
+    if digits.startswith("92"):
+        return f"bj.{digits}"
     if digits.startswith(("5", "6", "9")):
         return f"sh.{digits}"
     if digits.startswith(("4", "8")):
@@ -56,6 +58,13 @@ def _lookup_akshare_name(name: str) -> tuple[str, str] | None:
     code = "".join(ch for ch in str(hit.iloc[0][code_col]) if ch.isdigit()).zfill(6)[-6:]
     disp = str(hit.iloc[0][name_col]).strip()
     return code, disp
+
+
+def load_security_names() -> dict[str, str]:
+    """通达信本地证券简称，code -> name。"""
+    from tdx_day import load_security_names as _load
+
+    return _load()
 
 
 def resolve_code(query: str) -> tuple[str, str]:

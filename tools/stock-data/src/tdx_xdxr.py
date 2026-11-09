@@ -64,3 +64,42 @@ def load_xdxr(code: str, *, category: int | None = 1, refresh: bool = False) -> 
     if category is not None:
         sub = sub[sub["category"] == category]
     return sub.sort_values("date").reset_index(drop=True)
+
+
+def _code6(code: str) -> str:
+    digits = "".join(ch for ch in str(code) if ch.isdigit())
+    return digits[-6:] if len(digits) >= 6 else digits
+
+
+def cash_dividends(
+    gbbq: pd.DataFrame | None = None,
+    codes: list[str] | set[str] | None = None,
+    *,
+    refresh: bool = False,
+) -> pd.DataFrame:
+    """已除息现金分红。fenhong 为每 10 股税前派现，cash_per_share = fenhong / 10。
+
+    只取 category=1 且 fenhong>0。送股、转增不在结果里。
+    列：code, ex_date, cash_per_share。不另写缓存，走 load_gbbq 的解密 parquet。
+    """
+    columns = ["code", "ex_date", "cash_per_share"]
+    df = load_gbbq(refresh=refresh) if gbbq is None else gbbq
+    if df is None or df.empty:
+        return pd.DataFrame(columns=columns)
+    sub = df[pd.to_numeric(df["category"], errors="coerce") == 1]
+    if codes is not None:
+        wanted = {_code6(c) for c in codes}
+        wanted.discard("")
+        sub = sub[sub["code"].astype(str).str.zfill(6).isin(wanted)]
+    cash10 = pd.to_numeric(sub["fenhong"], errors="coerce")
+    sub = sub.loc[cash10 > 0]
+    if sub.empty:
+        return pd.DataFrame(columns=columns)
+    out = pd.DataFrame(
+        {
+            "code": sub["code"].astype(str).str.zfill(6).to_numpy(),
+            "ex_date": pd.to_datetime(sub["date"]).to_numpy(),
+            "cash_per_share": (pd.to_numeric(sub["fenhong"], errors="coerce") / 10.0).to_numpy(),
+        }
+    )
+    return out.sort_values(["code", "ex_date"]).reset_index(drop=True)

@@ -1,6 +1,6 @@
 # AGENTS.md — Ting-Media
 
-内容工作台：工具取数/出图 → 竖屏录屏 HTML → 按期归档。
+内容工作台。五个工具彼此独立；只有用户明确要做节目时，才用 `screen-pack` 出竖屏 HTML。
 
 ## 目录
 
@@ -33,13 +33,18 @@ cache/<分析名>/                  # 分析/选股结果（仓库根）；财�
 分析名通常与期次文件夹同名（`YYYY-MM-DD_主题`）；未立题探数用如 `trends_2026-11-05`。  
 不要写到 `tools/*/output/` 或仓库根 `output/`。
 
-## 两条工作流
+## 工具各自独立
+
+`stock-data`、`stock-screener`、`platform-trends`、`screen-pack`、`interactive-pack` 分开调用。分析、选股、热度默认只给数据。没必要不要调用 `screen-pack` 出 HTML；只有用户明确说「录屏 / 出一期 / 做节目」时才生成。
+
+## 工作流
 
 ### 1）数据分析（先查能力，勿乱加工具）
 
-1. 先看现有工具能否覆盖（`stock-data` 取数 / `stock-screener` 分析选股 / `screen-pack` 录屏）。
-2. **有能力就直接调用**。
+1. 先看取数和分析工具能否覆盖（`stock-data`、`stock-screener`、`platform-trends`）。
+2. **有能力就直接调用**。不要为了出图去调用 `screen-pack`。
 3. **同一类需求反复出现**再封装；不要一提新需求就新建工具。
+4. 只有用户明确要求成片时，才进入下面的节目流程。
 
 ### 2）生成一期节目
 
@@ -72,14 +77,16 @@ python scripts/analyze_trends.py
 
 ### 4）选股与估值分析
 
-技术面筛选 + 基本面面板/PE（原始数据来自 `stock-data`）。见 `tools/stock-screener/AGENTS.md`。
+技术面筛选 + 基本面面板/PE。取数只走 `stock-data` 的能力表（`tools/stock-data/AGENTS.md`）。分析只走 `tools/stock-screener/AGENTS.md`：单股用 `scripts/analyze_symbol.py`，全 A 股息率用 `scripts/div_yield.py`，全市场筛选用 `scripts/run_screener.py --config`。不调用 `screen-pack`。
 
 ```bash
 cd tools/stock-screener
 pip install -r ../stock-data/requirements.txt
 pip install -r requirements.txt
-python scripts/run_screener.py --config configs/v1_tech.yaml
-# -> cache/screener_v1_tech_YYYY-MM-DD/
+python scripts/analyze_symbol.py <名称或代码>
+python scripts/div_yield.py
+# 日线筛选配置位先空着，规则合并后再：
+# python scripts/run_screener.py --config configs/<配置>.yaml
 ```
 
 

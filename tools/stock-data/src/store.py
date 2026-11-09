@@ -44,6 +44,11 @@ def dividend_code_path(code: str) -> Path:
     return _ensure(stock_data_cache() / "em_dividend" / "by_code") / f"{code6(code)}.parquet"
 
 
+def dividend_period_path(report_date: str) -> Path:
+    d = pd.Timestamp(report_date).strftime("%Y%m%d")
+    return _ensure(stock_data_cache() / "em_dividend" / "by_period") / f"{d}.parquet"
+
+
 def meta_path(kind: str, code: str) -> Path:
     return _ensure(stock_data_cache() / kind / "by_code") / f"{code6(code)}.meta.json"
 

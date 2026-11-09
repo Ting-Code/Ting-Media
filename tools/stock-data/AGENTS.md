@@ -1,22 +1,35 @@
 # AGENTS.md — tools/stock-data
 
-公共 **取数 + 财报缓存**。不要在本工具做 PE/选股/面板分析（那些在 `tools/stock-screener`）。
+公共取数。不做 PE、选股、分位，那些在 `tools/stock-screener`。
 
-```bash
-cd tools/stock-data
-pip install -r requirements.txt
-```
+把 `tools/stock-data/src` 加入 `sys.path` 后，只从 `market`、`fundamentals`、`codes` 导入。`tdx_day`、`tdx_xdxr`、`adjust`、`store` 是内部实现。
 
-把 `tools/stock-data/src` 加入 `sys.path` 后 import（见 `docs/数据源规范.md`）。
+## 要什么，调哪个
 
-## 原则
+| 要什么 | 只调 |
+|---|---|
+| 成交价（估值、股息率分母） | `fetch_daily(code, adjust="bfq")` |
+| 全 A 最新不复权收盘 | `fetch_a_share_last_close()` |
+| 证券简称 | `load_security_names()` |
+| 复权走势 | `fetch_daily(code)`（默认前复权）或 `adjust="hfq"` |
+| 周 / 月 / 季线 | `resample_ohlcv`，周期 `W`、`M` 或 `Q` |
+| 单只已除息现金分红（含特别分红，用于复权） | `fetch_cash_dividends(code)` |
+| 全 A 已除息现金分红（含特别分红，用于复权） | `fetch_a_share_cash_dividends()` |
+| 单只定期报告期现金分红（股息率分子，不含特别分红） | `fetch_dividends(code)` |
+| 某一个报告期的全市场现金分红 | `fetch_period_cash_dividends(report_date)` |
+| 季报利润表 | `fetch_quarterly_profit(code)` |
+| 季报资产负债表 | `fetch_quarterly_balance(code)` |
+| 代码或名称 | `resolve_code(query)` |
 
-- **行情（通达信）**：直接读本机 `vipdoc` lday + `gbbq` 现场复权/重采样（`src/market.py`）。**不落盘缓存 K 线**（日/周/月均现算）。
-- **财报（东财）**：利润表 / 资产负债表等才写入 **`tools/stock-data/cache/`**（`em_profit` / `em_balance`）。
-- `cache/tdx/gbbq.parquet` 仅作权息文件解密加速（可选），不是行情副本；分析仍以通达信源文件为准。
+股息率分子用 `fetch_dividends` 或 `fetch_period_cash_dividends`：东财定期报告期里已实施、已除息的现金，不含特别分红。取最近四个已结束报告期加总。分母用 `adjust="bfq"` 的收盘价。`fetch_cash_dividends` 来自通达信 gbbq，含特别分红，用于复权。
+
+## 来源
+
+- 行情、复权用的已除息现金：本机通达信 `vipdoc` 日线 + `gbbq`。日线不落盘。`gbbq.parquet` 只加速解密。
+- 季报、定期报告期现金分红：东财。缓存 `tools/stock-data/cache/`（`em_profit` / `em_balance` / `em_dividend`）。
 - 环境变量（可选）：`TDX_DIR` / `TDX_VIPDOC` / `TDX_GBBQ` / `STOCK_DATA_CACHE`
 
-录屏 HTML：`tools/screen-pack`（分析口径走 screener）。
+录屏只有用户明确要求做节目时才走 `tools/screen-pack`。
 
 ## 合规
 

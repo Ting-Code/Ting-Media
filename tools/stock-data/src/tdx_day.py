@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 from codes import to_exchange
-from paths import tdx_vipdoc
+from paths import tdx_root, tdx_vipdoc
 
 RECORD = struct.Struct("<IIIIIfII")
 REC_SIZE = 32
@@ -110,6 +110,11 @@ def classify_board(market: str, code6: str) -> str | None:
     return None
 
 
+def list_a_share_codes(vipdoc: str | Path | None = None) -> list[str]:
+    """A 股代码（沪深京日线里能归到板块的），不含指数。"""
+    return [code for market, code, _ in list_day_files(vipdoc) if classify_board(market, code)]
+
+
 def list_day_files(vipdoc: str | Path | None = None) -> list[tuple[str, str, Path]]:
     root = Path(vipdoc) if vipdoc else tdx_vipdoc()
     if root is None:
@@ -151,3 +156,29 @@ def load_name_map() -> dict[str, str]:
 def is_st_name(name: str) -> bool:
     n = name.upper().replace(" ", "")
     return "ST" in n or n.startswith("*") or "退" in name
+
+
+def load_security_names() -> dict[str, str]:
+    """通达信本地证券简称。读 hq_cache 的 shs/szs/bjs.tnf，不走网络。"""
+    root = tdx_root()
+    if root is None:
+        return {}
+    out: dict[str, str] = {}
+    rec = 360
+    for filename in ("shs.tnf", "szs.tnf", "bjs.tnf"):
+        path = root / "T0002" / "hq_cache" / filename
+        if not path.is_file():
+            continue
+        raw = path.read_bytes()
+        body = raw[50:] if len(raw) > 50 else raw
+        n = len(body) // rec
+        for i in range(n):
+            chunk = body[i * rec : (i + 1) * rec]
+            code = chunk[:6].decode("ascii", "ignore")
+            if not code.isdigit():
+                continue
+            name = chunk[31:].split(b"\x00", 1)[0].decode("gbk", "ignore")
+            name = "".join(name.split())
+            if name:
+                out[code] = name
+    return out

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 import pandas as pd
 import akshare as ak
 
@@ -10,6 +11,7 @@ from store import (
     balance_code_path,
     code6,
     dividend_code_path,
+    dividend_period_path,
     is_fresh,
     profit_code_path,
     profit_quarter_dir,
@@ -199,6 +201,59 @@ def sync_dividends(code: str, *, force: bool = False, max_age_hours: float = 24.
 def fetch_dividends(
     code: str, *, refresh: bool = False, max_age_hours: float = 24.0
 ) -> pd.DataFrame:
-    """Cash dividend events; cash_per_share in yuan. Cached under em_dividend."""
+    """单只股票的定期报告期现金分红，东财，已实施且已除息。
+
+    列：report_date, cash_per_10, ex_date, status, total_share, cash_per_share。
+    cash_per_10 是每 10 股税前派现，cash_per_share = cash_per_10 / 10。
+    东财这张表只列年报、中报、一季报、三季报，不含特别分红。
+    股息率分子用它，再按最近四个已结束报告期加总。
+    """
     return sync_dividends(code, force=refresh, max_age_hours=max_age_hours)
+
+
+def fetch_period_cash_dividends(
+    report_date: str, *, refresh: bool = False, max_age_hours: float = 24.0
+) -> pd.DataFrame:
+    """某一个定期报告期的全市场已实施现金分红。东财分红送配。
+
+    report_date 用 YYYYMMDD，例如 20251231。
+    「现金分红-现金分红比例」是每 10 股税前派现，每股 = 该数 / 10。
+    只保留方案进度含「实施」、现金大于 0、且有除权除息日的记录。
+    这张表按定期报告期列示，不含特别分红。
+    列：code, name, report_date, cash_per_share, ex_date, status。
+    """
+    key = pd.Timestamp(report_date).strftime("%Y%m%d")
+    path = dividend_period_path(key)
+    if not refresh and path.exists():
+        age_h = (time.time() - path.stat().st_mtime) / 3600
+        if age_h <= max_age_hours:
+            cached = read_frame(path)
+            if cached is not None:
+                cached["report_date"] = pd.to_datetime(cached["report_date"])
+                cached["ex_date"] = pd.to_datetime(cached["ex_date"])
+                return cached
+
+    columns = ["code", "name", "report_date", "cash_per_share", "ex_date", "status"]
+    raw = ak.stock_fhps_em(date=key)
+    if raw is None or raw.empty:
+        out = pd.DataFrame(columns=columns)
+        write_frame(path, out)
+        return out
+    out = pd.DataFrame(
+        {
+            "code": raw["代码"].astype(str).str.replace(r"\D", "", regex=True).str[-6:].str.zfill(6),
+            "name": raw["名称"].astype(str).str.replace(" ", "", regex=False),
+            "report_date": pd.Timestamp(key),
+            "cash_per_share": pd.to_numeric(raw["现金分红-现金分红比例"], errors="coerce") / 10.0,
+            "ex_date": pd.to_datetime(raw["除权除息日"], errors="coerce"),
+            "status": raw["方案进度"].astype(str),
+        }
+    )
+    out = out[out["status"].str.contains("实施", na=False)]
+    out = out[out["cash_per_share"] > 0]
+    out = out.dropna(subset=["ex_date", "code"])
+    out = out[out["code"].str.fullmatch(r"\d{6}")]
+    out = out.sort_values("code").reset_index(drop=True)
+    write_frame(path, out[columns])
+    return out
 
