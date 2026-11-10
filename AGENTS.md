@@ -77,7 +77,7 @@ python scripts/analyze_trends.py
 
 ### 4）选股与估值分析
 
-技术面筛选 + 基本面面板/PE。取数只走 `stock-data` 的能力表（`tools/stock-data/AGENTS.md`）。分析只走 `tools/stock-screener/AGENTS.md`：单股用 `scripts/analyze_symbol.py`，全 A 股息率用 `scripts/div_yield.py`，全市场筛选用 `scripts/run_screener.py --config`。不调用 `screen-pack`。
+技术面筛选 + 基本面面板/PE。取数只走 `stock-data` 的能力表（`tools/stock-data/AGENTS.md`）。分析只走 `tools/stock-screener/AGENTS.md`：单股用 `scripts/analyze_symbol.py`，全 A 股息率用 `scripts/div_yield.py`，头部 ETF 持有规模占比用 `scripts/etf_market_share.py`，全市场筛选用 `scripts/run_screener.py --config`。不调用 `screen-pack`。
 
 ```bash
 cd tools/stock-screener
@@ -85,6 +85,7 @@ pip install -r ../stock-data/requirements.txt
 pip install -r requirements.txt
 python scripts/analyze_symbol.py <名称或代码>
 python scripts/div_yield.py
+python scripts/etf_market_share.py
 # 日线筛选配置位先空着，规则合并后再：
 # python scripts/run_screener.py --config configs/<配置>.yaml
 ```

@@ -2,7 +2,9 @@
 
 公共取数。不做 PE、选股、分位，那些在 `tools/stock-screener`。
 
-把 `tools/stock-data/src` 加入 `sys.path` 后，只从 `market`、`fundamentals`、`codes` 导入。`tdx_day`、`tdx_xdxr`、`adjust`、`store` 是内部实现。
+把 `tools/stock-data/src` 加入 `sys.path` 后，只从 `market`、`fundamentals`、`codes`、`holdings` 导入。`tdx_day`、`tdx_xdxr`、`adjust`、`store` 是内部实现。
+
+指数不要用 `fetch_daily("000300")`，6 位代码会按股票去找文件。指数用 `fetch_index_daily("sh000300")` 或 `fetch_index_daily("sz399006")`。
 
 ## 要什么，调哪个
 
@@ -10,6 +12,9 @@
 |---|---|
 | 成交价（估值、股息率分母） | `fetch_daily(code, adjust="bfq")` |
 | 全 A 最新不复权收盘 | `fetch_a_share_last_close()` |
+| 指数日线（不复权，带市场代码） | `fetch_index_daily("sh000300")` |
+| 分板块按日成交额合计 | `fetch_boards_daily_amount()` |
+| ETF 份额、板块总市值 | `holdings.fetch_sse_etf_shares` / `fetch_szse_etf_shares` / `fetch_board_caps` |
 | 证券简称 | `load_security_names()` |
 | 复权走势 | `fetch_daily(code)`（默认前复权）或 `adjust="hfq"` |
 | 周 / 月 / 季线 | `resample_ohlcv`，周期 `W`、`M` 或 `Q` |

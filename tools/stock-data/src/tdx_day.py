@@ -182,3 +182,29 @@ def load_security_names() -> dict[str, str]:
             if name:
                 out[code] = name
     return out
+
+
+def read_day_dates_amount(path: Path):
+    """只取日期和成交额。日期是 YYYYMMDD int64，成交额是元（float64）。"""
+    import numpy as np
+
+    raw = Path(path).read_bytes()
+    empty_d = np.empty(0, dtype=np.int64)
+    empty_a = np.empty(0, dtype=np.float64)
+    if len(raw) < REC_SIZE or len(raw) % REC_SIZE:
+        return empty_d, empty_a
+    n = len(raw) // REC_SIZE
+    dtype = np.dtype(
+        [
+            ("date", "<u4"),
+            ("open", "<u4"),
+            ("high", "<u4"),
+            ("low", "<u4"),
+            ("close", "<u4"),
+            ("amount", "<f4"),
+            ("volume", "<u4"),
+            ("pad", "<u4"),
+        ]
+    )
+    arr = np.frombuffer(raw, dtype=dtype, count=n)
+    return arr["date"].astype(np.int64), arr["amount"].astype(np.float64)

@@ -10,9 +10,10 @@
 |---|---|
 | 一只股票的 PE、PB、股息率、分位 | `python scripts/analyze_symbol.py <名称或代码>` |
 | 全 A 股息率 | `python scripts/div_yield.py` |
+| 头部 ETF 持有规模占板块总市值 | `python scripts/etf_market_share.py` |
 | 全市场按一套形态筛选 | `python scripts/run_screener.py --config configs/<配置>.yaml` |
 
-单股脚本只打印结果。全 A 股息率写到仓库根 `cache/div_yield_<行情日>/`。筛选结果写到 `cache/<配置名>_<日期>/`。
+单股脚本只打印结果。全 A 股息率写到仓库根 `cache/div_yield_<行情日>/`。头部 ETF 持有规模占比写到 `cache/etf_market_share_<行情日>/index.html`。筛选结果写到 `cache/<配置名>_<日期>/`。
 
 估值取数：成交价 `fetch_daily(..., adjust="bfq")`。股息率分子是东财定期报告期已实施现金 `fetch_dividends`，最近四个已结束报告期合计，不含特别分红。PE / PB 口径见 `docs/分析口径.md`。
 
