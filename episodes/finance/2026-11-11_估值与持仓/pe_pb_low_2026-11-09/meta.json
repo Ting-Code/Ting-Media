@@ -1,0 +1,18 @@
+{
+  "asof": "2026-11-09",
+  "universe": 5386,
+  "done": 5386,
+  "hits": 388,
+  "errors": 4,
+  "too_few_points": 800,
+  "blank_valuation": 1376,
+  "pe_max": 20.0,
+  "pb_max": 20.0,
+  "min_points": 12,
+  "workers": 8,
+  "fetch_workers": 3,
+  "financial_source": "eastmoney_market_main_quarter",
+  "elapsed_sec": 868.1,
+  "vipdoc": "D:\\app\\tdx\\vipdoc",
+  "industry_source": "tdxhy.cfg / tdxzs3.cfg"
+}

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>恒生互联网ETF（513330）前十大重仓 PE</title>
+<style>
+  body { margin: 0; background: #f3f4f6; color: #1a1a1a; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 32px 236px 56px 20px; }
+  h1 { font-size: 26px; line-height: 1.3; margin: 0 0 8px; }
+  h2 { font-size: 20px; margin: 0 0 8px; }
+  .lead, .axis, .note { margin: 0; color: #4b4b4b; font-size: 14px; line-height: 1.7; }
+  .note { margin-top: 8px; color: #7a3b00; }
+  .summary { background: #fff; border: 1px solid #e3e3e3; margin-top: 18px; padding: 16px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: left; white-space: nowrap; }
+  th { color: #555; font-weight: 600; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:hover { background: #f7f7f7; }
+  a { color: #1d4e89; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .stock { background: #fff; border: 1px solid #e3e3e3; margin-top: 18px; padding: 16px 16px 8px; scroll-margin-top: 16px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 12px 0 8px; padding: 0; list-style: none; font-size: 15px; }
+  .stats b { font-weight: 650; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 10px 0 6px; padding: 0; list-style: none; font-size: 13px; color: #333; }
+  .legend i { display: inline-block; width: 12px; height: 3px; margin-right: 6px; vertical-align: middle; }
+  .legend .pe { background: #c0392b; }
+  .legend .pb { background: #1d4e89; }
+  .legend .price { background: #1c7c4a; }
+  .legend .now { background: #c0392b; height: 0; border-top: 2px dashed #c0392b; }
+  .chart { position: relative; }
+  canvas { width: 100%; display: block; cursor: crosshair; }
+  .chart canvas { height: 420px; }
+  .brush canvas { height: 72px; cursor: ew-resize; }
+  .tip { min-height: 20px; margin: 2px 0 8px; color: #333; font-size: 12px; }
+  footer { margin-top: 16px; color: #666; font-size: 12px; line-height: 1.7; }
+  nav.toc { position: fixed; top: 24px; right: 16px; width: 200px; max-height: calc(100vh - 48px); overflow: auto; background: #fff; border: 1px solid #e3e3e3; padding: 10px 0; z-index: 20; }
+  nav.toc .nav-title { margin: 0 12px 8px; color: #666; font-size: 12px; }
+  nav.toc a { display: block; padding: 7px 12px; color: #1a1a1a; text-decoration: none; border-left: 3px solid transparent; line-height: 1.35; }
+  nav.toc a:hover { background: #f7f7f7; text-decoration: none; }
+  nav.toc a.active { border-left-color: #1d4e89; background: #f3f6fa; }
+  nav.toc .nav-name { display: block; font-size: 13px; }
+  nav.toc .nav-meta { display: block; color: #666; font-size: 11px; margin-top: 2px; }
+  @media (max-width: 1180px) {
+    main { padding: 72px 16px 56px; }
+    nav.toc { top: 0; right: 0; left: 0; width: auto; max-height: none; display: flex; overflow-x: auto; padding: 0; border-left: 0; border-right: 0; }
+    nav.toc .nav-title { display: none; }
+    nav.toc a { flex: 0 0 auto; border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+    nav.toc a.active { border-bottom-color: #1d4e89; background: #f3f6fa; }
+  }
+</style>
+</head>
+<body>
+<nav class="toc" id="toc">
+  <p class="nav-title">图表目录</p>
+  <a href="#stock-00700" data-target="stock-00700"><span class="nav-name">腾讯控股</span><span class="nav-meta">00700　PE 14.42</span></a><a href="#stock-09988" data-target="stock-09988"><span class="nav-name">阿里巴巴－W</span><span class="nav-meta">09988　PE —</span></a><a href="#stock-09999" data-target="stock-09999"><span class="nav-name">网易－S</span><span class="nav-meta">09999　PE 19.99</span></a><a href="#stock-03690" data-target="stock-03690"><span class="nav-name">美团－W</span><span class="nav-meta">03690　PE 46.12</span></a><a href="#stock-01810" data-target="stock-01810"><span class="nav-name">小米集团－W</span><span class="nav-meta">01810　PE 17.86</span></a><a href="#stock-09618" data-target="stock-09618"><span class="nav-name">京东集团－SW</span><span class="nav-meta">09618　PE 9.15</span></a><a href="#stock-09888" data-target="stock-09888"><span class="nav-name">百度集团－SW</span><span class="nav-meta">09888　PE 21.98</span></a><a href="#stock-01024" data-target="stock-01024"><span class="nav-name">快手－W</span><span class="nav-meta">01024　PE 8.52</span></a><a href="#stock-09660" data-target="stock-09660"><span class="nav-name">地平线机器人-W</span><span class="nav-meta">09660　PE 3.13</span></a><a href="#stock-00020" data-target="stock-00020"><span class="nav-name">商汤－W</span><span class="nav-meta">00020　PE 25.05</span></a>
+</nav>
+<main>
+  <h1>恒生互联网ETF（513330）前十大重仓 PE</h1>
+  <p class="lead">持仓来自华夏恒生互联网科技业ETF（QDII）2026-09-30 季报，前十合计占净值 82.04%。 截至 2026-11-10。每个点都用上一季单季股东应占溢利对应的基本每股盈利年化（×4），配该季末不复权港股收盘价，再按当日港币人民币中间价折成人民币计算 PE/PB。当季未结束时用最新完整收盘。最新一点的盈利来自报告期 各股标注的报告期。绿线股价为港元。</p>
+  <div class="summary">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>名称</th><th>代码</th><th>占净值</th><th>股价</th>
+          <th>PE</th><th>PE分位</th><th>PB</th><th>PB分位</th><th>报告期</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><a href="#stock-00700">腾讯控股</a></td><td>00700</td><td class='num'>15.09%</td><td class='num'>417.80</td><td class='num'>14.42</td><td class='num'>5.4%</td><td class='num'>2.84</td><td class='num'>1.8%</td><td>2026-06-30</td></tr><tr><td>2</td><td><a href="#stock-09988">阿里巴巴－W</a></td><td>09988</td><td class='num'>14.92%</td><td class='num'>101.60</td><td class='num'>—<sup>*</sup></td><td class='num'>—</td><td class='num'>1.56</td><td class='num'>24.1%</td><td>2026-06-30</td></tr><tr><td>3</td><td><a href="#stock-09999">网易－S</a></td><td>09999</td><td class='num'>10.52%</td><td class='num'>203.80</td><td class='num'>19.99</td><td class='num'>63.0%</td><td class='num'>3.34</td><td class='num'>22.2%</td><td>2026-06-30</td></tr><tr><td>4</td><td><a href="#stock-03690">美团－W</a></td><td>03690</td><td class='num'>9.64%</td><td class='num'>75.50</td><td class='num'>46.12</td><td class='num'>58.3%</td><td class='num'>2.35</td><td class='num'>17.6%</td><td>2026-06-30</td></tr><tr><td>5</td><td><a href="#stock-01810">小米集团－W</a></td><td>01810</td><td class='num'>9.43%</td><td class='num'>30.60</td><td class='num'>17.86</td><td class='num'>28.1%</td><td class='num'>2.51</td><td class='num'>45.5%</td><td>2026-06-30</td></tr><tr><td>6</td><td><a href="#stock-09618">京东集团－SW</a></td><td>09618</td><td class='num'>7.52%</td><td class='num'>112.10</td><td class='num'>9.15</td><td class='num'>26.1%</td><td class='num'>1.19</td><td class='num'>11.1%</td><td>2026-06-30</td></tr><tr><td>7</td><td><a href="#stock-09888">百度集团－SW</a></td><td>09888</td><td class='num'>6.24%</td><td class='num'>79.70</td><td class='num'>21.98</td><td class='num'>91.7%</td><td class='num'>0.75</td><td class='num'>6.7%</td><td>2026-06-30</td></tr><tr><td>8</td><td><a href="#stock-01024">快手－W</a></td><td>01024</td><td class='num'>4.36%</td><td class='num'>28.98</td><td class='num'>8.52</td><td class='num'>14.3%</td><td class='num'>1.30</td><td class='num'>4.3%</td><td>2026-06-30</td></tr><tr><td>9</td><td><a href="#stock-09660">地平线机器人-W</a></td><td>09660</td><td class='num'>2.27%</td><td class='num'>3.95</td><td class='num'>3.13<sup>*</sup></td><td class='num'>66.7%</td><td class='num'>2.89</td><td class='num'>40.0%</td><td>2026-06-30</td></tr><tr><td>10</td><td><a href="#stock-00020">商汤－W</a></td><td>00020</td><td class='num'>2.05%</td><td class='num'>1.17</td><td class='num'>25.05<sup>*</sup></td><td class='num'>50.0%</td><td class='num'>2.02</td><td class='num'>54.5%</td><td>2026-06-30</td></tr>
+      </tbody>
+    </table>
+    <p class="lead" style="margin-top:12px">按给定权重、只对当前有 PE 的股票（腾讯控股、网易－S、美团－W、小米集团－W、京东集团－SW、百度集团－SW、快手－W、地平线机器人-W、商汤－W）加权平均约为 20.00。这不是组合或基金本身的估值，权重若来自定期报告也不一定是最新的，仅供对照。</p>
+  </div>
+  
+<section class="stock" id="stock-00700">
+  <h2>1. 腾讯控股 00700　占净值 15.09%</h2>
+  <ul class="stats">
+    <li>股价 <b>417.80</b> 港元</li>
+    <li>PE <b>14.42</b> · 历史分位 5.4%</li>
+    <li>PB <b>2.84</b> · 历史分位 1.8%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2013-03-28", "quarter": "2013-03-31", "price": 246.8, "pe": 26.31, "pb": 8.83, "incomplete": false}, {"date": "2013-06-28", "quarter": "2013-06-30", "price": 304.2, "pe": 27.47, "pb": 9.94, "incomplete": false}, {"date": "2013-09-30", "quarter": "2013-09-30", "price": 406.8, "pe": 200.77, "pb": 63.38, "incomplete": false}, {"date": "2013-12-31", "quarter": "2013-12-31", "price": 494.6, "pe": 230.53, "pb": 67.43, "incomplete": false}, {"date": "2014-03-31", "quarter": "2014-03-31", "price": 539.5, "pe": 250.41, "pb": 67.61, "incomplete": false}, {"date": "2014-06-30", "quarter": "2014-06-30", "price": 118.2, "pe": 33.51, "pb": 13.41, "incomplete": false}, {"date": "2014-09-30", "quarter": "2014-09-30", "price": 115.5, "pe": 36.19, "pb": 12.07, "incomplete": false}, {"date": "2014-12-31", "quarter": "2014-12-31", "price": 112.5, "pe": 36.14, "pb": 10.94, "incomplete": false}, {"date": "2015-03-31", "quarter": "2015-03-31", "price": 147.2, "pe": 45.92, "pb": 13.45, "incomplete": false}, {"date": "2015-06-30", "quarter": "2015-06-30", "price": 154.7, "pe": 41.16, "pb": 12.84, "incomplete": false}, {"date": "2015-09-30", "quarter": "2015-09-30", "price": 129.3, "pe": 33.7, "pb": 10.1, "incomplete": false}, {"date": "2015-12-31", "quarter": "2015-12-31", "price": 152.5, "pe": 39.88, "pb": 10.97, "incomplete": false}, {"date": "2016-03-31", "quarter": "2016-03-31", "price": 158.4, "pe": 42.84, "pb": 10.23, "incomplete": false}, {"date": "2016-06-30", "quarter": "2016-06-30", "price": 176.1, "pe": 38.36, "pb": 11.11, "incomplete": false}, {"date": "2016-09-30", "quarter": "2016-09-30", "price": 213.0, "pe": 39.97, "pb": 12.15, "incomplete": false}, {"date": "2016-12-30", "quarter": "2016-12-31", "price": 189.7, "pe": 37.33, "pb": 9.7, "incomplete": false}, {"date": "2017-03-31", "quarter": "2017-03-31", "price": 222.8, "pe": 44.04, "pb": 10.62, "incomplete": false}, {"date": "2017-06-30", "quarter": "2017-06-30", "price": 279.2, "pe": 39.34, "pb": 11.72, "incomplete": false}, {"date": "2017-09-29", "quarter": "2017-09-30", "price": 336.2, "pe": 36.82, "pb": 12.51, "incomplete": false}, {"date": "2017-12-29", "quarter": "2017-12-31", "price": 406.0, "pe": 44.33, "pb": 13.7, "incomplete": false}, {"date": "2018-03-29", "quarter": "2018-03-31", "price": 409.6, "pe": 37.24, "pb": 12.1, "incomplete": false}, {"date": "2018-06-29", "quarter": "2018-06-30", "price": 393.8, "pe": 33.6, "pb": 11.28, "incomplete": false}, {"date": "2018-09-28", "quarter": "2018-09-30", "price": 323.2, "pe": 37.54, "pb": 9.1, "incomplete": false}, {"date": "2018-12-31", "quarter": "2018-12-31", "price": 314.0, "pe": 27.83, "pb": 8.26, "incomplete": false}, {"date": "2019-03-29", "quarter": "2019-03-31", "price": 361.0, "pe": 51.38, "pb": 9.04, "incomplete": false}, {"date": "2019-06-28", "quarter": "2019-06-30", "price": 352.6, "pe": 26.95, "pb": 8.06, "incomplete": false}, {"date": "2019-09-30", "quarter": "2019-09-30", "price": 330.2, "pe": 29.19, "pb": 7.29, "incomplete": false}, {"date": "2019-12-31", "quarter": "2019-12-31", "price": 375.6, "pe": 39.06, "pb": 7.88, "incomplete": false}, {"date": "2020-03-31", "quarter": "2020-03-31", "price": 380.2, "pe": 38.1, "pb": 7.6, "incomplete": false}, {"date": "2020-06-30", "quarter": "2020-06-30", "price": 498.6, "pe": 37.34, "pb": 9.43, "incomplete": false}, {"date": "2020-09-30", "quarter": "2020-09-30", "price": 511.5, "pe": 32.17, "pb": 7.96, "incomplete": false}, {"date": "2020-12-31", "quarter": "2020-12-31", "price": 564.0, "pe": 29.2, "pb": 7.8, "incomplete": false}, {"date": "2021-03-31", "quarter": "2021-03-31", "price": 610.0, "pe": 20.63, "pb": 6.95, "incomplete": false}, {"date": "2021-06-30", "quarter": "2021-06-30", "price": 584.0, "pe": 24.2, "pb": 6.07, "incomplete": false}, {"date": "2021-09-30", "quarter": "2021-09-30", "price": 461.4, "pe": 21.48, "pb": 4.32, "incomplete": false}, {"date": "2021-12-31", "quarter": "2021-12-31", "price": 456.8, "pe": 22.51, "pb": 4.15, "incomplete": false}, {"date": "2022-03-31", "quarter": "2022-03-31", "price": 374.2, "pe": 7.61, "pb": 3.59, "incomplete": false}, {"date": "2022-06-30", "quarter": "2022-06-30", "price": 354.4, "pe": 30.86, "pb": 3.72, "incomplete": false}, {"date": "2022-09-30", "quarter": "2022-09-30", "price": 266.4, "pe": 30.85, "pb": 3.12, "incomplete": false}, {"date": "2022-12-30", "quarter": "2022-12-31", "price": 334.0, "pe": 17.81, "pb": 3.76, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 385.8, "pe": 7.57, "pb": 4.46, "incomplete": false}, {"date": "2023-06-30", "quarter": "2023-06-30", "price": 331.6, "pe": 28.05, "pb": 3.72, "incomplete": false}, {"date": "2023-09-29", "quarter": "2023-09-30", "price": 306.2, "pe": 25.44, "pb": 3.42, "incomplete": false}, {"date": "2023-12-29", "quarter": "2023-12-31", "price": 293.6, "pe": 17.41, "pb": 3.28, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 303.8, "pe": 24.1, "pb": 3.22, "incomplete": false}, {"date": "2024-06-28", "quarter": "2024-06-30", "price": 372.4, "pe": 18.97, "pb": 3.75, "incomplete": false}, {"date": "2024-09-30", "quarter": "2024-09-30", "price": 444.6, "pe": 19.64, "pb": 4.35, "incomplete": false}, {"date": "2024-12-31", "quarter": "2024-12-31", "price": 417.0, "pe": 16.87, "pb": 3.94, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 497.0, "pe": 20.71, "pb": 4.37, "incomplete": false}, {"date": "2025-06-30", "quarter": "2025-06-30", "price": 503.0, "pe": 21.84, "pb": 4.01, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 663.0, "pe": 24.76, "pb": 4.94, "incomplete": false}, {"date": "2025-12-31", "quarter": "2025-12-31", "price": 599.0, "pe": 19.48, "pb": 4.2, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 484.0, "pe": 16.66, "pb": 3.36, "incomplete": false}, {"date": "2026-06-30", "quarter": "2026-06-30", "price": 429.8, "pe": 14.51, "pb": 2.99, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 431.0, "pe": 14.91, "pb": 2.94, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 417.8, "pe": 14.42, "pb": 2.84, "incomplete": true}], "pe_now": 14.42, "name": "腾讯控股", "code": "00700"}</script>
+</section>
+
+<section class="stock" id="stock-09988">
+  <h2>2. 阿里巴巴－W 09988　占净值 14.92%</h2>
+  <ul class="stats">
+    <li>股价 <b>101.60</b> 港元</li>
+    <li>PE <b>—</b> · 历史分位 —</li>
+    <li>PB <b>1.56</b> · 历史分位 24.1%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  <p class="note">当前 PE 留空：上一季单季盈利小于或等于 0。</p>
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2019-12-31", "quarter": "2019-12-31", "price": 207.2, "pe": 13.33, "pb": 6.34, "incomplete": false}, {"date": "2020-03-31", "quarter": "2020-03-31", "price": 183.4, "pe": 16.77, "pb": 4.66, "incomplete": false}, {"date": "2020-06-30", "quarter": "2020-06-30", "price": 209.6, "pe": 6.74, "pb": 5.27, "incomplete": false}, {"date": "2020-09-30", "quarter": "2020-09-30", "price": 275.6, "pe": null, "pb": 6.38, "incomplete": false}, {"date": "2020-12-31", "quarter": "2020-12-31", "price": 232.6, "pe": 36.58, "pb": 4.88, "incomplete": false}, {"date": "2021-03-31", "quarter": "2021-03-31", "price": 220.0, "pe": 12.64, "pb": 4.25, "incomplete": false}, {"date": "2021-06-30", "quarter": "2021-06-30", "price": 220.0, "pe": 6.58, "pb": 4.19, "incomplete": false}, {"date": "2021-09-30", "quarter": "2021-09-30", "price": 142.2, "pe": null, "pb": 2.61, "incomplete": false}, {"date": "2021-12-31", "quarter": "2021-12-31", "price": 118.9, "pe": 96.09, "pb": 2.17, "incomplete": false}, {"date": "2022-03-31", "quarter": "2022-03-31", "price": 112.1, "pe": 17.69, "pb": 2.0, "incomplete": false}, {"date": "2022-06-30", "quarter": "2022-06-30", "price": 111.9, "pe": 8.34, "pb": 2.17, "incomplete": false}, {"date": "2022-09-30", "quarter": "2022-09-30", "price": 77.95, "pe": null, "pb": 1.54, "incomplete": false}, {"date": "2022-12-30", "quarter": "2022-12-31", "price": 86.25, "pe": null, "pb": 1.79, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 100.4, "pe": 9.92, "pb": 1.89, "incomplete": false}, {"date": "2023-06-30", "quarter": "2023-06-30", "price": 81.2, "pe": 5.41, "pb": 1.58, "incomplete": false}, {"date": "2023-09-29", "quarter": "2023-09-30", "price": 85.6, "pe": null, "pb": 1.56, "incomplete": false}, {"date": "2023-12-29", "quarter": "2023-12-31", "price": 75.6, "pe": 12.56, "pb": 1.34, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 70.25, "pe": 22.31, "pb": 1.27, "incomplete": false}, {"date": "2024-06-28", "quarter": "2024-06-30", "price": 70.5, "pe": 4.07, "pb": 1.31, "incomplete": false}, {"date": "2024-09-30", "quarter": "2024-09-30", "price": 110.0, "pe": null, "pb": 2.02, "incomplete": false}, {"date": "2024-12-31", "quarter": "2024-12-31", "price": 82.4, "pe": 8.28, "pb": 1.51, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 128.0, "pe": 11.4, "pb": 2.21, "incomplete": false}, {"date": "2025-06-30", "quarter": "2025-06-30", "price": 109.8, "pe": 3.63, "pb": 1.85, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 177.0, "pe": null, "pb": 2.77, "incomplete": false}, {"date": "2025-12-31", "quarter": "2025-12-31", "price": 142.8, "pe": 27.42, "pb": 2.21, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 119.0, "pe": 28.9, "pb": 1.81, "incomplete": false}, {"date": "2026-06-30", "quarter": "2026-06-30", "price": 92.85, "pe": 3.54, "pb": 1.37, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 106.6, "pe": null, "pb": 1.64, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 101.6, "pe": null, "pb": 1.56, "incomplete": true}], "pe_now": null, "name": "阿里巴巴－W", "code": "09988"}</script>
+</section>
+
+<section class="stock" id="stock-09999">
+  <h2>3. 网易－S 09999　占净值 10.52%</h2>
+  <ul class="stats">
+    <li>股价 <b>203.80</b> 港元</li>
+    <li>PE <b>19.99</b> · 历史分位 63.0%</li>
+    <li>PB <b>3.34</b> · 历史分位 22.2%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2020-06-30", "quarter": "2020-06-30", "price": 133.6, "pe": 27.73, "pb": 6.29, "incomplete": false}, {"date": "2020-09-30", "quarter": "2020-09-30", "price": 137.9, "pe": 21.6, "pb": 4.57, "incomplete": false}, {"date": "2020-12-31", "quarter": "2020-12-31", "price": 147.6, "pe": 34.08, "pb": 4.79, "incomplete": false}, {"date": "2021-03-31", "quarter": "2021-03-31", "price": 158.2, "pe": 113.23, "pb": 5.38, "incomplete": false}, {"date": "2021-06-30", "quarter": "2021-06-30", "price": 175.9, "pe": 27.51, "pb": 5.7, "incomplete": false}, {"date": "2021-09-30", "quarter": "2021-09-30", "price": 131.5, "pe": 25.93, "pb": 4.26, "incomplete": false}, {"date": "2021-12-31", "quarter": "2021-12-31", "price": 157.5, "pe": 33.82, "pb": 5.14, "incomplete": false}, {"date": "2022-03-31", "quarter": "2022-03-31", "price": 143.8, "pe": 17.02, "pb": 4.07, "incomplete": false}, {"date": "2022-06-30", "quarter": "2022-06-30", "price": 144.1, "pe": 22.99, "pb": 4.14, "incomplete": false}, {"date": "2022-09-30", "quarter": "2022-09-30", "price": 118.5, "pe": 16.57, "pb": 3.48, "incomplete": false}, {"date": "2022-12-30", "quarter": "2022-12-31", "price": 114.5, "pe": 12.48, "pb": 3.17, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 138.0, "pe": 24.94, "pb": 3.77, "incomplete": false}, {"date": "2023-06-30", "quarter": "2023-06-30", "price": 152.6, "pe": 16.75, "pb": 4.17, "incomplete": false}, {"date": "2023-09-29", "quarter": "2023-09-30", "price": 159.5, "pe": 14.29, "pb": 4.12, "incomplete": false}, {"date": "2023-12-29", "quarter": "2023-12-31", "price": 140.6, "pe": 13.07, "pb": 3.42, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 162.8, "pe": 18.03, "pb": 3.82, "incomplete": false}, {"date": "2024-06-28", "quarter": "2024-06-30", "price": 149.1, "pe": 14.29, "pb": 3.43, "incomplete": false}, {"date": "2024-09-30", "quarter": "2024-09-30", "price": 150.5, "pe": 16.13, "pb": 3.33, "incomplete": false}, {"date": "2024-12-31", "quarter": "2024-12-31", "price": 138.4, "pe": 15.73, "pb": 3.11, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 158.0, "pe": 13.31, "pb": 3.36, "incomplete": false}, {"date": "2025-06-30", "quarter": "2025-06-30", "price": 211.0, "pe": 14.8, "pb": 4.24, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 236.8, "pe": 20.0, "pb": 4.6, "incomplete": false}, {"date": "2025-12-31", "quarter": "2025-12-31", "price": 214.6, "pe": 17.91, "pb": 3.95, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 170.5, "pe": 19.22, "pb": 2.99, "incomplete": false}, {"date": "2026-06-30", "quarter": "2026-06-30", "price": 202.4, "pe": 13.16, "pb": 3.41, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 192.6, "pe": 18.94, "pb": 3.16, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 203.8, "pe": 19.99, "pb": 3.34, "incomplete": true}], "pe_now": 19.99, "name": "网易－S", "code": "09999"}</script>
+</section>
+
+<section class="stock" id="stock-03690">
+  <h2>4. 美团－W 03690　占净值 9.64%</h2>
+  <ul class="stats">
+    <li>股价 <b>75.50</b> 港元</li>
+    <li>PE <b>46.12</b> · 历史分位 58.3%</li>
+    <li>PB <b>2.35</b> · 历史分位 17.6%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2018-09-28", "quarter": "2018-09-30", "price": 68.75, "pe": null, "pb": null, "incomplete": false}, {"date": "2019-03-29", "quarter": "2019-03-31", "price": 52.9, "pe": null, "pb": 1.43, "incomplete": false}, {"date": "2019-09-30", "quarter": "2019-09-30", "price": 80.1, "pe": 114.12, "pb": 4.6, "incomplete": false}, {"date": "2020-03-31", "quarter": "2020-03-31", "price": 93.65, "pe": 43.96, "pb": 5.33, "incomplete": false}, {"date": "2020-09-30", "quarter": "2020-09-30", "price": 241.8, "pe": 482.89, "pb": 12.83, "incomplete": false}, {"date": "2021-03-31", "quarter": "2021-03-31", "price": 298.2, "pe": 89.84, "pb": 15.0, "incomplete": false}, {"date": "2021-09-30", "quarter": "2021-09-30", "price": 246.6, "pe": null, "pb": 9.06, "incomplete": false}, {"date": "2022-03-31", "quarter": "2022-03-31", "price": 155.6, "pe": null, "pb": 6.06, "incomplete": false}, {"date": "2022-09-30", "quarter": "2022-09-30", "price": 165.6, "pe": null, "pb": 7.44, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 143.5, "pe": 1449.53, "pb": 5.98, "incomplete": false}, {"date": "2023-09-29", "quarter": "2023-09-30", "price": 114.6, "pe": 34.71, "pb": 4.58, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 96.8, "pe": 23.47, "pb": 3.59, "incomplete": false}, {"date": "2024-09-30", "quarter": "2024-09-30", "price": 172.0, "pe": 14.36, "pb": 5.98, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 155.8, "pe": 11.53, "pb": 5.1, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 104.5, "pe": 396.15, "pb": 3.14, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 82.95, "pe": null, "pb": 2.95, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 71.7, "pe": 43.9, "pb": 2.24, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 75.5, "pe": 46.12, "pb": 2.35, "incomplete": true}], "pe_now": 46.12, "name": "美团－W", "code": "03690"}</script>
+</section>
+
+<section class="stock" id="stock-01810">
+  <h2>5. 小米集团－W 01810　占净值 9.43%</h2>
+  <ul class="stats">
+    <li>股价 <b>30.60</b> 港元</li>
+    <li>PE <b>17.86</b> · 历史分位 28.1%</li>
+    <li>PB <b>2.51</b> · 历史分位 45.5%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2018-09-28", "quarter": "2018-09-30", "price": 15.5, "pe": 2.34, "pb": null, "incomplete": false}, {"date": "2018-12-31", "quarter": "2018-12-31", "price": 12.92, "pe": 15.72, "pb": 2.34, "incomplete": false}, {"date": "2019-03-29", "quarter": "2019-03-31", "price": 11.38, "pe": 11.51, "pb": 2.2, "incomplete": false}, {"date": "2019-06-28", "quarter": "2019-06-30", "price": 10.0, "pe": 16.66, "pb": 2.8, "incomplete": false}, {"date": "2019-09-30", "quarter": "2019-09-30", "price": 8.8, "pe": 24.12, "pb": 2.46, "incomplete": false}, {"date": "2019-12-31", "quarter": "2019-12-31", "price": 10.78, "pe": 22.72, "pb": 2.87, "incomplete": false}, {"date": "2020-03-31", "quarter": "2020-03-31", "price": 10.44, "pe": 23.2, "pb": 2.78, "incomplete": false}, {"date": "2020-06-30", "quarter": "2020-06-30", "price": 12.84, "pe": 32.22, "pb": 3.3, "incomplete": false}, {"date": "2020-09-30", "quarter": "2020-09-30", "price": 20.45, "pe": 23.85, "pb": 4.78, "incomplete": false}, {"date": "2020-12-31", "quarter": "2020-12-31", "price": 33.2, "pe": 34.42, "pb": 7.13, "incomplete": false}, {"date": "2021-03-31", "quarter": "2021-03-31", "price": 25.75, "pe": 14.78, "pb": 4.21, "incomplete": false}, {"date": "2021-06-30", "quarter": "2021-06-30", "price": 27.0, "pe": 18.12, "pb": 4.28, "incomplete": false}, {"date": "2021-09-30", "quarter": "2021-09-30", "price": 21.35, "pe": 13.5, "pb": 3.29, "incomplete": false}, {"date": "2021-12-31", "quarter": "2021-12-31", "price": 18.9, "pe": 122.66, "pb": 2.87, "incomplete": false}, {"date": "2022-03-31", "quarter": "2022-03-31", "price": 13.94, "pe": 28.19, "pb": 2.04, "incomplete": false}, {"date": "2022-06-30", "quarter": "2022-06-30", "price": 13.64, "pe": null, "pb": 2.51, "incomplete": false}, {"date": "2022-09-30", "quarter": "2022-09-30", "price": 8.96, "pe": 38.91, "pb": 1.54, "incomplete": false}, {"date": "2022-12-30", "quarter": "2022-12-31", "price": 10.94, "pe": null, "pb": 1.56, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 12.1, "pe": 20.79, "pb": 1.82, "incomplete": false}, {"date": "2023-06-30", "quarter": "2023-06-30", "price": 10.72, "pe": 14.54, "pb": 1.65, "incomplete": false}, {"date": "2023-09-29", "quarter": "2023-09-30", "price": 12.34, "pe": 18.98, "pb": 1.8, "incomplete": false}, {"date": "2023-12-29", "quarter": "2023-12-31", "price": 15.6, "pe": 18.12, "pb": 2.21, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 14.94, "pe": 17.89, "pb": 2.06, "incomplete": false}, {"date": "2024-06-28", "quarter": "2024-06-30", "price": 16.48, "pe": 22.12, "pb": 2.21, "incomplete": false}, {"date": "2024-09-30", "quarter": "2024-09-30", "price": 22.5, "pe": 24.96, "pb": 2.95, "incomplete": false}, {"date": "2024-12-31", "quarter": "2024-12-31", "price": 34.5, "pe": 37.01, "pb": 4.47, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 49.2, "pe": 31.32, "pb": 5.99, "incomplete": false}, {"date": "2025-06-30", "quarter": "2025-06-30", "price": 59.95, "pe": 31.07, "pb": 5.67, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 54.0, "pe": 26.26, "pb": 4.95, "incomplete": false}, {"date": "2025-12-31", "quarter": "2025-12-31", "price": 39.3, "pe": 18.53, "pb": 3.43, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 31.76, "pe": 27.54, "pb": 2.71, "incomplete": false}, {"date": "2026-06-30", "quarter": "2026-06-30", "price": 21.64, "pe": 26.11, "pb": 1.85, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 25.24, "pe": 14.76, "pb": 2.07, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 30.6, "pe": 17.86, "pb": 2.51, "incomplete": true}], "pe_now": 17.86, "name": "小米集团－W", "code": "01810"}</script>
+</section>
+
+<section class="stock" id="stock-09618">
+  <h2>6. 京东集团－SW 09618　占净值 7.52%</h2>
+  <ul class="stats">
+    <li>股价 <b>112.10</b> 港元</li>
+    <li>PE <b>9.15</b> · 历史分位 26.1%</li>
+    <li>PB <b>1.19</b> · 历史分位 11.1%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2020-06-30", "quarter": "2020-06-30", "price": 231.8, "pe": 143.06, "pb": 7.28, "incomplete": false}, {"date": "2020-09-30", "quarter": "2020-09-30", "price": 293.8, "pe": 11.55, "pb": 5.58, "incomplete": false}, {"date": "2020-12-31", "quarter": "2020-12-31", "price": 342.0, "pe": 28.52, "pb": 5.73, "incomplete": false}, {"date": "2021-03-31", "quarter": "2021-03-31", "price": 322.0, "pe": 8.45, "pb": 4.38, "incomplete": false}, {"date": "2021-06-30", "quarter": "2021-06-30", "price": 305.4, "pe": 54.77, "pb": 4.2, "incomplete": false}, {"date": "2021-09-30", "quarter": "2021-09-30", "price": 283.2, "pe": 230.52, "pb": 3.38, "incomplete": false}, {"date": "2021-12-31", "quarter": "2021-12-31", "price": 274.0, "pe": null, "pb": 3.21, "incomplete": false}, {"date": "2022-03-31", "quarter": "2022-03-31", "price": 234.0, "pe": null, "pb": 2.81, "incomplete": false}, {"date": "2022-06-30", "quarter": "2022-06-30", "price": 252.8, "pe": null, "pb": 3.26, "incomplete": false}, {"date": "2022-09-30", "quarter": "2022-09-30", "price": 198.6, "pe": 31.58, "pb": 2.75, "incomplete": false}, {"date": "2022-12-30", "quarter": "2022-12-31", "price": 220.2, "pe": 25.79, "pb": 2.9, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 172.0, "pe": 38.82, "pb": 2.21, "incomplete": false}, {"date": "2023-06-30", "quarter": "2023-06-30", "price": 132.4, "pe": 15.34, "pb": 1.82, "incomplete": false}, {"date": "2023-09-29", "quarter": "2023-09-30", "price": 115.1, "pe": 12.6, "pb": 1.5, "incomplete": false}, {"date": "2023-12-29", "quarter": "2023-12-31", "price": 112.5, "pe": 10.1, "pb": 1.39, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 107.9, "pe": 22.69, "pb": 1.33, "incomplete": false}, {"date": "2024-06-28", "quarter": "2024-06-30", "price": 103.3, "pe": 10.34, "pb": 1.33, "incomplete": false}, {"date": "2024-09-30", "quarter": "2024-09-30", "price": 167.1, "pe": 9.15, "pb": 2.1, "incomplete": false}, {"date": "2024-12-31", "quarter": "2024-12-31", "price": 136.0, "pe": 8.1, "pb": 1.66, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 160.8, "pe": 11.26, "pb": 1.85, "incomplete": false}, {"date": "2025-06-30", "quarter": "2025-06-30", "price": 127.9, "pe": 7.76, "pb": 1.44, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 138.5, "pe": 14.68, "pb": 1.6, "incomplete": false}, {"date": "2025-12-31", "quarter": "2025-12-31", "price": 111.6, "pe": 13.66, "pb": 1.24, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 113.2, "pe": null, "pb": 1.27, "incomplete": false}, {"date": "2026-06-30", "quarter": "2026-06-30", "price": 99.25, "pe": 11.59, "pb": 1.09, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 104.3, "pe": 8.53, "pb": 1.11, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 112.1, "pe": 9.15, "pb": 1.19, "incomplete": true}], "pe_now": 9.15, "name": "京东集团－SW", "code": "09618"}</script>
+</section>
+
+<section class="stock" id="stock-09888">
+  <h2>7. 百度集团－SW 09888　占净值 6.24%</h2>
+  <ul class="stats">
+    <li>股价 <b>79.70</b> 港元</li>
+    <li>PE <b>21.98</b> · 历史分位 91.7%</li>
+    <li>PB <b>0.75</b> · 历史分位 6.7%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2021-03-31", "quarter": "2021-03-31", "price": 213.0, "pe": 5.51, "pb": 2.7, "incomplete": false}, {"date": "2021-06-30", "quarter": "2021-06-30", "price": 199.4, "pe": 4.36, "pb": 1.95, "incomplete": false}, {"date": "2022-03-31", "quarter": "2022-03-31", "price": 141.5, "pe": null, "pb": 1.55, "incomplete": false}, {"date": "2022-06-30", "quarter": "2022-06-30", "price": 148.5, "pe": null, "pb": 1.47, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 148.7, "pe": 11.65, "pb": 1.76, "incomplete": false}, {"date": "2023-06-30", "quarter": "2023-06-30", "price": 132.8, "pe": 15.15, "pb": 1.53, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 102.7, "pe": 4.68, "pb": 1.11, "incomplete": false}, {"date": "2024-06-28", "quarter": "2024-06-30", "price": 85.25, "pe": 10.4, "pb": 0.91, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 89.95, "pe": 3.24, "pb": 0.9, "incomplete": false}, {"date": "2025-06-30", "quarter": "2025-06-30", "price": 83.45, "pe": 6.97, "pb": 0.8, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 133.2, "pe": 11.67, "pb": 1.24, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 105.7, "pe": null, "pb": 1.15, "incomplete": false}, {"date": "2026-06-30", "quarter": "2026-06-30", "price": 109.6, "pe": 20.34, "pb": 1.04, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 85.8, "pe": 23.71, "pb": 0.81, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 79.7, "pe": 21.98, "pb": 0.75, "incomplete": true}], "pe_now": 21.98, "name": "百度集团－SW", "code": "09888"}</script>
+</section>
+
+<section class="stock" id="stock-01024">
+  <h2>8. 快手－W 01024　占净值 4.36%</h2>
+  <ul class="stats">
+    <li>股价 <b>28.98</b> 港元</li>
+    <li>PE <b>8.52</b> · 历史分位 14.3%</li>
+    <li>PB <b>1.30</b> · 历史分位 4.3%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2021-03-31", "quarter": "2021-03-31", "price": 270.0, "pe": null, "pb": null, "incomplete": false}, {"date": "2021-06-30", "quarter": "2021-06-30", "price": 194.8, "pe": null, "pb": 7.65, "incomplete": false}, {"date": "2021-09-30", "quarter": "2021-09-30", "price": 82.7, "pe": null, "pb": 4.39, "incomplete": false}, {"date": "2021-12-31", "quarter": "2021-12-31", "price": 72.05, "pe": null, "pb": 4.36, "incomplete": false}, {"date": "2022-03-31", "quarter": "2022-03-31", "price": 74.2, "pe": null, "pb": 5.12, "incomplete": false}, {"date": "2022-06-30", "quarter": "2022-06-30", "price": 87.4, "pe": null, "pb": 7.8, "incomplete": false}, {"date": "2022-09-30", "quarter": "2022-09-30", "price": 50.95, "pe": null, "pb": 4.83, "incomplete": false}, {"date": "2022-12-30", "quarter": "2022-12-31", "price": 71.05, "pe": null, "pb": 6.63, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 60.45, "pe": null, "pb": 5.65, "incomplete": false}, {"date": "2023-06-30", "quarter": "2023-06-30", "price": 53.55, "pe": null, "pb": 5.42, "incomplete": false}, {"date": "2023-09-29", "quarter": "2023-09-30", "price": 62.85, "pe": 42.24, "pb": 5.8, "incomplete": false}, {"date": "2023-12-29", "quarter": "2023-12-31", "price": 52.95, "pe": 23.59, "pb": 4.49, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 49.05, "pe": 13.32, "pb": 3.92, "incomplete": false}, {"date": "2024-06-28", "quarter": "2024-06-30", "price": 46.15, "pe": 11.08, "pb": 3.49, "incomplete": false}, {"date": "2024-09-30", "quarter": "2024-09-30", "price": 54.85, "pe": 13.46, "pb": 3.8, "incomplete": false}, {"date": "2024-12-31", "quarter": "2024-12-31", "price": 41.35, "pe": 12.61, "pb": 2.83, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 54.35, "pe": 13.61, "pb": 3.48, "incomplete": false}, {"date": "2025-06-30", "quarter": "2025-06-30", "price": 63.3, "pe": 15.52, "pb": 3.76, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 84.6, "pe": 16.71, "pb": 4.65, "incomplete": false}, {"date": "2025-12-31", "quarter": "2025-12-31", "price": 63.95, "pe": 13.76, "pb": 3.31, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 45.12, "pe": 8.15, "pb": 2.14, "incomplete": false}, {"date": "2026-06-30", "quarter": "2026-06-30", "price": 41.6, "pe": 13.48, "pb": 1.9, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 30.94, "pe": 9.12, "pb": 1.4, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 28.98, "pe": 8.52, "pb": 1.3, "incomplete": true}], "pe_now": 8.52, "name": "快手－W", "code": "01024"}</script>
+</section>
+
+<section class="stock" id="stock-09660">
+  <h2>9. 地平线机器人-W 09660　占净值 2.27%</h2>
+  <ul class="stats">
+    <li>股价 <b>3.95</b> 港元</li>
+    <li>PE <b>3.13</b> · 历史分位 66.7%</li>
+    <li>PB <b>2.89</b> · 历史分位 40.0%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  <p class="note">有效 PE 点很少，历史分位参考意义有限。</p>
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2025-03-31", "quarter": "2025-03-31", "price": 6.67, "pe": 0.95, "pb": 2.38, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 9.58, "pe": null, "pb": 9.54, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 6.62, "pe": null, "pb": 5.98, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 4.18, "pe": 3.32, "pb": 3.07, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 3.95, "pe": 3.13, "pb": 2.89, "incomplete": true}], "pe_now": 3.13, "name": "地平线机器人-W", "code": "09660"}</script>
+</section>
+
+<section class="stock" id="stock-00020">
+  <h2>10. 商汤－W 00020　占净值 2.05%</h2>
+  <ul class="stats">
+    <li>股价 <b>1.17</b> 港元</li>
+    <li>PE <b>25.05</b> · 历史分位 50.0%</li>
+    <li>PB <b>2.02</b> · 历史分位 54.5%</li>
+    <li>报告期 2026-06-30</li>
+  </ul>
+  <p class="note">有效 PE 点很少，历史分位参考意义有限。</p>
+  <p class="axis">红线是 PE，蓝线是 PB，绿线是季度末股价。三条线各用自己的纵轴，按当前选中区间各自拉满，不共用刻度。纵轴数字隐藏，鼠标移到点上看真值。缺值的季度断开。红色虚线是当前 PE。</p>
+  <ul class="legend">
+    <li><i class="pe"></i>PE</li>
+    <li><i class="pb"></i>PB</li>
+    <li><i class="price"></i>股价</li>
+    <li><i class="now"></i>当前 PE</li>
+  </ul>
+  <div class="chart"><canvas class="main"></canvas></div>
+  <div class="brush"><canvas class="brush-canvas"></canvas></div>
+  <p class="axis range"></p>
+  <div class="tip">鼠标移到图上看 PE、PB 和股价。下方色带拖动选区，拖两端改范围。</div>
+  <script type="application/json" class="pack">{"points": [{"date": "2022-03-31", "quarter": "2022-03-31", "price": 6.15, "pe": null, "pb": 1.54, "incomplete": false}, {"date": "2022-09-30", "quarter": "2022-09-30", "price": 1.6, "pe": null, "pb": 1.47, "incomplete": false}, {"date": "2023-03-31", "quarter": "2023-03-31", "price": 2.66, "pe": null, "pb": 2.56, "incomplete": false}, {"date": "2023-09-29", "quarter": "2023-09-30", "price": 1.43, "pe": null, "pb": 1.54, "incomplete": false}, {"date": "2024-03-28", "quarter": "2024-03-31", "price": 0.71, "pe": null, "pb": 0.9, "incomplete": false}, {"date": "2024-09-30", "quarter": "2024-09-30", "price": 1.72, "pe": null, "pb": 2.1, "incomplete": false}, {"date": "2025-03-31", "quarter": "2025-03-31", "price": 1.49, "pe": null, "pb": 1.93, "incomplete": false}, {"date": "2025-09-30", "quarter": "2025-09-30", "price": 2.89, "pe": null, "pb": 4.38, "incomplete": false}, {"date": "2026-03-31", "quarter": "2026-03-31", "price": 1.84, "pe": null, "pb": 2.15, "incomplete": false}, {"date": "2026-09-30", "quarter": "2026-09-30", "price": 1.23, "pe": 26.4, "pb": 2.13, "incomplete": false}, {"date": "2026-11-10", "quarter": "2026-12-31", "price": 1.17, "pe": 25.05, "pb": 2.02, "incomplete": true}], "pe_now": 25.05, "name": "商汤－W", "code": "00020"}</script>
+</section>
+
+  <footer>单季盈利小于或等于 0 时，该季 PE 留空。生成数据仅供参考，不构成投资建议。</footer>
+</main>
+<script>
+function finite(values) {
+  return values.filter((v) => v != null && Number.isFinite(v));
+}
+function padded(values, pad) {
+  const nums = finite(values);
+  if (!nums.length) return null;
+  let lo = Math.min(...nums);
+  let hi = Math.max(...nums);
+  if (lo === hi) {
+    const delta = Math.abs(lo) * 0.1 || 1;
+    return {lo: lo - delta, hi: hi + delta};
+  }
+  const span = hi - lo;
+  return {lo: lo - span * pad, hi: hi + span * pad};
+}
+function bindChart(section) {
+  const pack = JSON.parse(section.querySelector(".pack").textContent);
+  const all = pack.points || [];
+  const peNow = pack.pe_now;
+  const state = {range: {start: 0, end: Math.max(0, all.length - 1)}};
+  const main = section.querySelector("canvas.main");
+  const brush = section.querySelector("canvas.brush-canvas");
+  const tip = section.querySelector(".tip");
+  const label = section.querySelector(".range");
+  const slice = () => all.slice(state.range.start, state.range.end + 1);
+
+  function drawMain(canvas, points) {
+    const dpr = window.devicePixelRatio || 1;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    canvas.width = Math.max(1, Math.floor(width * dpr));
+    canvas.height = Math.max(1, Math.floor(height * dpr));
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const pad = {l: 28, r: 28, t: 18, b: 34};
+    const plotW = width - pad.l - pad.r;
+    const plotH = height - pad.t - pad.b;
+    const n = points.length;
+    const peRange = padded(points.map((p) => p.pe), 0.08);
+    const pbRange = padded(points.map((p) => p.pb), 0.08);
+    const priceRange = padded(points.map((p) => p.price), 0.08);
+    if (peNow != null && peRange) {
+      peRange.lo = Math.min(peRange.lo, peNow);
+      peRange.hi = Math.max(peRange.hi, peNow);
+    }
+    const x = (i) => pad.l + (n < 2 ? plotW / 2 : (i / (n - 1)) * plotW);
+    const yOf = (range, v) => pad.t + (range.hi - v) / (range.hi - range.lo || 1) * plotH;
+    ctx.clearRect(0, 0, width, height);
+    ctx.strokeStyle = "#ececec";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = pad.t + (plotH * i) / 4;
+      ctx.beginPath();
+      ctx.moveTo(pad.l, y);
+      ctx.lineTo(width - pad.r, y);
+      ctx.stroke();
+    }
+    if (peNow != null && peRange) {
+      const y = yOf(peRange, peNow);
+      ctx.setLineDash([6, 5]);
+      ctx.strokeStyle = "#c0392b";
+      ctx.beginPath();
+      ctx.moveTo(pad.l, y);
+      ctx.lineTo(width - pad.r, y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#c0392b";
+      ctx.font = "12px Microsoft YaHei, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText("当前 PE " + peNow.toFixed(1), pad.l + 4, Math.max(pad.t + 12, y - 6));
+    }
+    const series = [
+      {key: "pe", color: "#c0392b", range: peRange},
+      {key: "pb", color: "#1d4e89", range: pbRange},
+      {key: "price", color: "#1c7c4a", range: priceRange},
+    ];
+    series.forEach((item) => {
+      if (!item.range) return;
+      ctx.strokeStyle = item.color;
+      ctx.fillStyle = item.color;
+      ctx.lineWidth = 2;
+      let started = false;
+      ctx.beginPath();
+      points.forEach((p, i) => {
+        const v = p[item.key];
+        if (v == null || !Number.isFinite(v)) { started = false; return; }
+        const cx = x(i);
+        const cy = yOf(item.range, v);
+        if (!started) { ctx.moveTo(cx, cy); started = true; }
+        else ctx.lineTo(cx, cy);
+      });
+      ctx.stroke();
+      points.forEach((p, i) => {
+        const v = p[item.key];
+        if (v == null || !Number.isFinite(v)) return;
+        ctx.beginPath();
+        ctx.arc(x(i), yOf(item.range, v), 3.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    });
+    ctx.fillStyle = "#666";
+    ctx.font = "12px Microsoft YaHei, sans-serif";
+    if (points.length) {
+      ctx.textAlign = "left";
+      ctx.fillText(points[0].date.slice(0, 7), pad.l, height - 8);
+      ctx.textAlign = "right";
+      ctx.fillText(points[points.length - 1].date.slice(0, 7), width - pad.r, height - 8);
+    }
+    canvas._geom = {n, x, pad, plotW, plotH};
+  }
+
+  function drawBrush(canvas, points, range) {
+    const dpr = window.devicePixelRatio || 1;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    canvas.width = Math.max(1, Math.floor(width * dpr));
+    canvas.height = Math.max(1, Math.floor(height * dpr));
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const pad = {l: 28, r: 28, t: 8, b: 18};
+    const plotW = width - pad.l - pad.r;
+    const plotH = height - pad.t - pad.b;
+    const n = points.length;
+    const peRange = padded(points.map((p) => p.pe), 0.08) || {lo: 0, hi: 1};
+    const x = (i) => pad.l + (n < 2 ? plotW / 2 : (i / (n - 1)) * plotW);
+    const y = (v) => pad.t + (peRange.hi - v) / (peRange.hi - peRange.lo || 1) * plotH;
+    ctx.clearRect(0, 0, width, height);
+    ctx.strokeStyle = "#c0392b";
+    ctx.lineWidth = 1.2;
+    let started = false;
+    ctx.beginPath();
+    points.forEach((p, i) => {
+      if (p.pe == null || !Number.isFinite(p.pe)) { started = false; return; }
+      const cx = x(i);
+      const cy = y(p.pe);
+      if (!started) { ctx.moveTo(cx, cy); started = true; }
+      else ctx.lineTo(cx, cy);
+    });
+    ctx.stroke();
+    const x0 = x(range.start);
+    const x1 = x(range.end);
+    ctx.fillStyle = "rgba(29, 78, 137, 0.16)";
+    ctx.fillRect(x0, pad.t, Math.max(2, x1 - x0), plotH);
+    ctx.strokeStyle = "#1d4e89";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x0, pad.t, Math.max(2, x1 - x0), plotH);
+    ctx.fillStyle = "#1d4e89";
+    ctx.fillRect(x0 - 2, pad.t, 4, plotH);
+    ctx.fillRect(x1 - 2, pad.t, 4, plotH);
+    ctx.font = "11px Microsoft YaHei, sans-serif";
+    ctx.fillStyle = "#666";
+    if (points.length) {
+      ctx.textAlign = "left";
+      ctx.fillText(points[0].date.slice(0, 7), pad.l, height - 4);
+      ctx.textAlign = "right";
+      ctx.fillText(points[points.length - 1].date.slice(0, 7), width - pad.r, height - 4);
+    }
+    canvas._geom = {n, x, pad};
+  }
+
+  function paint() {
+    const points = slice();
+    drawMain(main, points);
+    drawBrush(brush, all, state.range);
+    if (points.length) {
+      label.textContent = "显示 " + points[0].date + " 至 " + points[points.length - 1].date + "，共 " + points.length + " 个季度。主图按选中区间重新定三条纵轴。";
+    } else {
+      label.textContent = "没有可画的季度点。";
+    }
+  }
+
+  main.addEventListener("mousemove", (event) => {
+    const geom = main._geom;
+    const points = slice();
+    if (!geom || !points.length) return;
+    const px = event.clientX - main.getBoundingClientRect().left;
+    let nearest = 0, best = Infinity;
+    points.forEach((_, i) => {
+      const dist = Math.abs(geom.x(i) - px);
+      if (dist < best) { best = dist; nearest = i; }
+    });
+    const p = points[nearest];
+    const pe = p.pe == null ? "—" : p.pe.toFixed(2);
+    const pb = p.pb == null ? "—" : p.pb.toFixed(2);
+    const price = p.price == null ? "—" : p.price.toFixed(2);
+    const flag = p.incomplete ? " · 当季未结束，用最新收盘" : "";
+    tip.textContent = p.date + "  PE " + pe + "  PB " + pb + "  股价 " + price + flag;
+  });
+
+  let drag = null;
+  const indexAt = (event) => {
+    const geom = brush._geom;
+    const px = event.clientX - brush.getBoundingClientRect().left;
+    let nearest = 0, best = Infinity;
+    for (let i = 0; i < geom.n; i++) {
+      const dist = Math.abs(geom.x(i) - px);
+      if (dist < best) { best = dist; nearest = i; }
+    }
+    return nearest;
+  };
+  const clampRange = (start, end) => {
+    const span = Math.max(4, end - start);
+    let left = start, right = start + span;
+    if (right > all.length - 1) { right = all.length - 1; left = Math.max(0, right - span); }
+    if (left < 0) { right -= left; left = 0; }
+    state.range = {start: left, end: right};
+  };
+  brush.addEventListener("pointerdown", (event) => {
+    if (!brush._geom || !all.length) return;
+    const px = event.clientX - brush.getBoundingClientRect().left;
+    const x0 = brush._geom.x(state.range.start);
+    const x1 = brush._geom.x(state.range.end);
+    const i = indexAt(event);
+    let mode = "move";
+    if (Math.abs(px - x0) <= 8) mode = "start";
+    else if (Math.abs(px - x1) <= 8) mode = "end";
+    else if (px < x0 || px > x1) mode = "new";
+    drag = {mode, anchor: i, start: state.range.start, end: state.range.end};
+    brush.setPointerCapture(event.pointerId);
+  });
+  brush.addEventListener("pointermove", (event) => {
+    if (!drag) return;
+    const i = indexAt(event);
+    if (drag.mode === "start") state.range.start = Math.max(0, Math.min(i, state.range.end - 4));
+    else if (drag.mode === "end") state.range.end = Math.min(all.length - 1, Math.max(i, state.range.start + 4));
+    else if (drag.mode === "move") {
+      const span = drag.end - drag.start;
+      clampRange(drag.start + (i - drag.anchor), drag.start + (i - drag.anchor) + span);
+    } else clampRange(Math.min(drag.anchor, i), Math.max(drag.anchor, i));
+    paint();
+  });
+  const stop = () => { drag = null; };
+  brush.addEventListener("pointerup", stop);
+  brush.addEventListener("pointercancel", stop);
+  paint();
+  window.addEventListener("resize", paint);
+}
+
+document.querySelectorAll("section.stock").forEach(bindChart);
+
+(function bindNav() {
+  const nav = document.getElementById("toc");
+  const links = [...nav.querySelectorAll("a[data-target]")];
+  const sections = links.map((a) => document.getElementById(a.dataset.target)).filter(Boolean);
+  links.forEach((a) => {
+    a.addEventListener("click", (event) => {
+      event.preventDefault();
+      const target = document.getElementById(a.dataset.target);
+      if (target) target.scrollIntoView({behavior: "smooth", block: "start"});
+    });
+  });
+  const sync = () => {
+    let current = sections[0];
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= 88) current = section;
+    }
+    links.forEach((a) => a.classList.toggle("active", current && a.dataset.target === current.id));
+  };
+  window.addEventListener("scroll", sync, {passive: true});
+  sync();
+})();
+</script>
+</body>
+</html>
