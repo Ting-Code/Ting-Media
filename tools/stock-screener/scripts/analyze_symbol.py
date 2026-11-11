@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""单股估值：PE、PB、股息率、历史分位。不生成录屏 HTML。
+"""单股估值：PE、PB、股息率、历史分位。写出普通横版网页，不生成录屏 HTML。
 
 用法：
   python scripts/analyze_symbol.py 600519
@@ -25,7 +25,9 @@ from analysis import (  # noqa: E402
     current_snapshot,
     percentile,
 )
-from codes import resolve_code  # noqa: E402
+from cache_io import repo_root  # noqa: E402
+from codes import hk_code5, is_hk, resolve_code  # noqa: E402
+from valuation_page import write_valuation_page  # noqa: E402
 from fundamentals import fetch_dividends  # noqa: E402
 from market import fetch_daily  # noqa: E402
 
@@ -41,8 +43,9 @@ def main() -> int:
         print("用法: python scripts/analyze_symbol.py <名称或代码>", file=sys.stderr)
         return 2
     code, name = resolve_code(sys.argv[1])
+    start = "2013-01-01" if is_hk(code) else "2015-01-01"
     panel = build_fundamental_panel(code)
-    daily = fetch_daily(code, start_date="2015-01-01", adjust="bfq")
+    daily = fetch_daily(code, start_date=start, adjust="bfq")
     dividends = fetch_dividends(code)
     series = build_valuation_series(panel, daily, dividends)
     snap = current_snapshot(panel, daily, dividends)
@@ -63,10 +66,22 @@ def main() -> int:
             1,
         ),
         "report_date": None if report is None else str(report)[:10],
-        "price_adjust": "bfq",
-        "dividend_source": "eastmoney_report_period",
+        "price_adjust": "unadjusted" if is_hk(code) else "bfq",
+        "dividend_source": None if is_hk(code) else "eastmoney_report_period",
+        "market": snap.get("market") or ("hk" if is_hk(code) else "a"),
+        "currency_price": "HKD" if is_hk(code) else "CNY",
+        "currency_financials": "CNY",
+        "fx": "HKDCNYC" if is_hk(code) else None,
+        "fx_cny_per_hkd": _num(snap.get("fx_cny_per_hkd"), 4) if is_hk(code) else None,
+        "price_cny": _num(snap.get("price_cny"), 2) if is_hk(code) else None,
     }
+    day = out["asof"] or "na"
+    folder_code = hk_code5(code) if is_hk(code) else code
+    page_code = folder_code
+    folder = repo_root() / "cache" / f"pe_{folder_code}_{day}"
+    page = write_valuation_page(name, page_code, series, out, folder)
     print(json.dumps(out, ensure_ascii=False, indent=2))
+    print(page, file=sys.stderr)
     return 0
 
 

@@ -35,7 +35,7 @@ cache/<分析名>/                  # 分析/选股结果（仓库根）；财�
 
 ## 工具各自独立
 
-`stock-data`、`stock-screener`、`platform-trends`、`screen-pack`、`interactive-pack` 分开调用。分析、选股、热度默认只给数据。没必要不要调用 `screen-pack` 出 HTML；只有用户明确说「录屏 / 出一期 / 做节目」时才生成。
+`stock-data`、`stock-screener`、`platform-trends`、`screen-pack`、`interactive-pack` 分开调用。热度默认只给数据；选股名单默认只给数据。单股 PE/基本面走 `analyze_symbol.py` 时**默认写出横版分析页** `cache/pe_<代码>_<行情日>/index.html`（主图 + 下方色带，画法见 `tools/stock-screener/docs/分析口径.md`），不是录屏 HTML。没必要不要调用 `screen-pack` 出竖屏 HTML；只有用户明确说「录屏 / 出一期 / 做节目」时才生成。
 
 ## 工作流
 
@@ -77,7 +77,7 @@ python scripts/analyze_trends.py
 
 ### 4）选股与估值分析
 
-技术面筛选 + 基本面面板/PE。取数只走 `stock-data` 的能力表（`tools/stock-data/AGENTS.md`）。分析只走 `tools/stock-screener/AGENTS.md`：单股用 `scripts/analyze_symbol.py`，全 A 股息率用 `scripts/div_yield.py`，头部 ETF 持有规模占比用 `scripts/etf_market_share.py`，全市场筛选用 `scripts/run_screener.py --config`。不调用 `screen-pack`。
+技术面筛选 + 基本面面板/PE。取数只走 `stock-data` 的能力表（`tools/stock-data/AGENTS.md`）。分析只走 `tools/stock-screener/AGENTS.md`：单股用 `scripts/analyze_symbol.py`（默认写出横版 PE 页，恒生电子那种；不是录屏），全 A 股息率用 `scripts/div_yield.py`，头部 ETF 持有规模占比用 `scripts/etf_market_share.py`，全市场筛选用 `scripts/run_screener.py --config`。不调用 `screen-pack`。
 
 ```bash
 cd tools/stock-screener
