@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 # Common aliases for demos / AI prompts. Prefer 6-digit code when unsure.
+# 港股用 00700.HK，不要把 5 位代码左侧补成 6 位 A 股。
 NAME_TO_CODE = {
     "宁德时代": "300750",
     "catl": "300750",
@@ -16,10 +17,34 @@ NAME_TO_CODE = {
     "隆基绿能": "601012",
     "中芯国际": "688981",
     "药明康德": "603259",
+    "腾讯控股": "00700.HK",
+    "腾讯": "00700.HK",
 }
 
 
+def is_hk(code: str) -> bool:
+    """是否为已规范化的港股代码（00700.HK）或带 .HK 后缀的输入。"""
+    s = str(code).strip().upper()
+    return s.endswith(".HK")
+
+
+def hk_code5(code: str) -> str:
+    s = str(code).strip().upper()
+    if s.endswith(".HK"):
+        s = s[:-3]
+    digits = "".join(ch for ch in s if ch.isdigit())
+    if not digits or len(digits) > 5:
+        raise ValueError(f"无效港股代码: {code}")
+    return digits.zfill(5)
+
+
+def hk_symbol(code: str) -> str:
+    return f"{hk_code5(code)}.HK"
+
+
 def to_exchange(code: str) -> str:
+    if is_hk(code):
+        return f"hk.{hk_code5(code)}"
     digits = "".join(ch for ch in code if ch.isdigit())
     if len(digits) != 6:
         raise ValueError(f"无效代码: {code}")
@@ -60,6 +85,30 @@ def _lookup_akshare_name(name: str) -> tuple[str, str] | None:
     return code, disp
 
 
+def _lookup_local_name(name: str) -> tuple[str, str] | None:
+    """通达信本地简称。只在唯一命中时返回。"""
+    try:
+        names = load_security_names()
+    except Exception:
+        return None
+    exact = [(code, label) for code, label in names.items() if label == name]
+    if len(exact) == 1:
+        return exact[0]
+    return None
+
+
+def _lookup_hk_local_name(name: str) -> tuple[str, str] | None:
+    try:
+        from tdx_day import load_hk_security_names
+        names = load_hk_security_names()
+    except Exception:
+        return None
+    exact = [(code, label) for code, label in names.items() if label == name]
+    if len(exact) == 1:
+        return exact[0]
+    return None
+
+
 def load_security_names() -> dict[str, str]:
     """通达信本地证券简称，code -> name。"""
     from tdx_day import load_security_names as _load
@@ -67,21 +116,43 @@ def load_security_names() -> dict[str, str]:
     return _load()
 
 
+def _looks_like_bare_hk_code(query: str, digits: str) -> bool:
+    compact = query.strip().upper().replace(" ", "")
+    return compact == digits and len(digits) == 5
+
+
 def resolve_code(query: str) -> tuple[str, str]:
-    """Return (6-digit code, display name)."""
+    """Return (code, display name). A 股为 6 位数字，港股为 00700.HK。"""
     q = query.strip()
     if not q:
         raise ValueError("名称或代码不能为空")
 
     key = q.lower()
     if key in NAME_TO_CODE:
-        return NAME_TO_CODE[key], q
+        code = NAME_TO_CODE[key]
+        return code, q
     if q in NAME_TO_CODE:
-        return NAME_TO_CODE[q], q
+        code = NAME_TO_CODE[q]
+        return code, q
+
+    if q.upper().endswith(".HK"):
+        symbol = hk_symbol(q)
+        return symbol, _hk_display_name(symbol, q)
 
     digits = "".join(ch for ch in q if ch.isdigit())
-    if len(digits) == 6 and digits.isdigit():
+    if len(digits) == 6 and digits.isdigit() and not q.upper().endswith(".HK"):
         return digits, q
+    if _looks_like_bare_hk_code(q, digits):
+        symbol = hk_symbol(digits)
+        return symbol, _hk_display_name(symbol, q)
+
+    found = _lookup_local_name(q)
+    if found:
+        return found
+
+    found = _lookup_hk_local_name(q)
+    if found:
+        return found
 
     found = _lookup_akshare_name(q)
     if found:
@@ -89,6 +160,17 @@ def resolve_code(query: str) -> tuple[str, str]:
 
     raise ValueError(
         f"无法识别: {query}。"
-        "请改用 6 位代码（如 300750），或在 src/codes.py 的 NAME_TO_CODE 中补充名称映射。"
+        "请改用 6 位 A 股代码（如 300750），或港股 00700 / 00700.HK，"
+        "或在 src/codes.py 的 NAME_TO_CODE 中补充名称映射。"
     )
 
+
+def _hk_display_name(symbol: str, fallback: str) -> str:
+    try:
+        from tdx_day import load_hk_security_names
+        name = load_hk_security_names().get(symbol)
+        if name:
+            return name
+    except Exception:
+        pass
+    return fallback

@@ -34,8 +34,23 @@
 - 季报、定期报告期现金分红：东财。缓存 `tools/stock-data/cache/`（`em_profit` / `em_balance` / `em_dividend`）。
 - 环境变量（可选）：`TDX_DIR` / `TDX_VIPDOC` / `TDX_GBBQ` / `STOCK_DATA_CACHE`
 
+## 东财财报缓存（硬规则）
+
+- 利润表 / 资产负债表 / 定期报告期分红：每次拉到后写入 `cache/` 对应 parquet（按股一份全字段）。
+- **有缓存先读缓存**；不按 24 小时或其它时间自动过期，不重复请求东财。
+- 以后要收入、同比、费用、EPS 等字段，先看本地缓存列，不要再调接口。
+- 只有调用方显式 `refresh=True` 才重新请求并覆盖缓存。
+
 录屏只有用户明确要求做节目时才走 `tools/screen-pack`。
 
 ## 合规
 
 生成数据仅供参考；不授权商用；请勿滥用。
+
+## 港股
+
+- 代码：`00700` / `00700.HK` / 名称（如腾讯控股）。`resolve_code` 返回 `00700.HK`，不要把 5 位代码补成 6 位 A 股。
+- 日线：`fetch_daily(code, adjust="bfq")`。本机通达信 `vipdoc/ds/lday/31#00700.day`，浮点价格，不复权。港股未收盘前会去掉当天可能未完成的一根。
+- 财报：`fetch_quarterly_profit` / `fetch_quarterly_balance` 自动走东财港股报告期（`em_hk_profit` / `em_hk_balance`），有缓存先读。盈利用股东应占溢利，不是 A 股扣非。
+- 汇率：`fetch_fx_hkdcnyc()`，港币人民币中间价，缓存 `em_fx/HKDCNYC.parquet`。
+- 港股暂不提供 A 股那套东财分红表，`fetch_dividends` 返回空表。

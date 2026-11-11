@@ -11,6 +11,29 @@ import pandas as pd
 from paths import stock_data_cache
 
 
+def cache_stem(code: str) -> str:
+    """A 股 6 位，港股 5 位（00700.HK -> 00700）。用于缓存文件名。"""
+    raw = str(code).strip().upper()
+    if raw.endswith('.HK'):
+        digits = ''.join(ch for ch in raw if ch.isdigit())
+        if not digits or len(digits) > 5:
+            raise ValueError(f'无效港股代码: {code}')
+        return digits.zfill(5)
+    return code6(code)
+
+
+def hk_profit_code_path(code: str) -> Path:
+    return _ensure(stock_data_cache() / 'em_hk_profit' / 'by_code') / f'{cache_stem(code)}.parquet'
+
+
+def hk_balance_code_path(code: str) -> Path:
+    return _ensure(stock_data_cache() / 'em_hk_balance' / 'by_code') / f'{cache_stem(code)}.parquet'
+
+
+def fx_path(symbol: str = 'HKDCNYC') -> Path:
+    return _ensure(stock_data_cache() / 'em_fx') / f'{symbol}.parquet'
+
+
 def code6(code: str) -> str:
     digits = "".join(ch for ch in str(code) if ch.isdigit())
     if len(digits) < 6:

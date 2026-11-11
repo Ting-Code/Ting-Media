@@ -7,12 +7,15 @@ from pathlib import Path
 
 import pandas as pd
 
-from codes import to_exchange
+from codes import hk_code5, is_hk, to_exchange
 from paths import tdx_root, tdx_vipdoc
 
 RECORD = struct.Struct("<IIIIIfII")
 REC_SIZE = 32
 MARKET_DIRS = ("sh", "sz", "bj")
+HK_DAY_RECORD = struct.Struct("<IfffffII")
+HK_MARKET_DIR = "ds"
+HK_FILE_PREFIX = "31#"
 
 
 def _market_code(code: str) -> tuple[str, str]:
@@ -22,6 +25,8 @@ def _market_code(code: str) -> tuple[str, str]:
 
 
 def day_file_path(code: str, vipdoc: Path | None = None) -> Path:
+    if is_hk(code):
+        return hk_day_file_path(code, vipdoc=vipdoc)
     root = vipdoc or tdx_vipdoc()
     if root is None:
         raise FileNotFoundError("未找到通达信 vipdoc，请设置 TDX_DIR / TDX_VIPDOC")
@@ -31,6 +36,105 @@ def day_file_path(code: str, vipdoc: Path | None = None) -> Path:
         raise FileNotFoundError(f"无日线文件: {path}")
     return path
 
+
+
+
+def hk_day_file_path(code: str, vipdoc: Path | None = None) -> Path:
+    root = vipdoc or tdx_vipdoc()
+    if root is None:
+        raise FileNotFoundError("未找到通达信 vipdoc，请设置 TDX_DIR / TDX_VIPDOC")
+    code5 = hk_code5(code)
+    path = root / HK_MARKET_DIR / "lday" / f"{HK_FILE_PREFIX}{code5}.day"
+    if not path.is_file():
+        raise FileNotFoundError(f"无港股日线文件: {path}")
+    return path
+
+
+def _rows_from_raw_hk(raw: bytes) -> pd.DataFrame:
+    if len(raw) < REC_SIZE or len(raw) % REC_SIZE:
+        return pd.DataFrame(columns=["date", "open", "high", "low", "close", "volume", "amount"])
+    rows = []
+    for date_i, o, h, l, c, amount, volume, _ in HK_DAY_RECORD.iter_unpack(raw):
+        rows.append((date_i, float(o), float(h), float(l), float(c), float(volume), float(amount)))
+    df = pd.DataFrame(rows, columns=["date_i", "open", "high", "low", "close", "volume", "amount"])
+    df["date"] = pd.to_datetime(df["date_i"].astype(str), format="%Y%m%d", errors="coerce")
+    return df.dropna(subset=["date", "close"]).drop(columns=["date_i"]).reset_index(drop=True)
+
+
+def read_hk_day_file(path: Path) -> pd.DataFrame:
+    return _rows_from_raw_hk(Path(path).read_bytes()).sort_values("date").reset_index(drop=True)
+
+
+def load_hk_security_names() -> dict[str, str]:
+    """港股代码 -> 简称。优先扫 ds_stk.dat，再用 tdxhkag.cfg 覆盖。"""
+    root = tdx_root()
+    if root is None:
+        return {}
+    cache = root / "T0002" / "hq_cache"
+    out: dict[str, str] = {}
+
+    stk = cache / "ds_stk.dat"
+    if stk.is_file():
+        raw = stk.read_bytes()
+        i = 0
+        n = len(raw)
+        while i < n - 25:
+            token = raw[i : i + 5]
+            if token.isdigit() and raw[i + 5 : i + 8] == b"\x00\x00\x00":
+                code = token.decode("ascii")
+                name_raw = raw[i + 20 : i + 40].split(b"\x00", 1)[0]
+                try:
+                    name = name_raw.decode("gbk").strip()
+                except UnicodeDecodeError:
+                    name = ""
+                if name and all(ch.isprintable() for ch in name):
+                    out[f"{code}.HK"] = name
+                i += 20
+            else:
+                i += 1
+
+    cfg = cache / "tdxhkag.cfg"
+    if cfg.is_file():
+        for line in cfg.read_text(encoding="gbk", errors="ignore").splitlines():
+            parts = line.split("|")
+            if len(parts) < 2:
+                continue
+            digits = "".join(ch for ch in parts[0] if ch.isdigit())
+            name = parts[1].strip()
+            if len(digits) <= 5 and name:
+                out[f"{digits.zfill(5)}.HK"] = name
+    return out
+
+
+def drop_incomplete_hk_session(
+    daily: pd.DataFrame,
+    *,
+    now: pd.Timestamp | None = None,
+    close_hour: int = 16,
+    close_minute: int = 10,
+) -> pd.DataFrame:
+    """港股当日未收盘前，去掉最后一根可能未完成的日线。"""
+    if daily is None or daily.empty:
+        return daily
+    df = daily.sort_values("date").reset_index(drop=True)
+    last = pd.Timestamp(df["date"].iloc[-1]).normalize()
+    try:
+        from zoneinfo import ZoneInfo
+        tz = ZoneInfo("Asia/Hong_Kong")
+    except Exception:
+        tz = None
+    if now is None:
+        now = pd.Timestamp.now(tz=tz) if tz else pd.Timestamp.now()
+    else:
+        now = pd.Timestamp(now)
+        if tz is not None and now.tzinfo is None:
+            now = now.tz_localize(tz)
+    local = now.tz_convert(tz) if tz is not None and now.tzinfo is not None else now
+    today = pd.Timestamp(local.date())
+    cutoff = local.replace(hour=close_hour, minute=close_minute, second=0, microsecond=0) if tz else local
+    if last == today and local < cutoff:
+        return df.iloc[:-1].reset_index(drop=True)
+    return df
 
 def _rows_from_raw(raw: bytes) -> pd.DataFrame:
     if len(raw) < REC_SIZE or len(raw) % REC_SIZE:
@@ -77,7 +181,8 @@ def fetch_tdx_daily(
     end_date: str | None = None,
     vipdoc: Path | None = None,
 ) -> pd.DataFrame:
-    df = read_day_file(day_file_path(code, vipdoc=vipdoc))
+    path = day_file_path(code, vipdoc=vipdoc)
+    df = read_hk_day_file(path) if is_hk(code) else read_day_file(path)
     if start_date:
         df = df[df["date"] >= pd.Timestamp(start_date)]
     if end_date:

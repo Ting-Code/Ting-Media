@@ -7,9 +7,11 @@ from datetime import datetime
 import pandas as pd
 
 from adjust import apply_adjust
+from codes import is_hk
 from paths import tdx_vipdoc
 from tdx_day import (
     classify_board,
+    drop_incomplete_hk_session,
     fetch_tdx_daily,
     list_a_share_codes,
     list_day_files,
@@ -37,7 +39,10 @@ def fetch_daily(
     if full.empty:
         raise ValueError(f"no daily bars for {code}")
 
-    if how not in ("bfq", "none", ""):
+    if is_hk(code):
+        full = drop_incomplete_hk_session(full)
+        # 港股通达信日线为不复权成交价，不做 gbbq 复权。
+    elif how not in ("bfq", "none", ""):
         full = apply_adjust(full, load_xdxr(code, category=1), how=how)
 
     out = full[full["date"] >= pd.Timestamp(start_date)]

@@ -7,7 +7,12 @@ import pandas as pd
 from data_path import ensure_stock_data_on_path
 
 ensure_stock_data_on_path()
-from fundamentals import fetch_quarterly_balance, fetch_quarterly_profit  # noqa: E402
+from codes import is_hk  # noqa: E402
+from fundamentals import (  # noqa: E402
+    fetch_fx_hkdcnyc,
+    fetch_quarterly_balance,
+    fetch_quarterly_profit,
+)
 from market import month_end_close_on_or_before  # noqa: E402
 
 
@@ -48,6 +53,17 @@ def build_fundamental_panel(code: str, *, refresh: bool = False) -> pd.DataFrame
         df[new] = ytd_to_single_quarter(df[col])
     df["deduct_np_ttm"] = df["deduct_np_q"].rolling(4).sum()
     df["revenue_ttm"] = df["revenue_q"].rolling(4).sum()
+    if is_hk(code):
+        if "BASIC_EPS" in df.columns:
+            eps = pd.to_numeric(df["BASIC_EPS"], errors="coerce")
+            profit = pd.to_numeric(df["PARENT_NETPROFIT"], errors="coerce")
+            implied = profit / eps.replace(0, pd.NA)
+            if "SHARE_CAPITAL" not in df.columns:
+                df["SHARE_CAPITAL"] = implied
+            else:
+                cap = pd.to_numeric(df["SHARE_CAPITAL"], errors="coerce")
+                df["SHARE_CAPITAL"] = cap.where(cap > 0, implied)
+        df["market"] = "hk"
     return df.reset_index()
 
 
@@ -78,6 +94,20 @@ def four_quarter_dividend_per_share(dividends: pd.DataFrame, asof: pd.Timestamp)
     if not mask.any():
         return 0.0
     return float(cash[mask].sum())
+
+
+
+def _is_hk_fundamentals(fundamentals: pd.DataFrame) -> bool:
+    if fundamentals is None or fundamentals.empty or "market" not in fundamentals.columns:
+        return False
+    return fundamentals["market"].astype(str).str.lower().eq("hk").any()
+
+
+def _fx_on_or_before(fx: pd.DataFrame, day: pd.Timestamp) -> float | None:
+    sub = fx[fx["date"] <= pd.Timestamp(day)]
+    if sub.empty:
+        return None
+    return float(sub.iloc[-1]["cny_per_hkd"])
 
 
 def _prev_quarter_end(q_end: pd.Timestamp) -> pd.Timestamp:
@@ -111,6 +141,8 @@ def build_valuation_series(
         return pd.DataFrame()
 
     f["REPORT_DATE"] = pd.to_datetime(f["REPORT_DATE"])
+    hk = _is_hk_fundamentals(f) or _is_hk_fundamentals(fundamentals)
+    fx = fetch_fx_hkdcnyc() if hk else None
     last_daily = pd.Timestamp(daily["date"].iloc[-1]).normalize()
     first_report = f["REPORT_DATE"].min()
     start_obs = (first_report.to_period("Q") + 1).to_timestamp(how="end")
@@ -125,10 +157,13 @@ def build_valuation_series(
     rows = []
     for q_end in q_ends:
         q_end = pd.Timestamp(q_end).normalize()
+        incomplete = q_end > last_daily
         r = _match_fundamental(f, _prev_quarter_end(q_end))
+        if r is None and hk and incomplete:
+            # 港股上一自然季尚未披露时，当前未完成季用已披露的最近一期。
+            r = f.sort_values("REPORT_DATE").iloc[-1]
         if r is None:
             continue
-        incomplete = q_end > last_daily
         if incomplete:
             price_date, price = last_daily, float(daily.iloc[-1]["close"])
         else:
@@ -142,9 +177,16 @@ def build_valuation_series(
         equity = float(r["TOTAL_PARENT_EQUITY"])
         if shares <= 0:
             continue
-        pe = (price / ((deduct_q * 4) / shares)) if deduct_q > 0 else None
-        pb = (price / (equity / shares)) if equity > 0 else None
-        dps = four_quarter_dividend_per_share(dividends, price_date)
+        fx_rate = None
+        price_for_pe = price
+        if hk:
+            fx_rate = _fx_on_or_before(fx, price_date)
+            if fx_rate is None or fx_rate <= 0:
+                continue
+            price_for_pe = price * fx_rate
+        pe = (price_for_pe / ((deduct_q * 4) / shares)) if deduct_q > 0 else None
+        pb = (price_for_pe / (equity / shares)) if equity > 0 else None
+        dps = 0.0 if hk else four_quarter_dividend_per_share(dividends, price_date)
         rows.append(
             {
                 "quarter_end": q_end,
@@ -155,11 +197,13 @@ def build_valuation_series(
                 "pe": pe,
                 "pe_ttm_deduct": pe,
                 "pb": pb,
-                "div_yield_pct": (dps / price * 100) if price > 0 else None,
+                "div_yield_pct": None if hk else ((dps / price * 100) if price > 0 else None),
                 "deduct_np_q": deduct_q,
                 "revenue_q": r.get("revenue_q"),
                 "SHARE_CAPITAL": shares,
                 "TOTAL_PARENT_EQUITY": equity,
+                "fx_cny_per_hkd": fx_rate,
+                "price_cny": price_for_pe if hk else None,
             }
         )
     return pd.DataFrame(rows)
@@ -183,8 +227,10 @@ def current_snapshot(
             "pb": None,
             "div_yield_pct": None,
             "report_date": None,
+            "market": "hk" if _is_hk_fundamentals(fundamentals) else "a",
         }
     row = series.iloc[-1]
+    hk = _is_hk_fundamentals(fundamentals)
     return {
         "asof": asof,
         "price": price,
@@ -193,6 +239,9 @@ def current_snapshot(
         "pb": row.get("pb"),
         "div_yield_pct": row.get("div_yield_pct"),
         "report_date": row.get("prev_report_date"),
+        "market": "hk" if hk else "a",
+        "fx_cny_per_hkd": row.get("fx_cny_per_hkd") if hk else None,
+        "price_cny": row.get("price_cny") if hk else None,
     }
 
 
