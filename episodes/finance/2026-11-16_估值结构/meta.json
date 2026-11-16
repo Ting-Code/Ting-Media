@@ -1,0 +1,13 @@
+{
+  "niche": "finance",
+  "theme": "估值结构",
+  "date": "2026-11-16",
+  "code": "600570",
+  "name": "恒生电子",
+  "generated_at": "2026-11-16T14:32:29",
+  "html": "index.html",
+  "format": "9:16-ppt-deck",
+  "data_tool": "tools/stock-data",
+  "analysis_tool": "tools/stock-screener",
+  "cache": "cache/2026-11-16_估值结构"
+}

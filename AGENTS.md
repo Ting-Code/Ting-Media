@@ -1,6 +1,6 @@
 # AGENTS.md — Ting-Media
 
-内容工作台。五个工具彼此独立；只有用户明确要做节目时，才用 `screen-pack` 出竖屏 HTML。
+内容工作台。六个工具彼此独立；只有用户明确要做节目时，才用 `screen-pack` 出竖屏 HTML，或用 `speak-pack` 出口播 / 跟读录屏页。
 
 ## 目录
 
@@ -9,8 +9,9 @@ Ting-Media/
 ├── AGENTS.md
 ├── episodes/<赛道>/YYYY-MM-DD_主题/
 └── tools/
-    ├── stock-data/       # 取数；行情直读通达信，仅财报缓存（工具内）
-    ├── screen-pack/    # 录屏 HTML；视觉规范已定稿
+    ├── stock-data/        # 取数；行情直读通达信，仅财报缓存（工具内）
+    ├── screen-pack/       # 录屏 HTML；视觉规范已定稿
+    ├── speak-pack/        # 口播 / 跟读 9:16 录屏 HTML
     ├── stock-screener/    # 选股 + 基本面/估值分析
     ├── platform-trends/   # 跨平台热榜；免 Key 三家
     └── interactive-pack/  # 抖音/B站Toy/小红书 离线互动 HTML
@@ -35,7 +36,7 @@ cache/<分析名>/                  # 分析/选股结果（仓库根）；财�
 
 ## 工具各自独立
 
-`stock-data`、`stock-screener`、`platform-trends`、`screen-pack`、`interactive-pack` 分开调用。热度默认只给数据；选股名单默认只给数据。单股 PE/基本面走 `analyze_symbol.py` 时**默认写出横版分析页** `cache/pe_<代码>_<行情日>/index.html`（主图 + 下方色带，画法见 `tools/stock-screener/docs/分析口径.md`），不是录屏 HTML。没必要不要调用 `screen-pack` 出竖屏 HTML；只有用户明确说「录屏 / 出一期 / 做节目」时才生成。
+`stock-data`、`stock-screener`、`platform-trends`、`screen-pack`、`speak-pack`、`interactive-pack` 分开调用。热度默认只给数据；选股名单默认只给数据。单股 PE/基本面走 `analyze_symbol.py` 时**默认写出横版分析页** `cache/pe_<代码>_<行情日>/index.html`（主图 + 下方色带，画法见 `tools/stock-screener/docs/分析口径.md`），不是录屏 HTML。没必要不要调用 `screen-pack` 出竖屏 HTML；只有用户明确说「录屏 / 出一期 / 做节目」时才生成。口播 / 跟读页走 `speak-pack`，不要改 `screen-pack` 的股票录屏母版。
 
 ## 工作流
 
@@ -97,16 +98,31 @@ python scripts/etf_market_share.py
 
 ```bash
 cd tools/interactive-pack
-python scripts/cli.py --platform common generate \n  --content examples/sample.json \n  --theme 今日热度速览 \n  --date 2026-11-05 \n  --niche finance
+python scripts/cli.py --platform common generate \
+  --content examples/sample.json \
+  --theme 今日热度速览 \
+  --date 2026-11-05 \
+  --niche finance
 # -> episodes/finance/2026-11-05_今日热度速览/interactive/ + interactive-common.zip
 ```
 
 默认 `common` 可过三端校验；仅抖音/B站单文件时加 `--single --platform douyin|bilibili`。
 
+### 6）口播 / 跟读录屏
+
+按主题句生成 9:16 口播页：中间留空给后期叠画面，字幕放在安全区顶部、左对齐。视觉规范见 `tools/speak-pack/docs/9-16-口播录屏规范.md`。只有用户明确要做口播 / 跟读节目时才生成；**换期只换 JSON 内容**。
+
+```bash
+cd tools/speak-pack
+python scripts/generate_speak_html.py examples/sample.json --theme 跟读名言 --date 2026-11-16 --niche english
+python scripts/serve_episode.py ../../episodes/english/2026-11-16_跟读名言
+```
+
 ## 已定稿规范（勿擅自改画法）
 
 - 录屏视觉：`tools/screen-pack/docs/9-16-录屏规范.md` + deck 母版  
   单股/板块同一套：PE、PB、股价（或点位）**各用独立纵轴**，刻度可隐藏、悬浮看真值；禁止共用绝对刻度、禁止末点=100 归一
+- 口播 / 跟读录屏：`tools/speak-pack/docs/9-16-口播录屏规范.md` + speak 母版（与股票录屏母版分开）
 - 互动离线包：`tools/interactive-pack/docs/平台规范.md`（与录屏母版分开）
 - 取数：`tools/stock-data/`（缓存内化 `tools/stock-data/cache/`）
 - PE/基本面分析口径：`tools/stock-screener/docs/分析口径.md`

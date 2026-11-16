@@ -126,16 +126,12 @@ def _slide(index: int, total: int, title: str, tag: str, script: str, chart_i: i
     ) % chart_i
     return (
         '<section class="slide slide-chart" id="slide-%d" data-page="%d" data-title="%s" data-script="%s">'
-        '<div class="slide-tag"><span>%d / %d</span><span>%s</span></div>'
         '<div class="slide-inner"><h2>%s</h2><div class="panel">%s</div></div></section>'
     ) % (
         index,
         index,
         html.escape(title, quote=True),
         script_attr,
-        index,
-        total,
-        html.escape(tag),
         html.escape(title),
         box,
     )

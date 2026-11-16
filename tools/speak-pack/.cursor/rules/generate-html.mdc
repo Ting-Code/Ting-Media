@@ -1,0 +1,11 @@
+---
+description: speak-pack 出页流程与视觉契约
+alwaysApply: true
+---
+
+# speak-pack
+
+- 视觉已定稿：`docs/9-16-口播录屏规范.md` + `src/_speak_template.html`。换期只换口播稿和句子。
+- 出页：`python scripts/generate_speak_html.py <json>`；禁止手写整页 HTML。
+- 勿改工作台三栏、安全区或 One Dark 主题；勿改 `tools/screen-pack` 的股票录屏母版。
+- 只有用户明确要做口播 / 跟读节目时才生成。

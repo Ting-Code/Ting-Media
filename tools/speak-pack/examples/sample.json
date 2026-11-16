@@ -1,0 +1,69 @@
+{
+  "title": "跟读学英语 · 维特根斯坦",
+  "subtitle": "每天一句，整句跟读",
+  "theme": "跟读名言",
+  "niche": "english",
+  "date": "2026-11-16",
+  "slides": [
+    {
+      "title": "开场",
+      "tag": "开场",
+      "script": "开场点题：跟读能提升语音。\n先听一句，再一起跟。\n不要把单词拆开背，先把整句说顺。",
+      "en": "Repeat after me.",
+      "zh": "先听一句，再跟着读。",
+      "words": [
+        {
+          "text": "Repeat",
+          "meaning": "跟读、重复"
+        },
+        {
+          "text": "after me",
+          "meaning": "跟我读"
+        }
+      ]
+    },
+    {
+      "title": "名言",
+      "tag": "跟读",
+      "script": "完整读出这句名言。\n第一遍稍慢，第二遍跟上语速。\n强调 limits 和 language。",
+      "en": "The limits of my language mean the limits of my world.",
+      "zh": "语言有多宽，世界就有多大。",
+      "attr": "— Ludwig Wittgenstein",
+      "words": [
+        {
+          "text": "limits",
+          "meaning": "界限、限度"
+        },
+        {
+          "text": "language",
+          "meaning": "语言"
+        },
+        {
+          "text": "mean",
+          "meaning": "意味着"
+        },
+        {
+          "text": "world",
+          "meaning": "世界"
+        }
+      ]
+    },
+    {
+      "title": "收尾",
+      "tag": "收尾",
+      "script": "收尾告诉观众：每天跟读一句，把整句说顺。\n邀请下次继续。",
+      "en": "One sentence a day. Say it until it is smooth.",
+      "zh": "每天跟读一句，把整句说顺。",
+      "words": [
+        {
+          "text": "sentence",
+          "meaning": "句子"
+        },
+        {
+          "text": "smooth",
+          "meaning": "顺畅"
+        }
+      ]
+    }
+  ]
+}

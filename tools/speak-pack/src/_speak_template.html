@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>__TITLE__</title>
+<style>
+:root{
+  --od-bg:#1e2227;--od-panel:#282c34;--od-panel-2:#2c313c;--od-line:#3e4451;
+  --od-fg:#abb2bf;--od-muted:#5c6370;--od-soft:#9da5b4;
+  --od-blue:#61afef;--od-cyan:#56b6c2;--od-purple:#c678dd;--od-green:#98c379;--od-orange:#d19a66;--od-red:#e06c75;
+  --phone-h:min(853px, calc(100dvh - 48px));--phone-w:calc(var(--phone-h) * 9 / 16);
+  --safe-top:14%;--safe-bottom:32%;--safe-left:1.2%;--safe-right:1.2%;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--od-bg)}
+body{font-family:Consolas,"Cascadia Code","Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Noto Sans SC","WenQuanYi Micro Hei",sans-serif;color:var(--od-fg);line-height:1.5}
+.workbench{height:100dvh;max-height:100dvh;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:20px;padding:24px 16px;overflow:hidden}
+.stage-col{display:flex;align-items:center;flex-shrink:0}
+.phone{width:var(--phone-w);height:var(--phone-h);flex:0 0 auto;border-radius:16px;overflow:hidden;position:relative;background:#1a1d23;border:1px solid var(--od-line);box-shadow:0 0 0 1px #15181c, 0 14px 40px rgba(0,0,0,.4)}
+.speak-stage{width:100%;height:100%;position:relative;background:radial-gradient(700px 420px at 50% -10%,#323844 0%,transparent 55%),#1a1d23}
+.video-stage{position:absolute;inset:0;overflow:hidden;background:#14171c}
+.caption-bar{
+  position:absolute;top:var(--safe-top);left:var(--safe-left);right:var(--safe-right);
+  bottom:auto;height:auto;z-index:5;
+  padding:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;
+  gap:7px;text-align:left;background:transparent;box-sizing:border-box;
+}
+.caption-en{margin:0;font-size:1.28rem;line-height:1.4;color:#f3f4f6;font-weight:600;text-wrap:pretty;text-align:left;width:100%}
+.caption-en mark.vocab{color:var(--od-orange);background:rgba(209,154,102,.16);border-radius:4px;padding:0 3px;font-weight:700}
+.caption-zh{margin:0;font-size:1.02rem;line-height:1.4;color:var(--od-soft);text-align:left;width:100%}
+.caption-attr{margin:0;font-size:.78rem;color:var(--od-muted);text-align:left;width:100%}
+.word-row{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:6px;margin-top:2px;width:100%}
+.word-chip{display:flex;align-items:baseline;gap:5px;background:var(--od-panel-2);border:1px solid var(--od-line);border-radius:999px;padding:4px 10px 4px 9px}
+.word-chip .w{color:var(--od-orange);font-weight:650;font-size:.88rem}
+.word-chip .m{color:var(--od-muted);font-size:.82rem}
+.safe-guides{pointer-events:none;position:absolute;inset:0;z-index:40;display:none;border-radius:inherit;overflow:hidden}
+.safe-guides.on{display:block}
+.safe-guides .band{position:absolute;background:rgba(224,108,117,.22);border:1px dashed rgba(224,108,117,.55)}
+.safe-guides .band-top{top:0;left:0;right:0;height:var(--safe-top)}
+.safe-guides .band-bottom{bottom:0;left:0;right:0;height:var(--safe-bottom)}
+.safe-guides .band-left{top:var(--safe-top);bottom:var(--safe-bottom);left:0;width:var(--safe-left)}
+.safe-guides .band-right{top:var(--safe-top);bottom:var(--safe-bottom);right:0;width:var(--safe-right)}
+.safe-guides .label{position:absolute;font-size:.58rem;color:var(--od-red);line-height:1.25;text-align:center;padding:2px 4px}
+.safe-guides .label.top{top:6px;left:0;right:0}
+.safe-guides .label.bottom{bottom:8px;left:var(--safe-left);right:var(--safe-right)}
+.safe-guides .label.right{top:42%;right:2px;writing-mode:vertical-rl;text-orientation:mixed}
+.script-rail{flex:0 0 560px;width:560px;height:var(--phone-h);max-height:var(--phone-h);display:flex;flex-direction:column;gap:10px;padding:0;overflow:hidden;box-sizing:border-box}
+.script-rail .rail-head{flex-shrink:0;padding:2px 2px 0}
+.script-rail .rail-head .eyebrow{font-size:1.15rem;letter-spacing:.1em;text-transform:uppercase;color:var(--od-purple);margin:0 0 4px}
+.script-rail .rail-head h1{font-size:1.75rem;margin:0;font-weight:600;color:#e6e6e6}
+.script-rail .rail-head .meta{margin:6px 0 0;font-size:1.25rem;color:var(--od-muted)}
+.script-list{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;padding:2px 6px 4px 0;display:flex;flex-direction:column;align-items:stretch;gap:8px;scrollbar-width:thin;scrollbar-color:#4b5263 transparent}
+.script-list::-webkit-scrollbar{width:5px}
+.script-list::-webkit-scrollbar-track{background:transparent}
+.script-list::-webkit-scrollbar-thumb{background:#4b5263;border-radius:999px}
+.script-card{flex:0 0 auto;height:auto;min-height:0;overflow:visible;background:var(--od-panel);border:1px solid var(--od-line);border-radius:8px;padding:18px 20px;color:var(--od-fg);cursor:pointer;transition:border-color .15s,background .15s}
+.script-card:hover{background:var(--od-panel-2);border-color:#4b5263}
+.script-card.active{background:#2f3541;border-color:var(--od-blue);box-shadow:inset 3px 0 0 var(--od-blue)}
+.script-card .idx{font-size:1.12rem;color:var(--od-cyan);margin:0 0 4px}
+.script-card .title{font-size:1.8rem;font-weight:600;margin:0 0 8px;color:#e6e6e6}
+.script-card .body{font-size:1.65rem;line-height:1.55;color:var(--od-soft);margin:0;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+.pager{width:64px;flex-shrink:0;height:var(--phone-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px 0;box-sizing:border-box}
+.pager .page-label{font-size:1.4rem;color:#e6e6e6;text-align:center;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.02em;margin-bottom:2px}
+.pager button.nav{
+  width:52px;height:52px;border-radius:10px;border:1px solid var(--od-line);
+  background:var(--od-panel);color:var(--od-fg);font-size:1rem;cursor:pointer;
+}
+.pager button.nav:hover{border-color:var(--od-blue);color:var(--od-blue)}
+.pager button.guide,.pager button.flip{
+  margin-top:4px;width:52px;min-height:40px;border-radius:8px;border:1px solid var(--od-line);
+  background:transparent;color:var(--od-muted);font-size:.72rem;line-height:1.2;cursor:pointer;padding:6px 2px;
+}
+.pager button.guide:hover,.pager button.guide.on{border-color:var(--od-red);color:var(--od-red)}
+.pager button.flip:hover,.pager button.flip.on{border-color:var(--od-purple);color:var(--od-purple)}
+.workbench.layout-flip .stage-col{order:2}
+.workbench.layout-flip .script-rail{order:1}
+.workbench.layout-flip .pager{order:3}
+@media (max-width:900px){
+  .workbench{flex-wrap:wrap;padding:10px;gap:10px}
+  .stage-col{order:1;justify-content:center;width:100%}
+  .script-rail{order:2;flex:1 1 auto;width:auto;max-width:none;height:auto;max-height:40dvh}
+  .pager{order:3}
+  .phone{width:min(360px, 70vw);height:calc(min(360px, 70vw) * 16 / 9)}
+}
+</style></head><body>
+<div class="workbench">
+  <div class="stage-col">
+    <div class="phone" id="phone">
+      <div class="safe-guides" id="safeGuides" aria-hidden="true">
+        <div class="band band-top"></div>
+        <div class="band band-bottom"></div>
+        <div class="band band-left"></div>
+        <div class="band band-right"></div>
+        <div class="label top">顶栏 · 状态/频道</div>
+        <div class="label bottom">底栏遮挡带</div>
+        <div class="label right">右缘</div>
+      </div>
+      <div class="speak-stage">
+        <div class="video-stage" id="videoStage" aria-hidden="true"></div>
+        <div class="caption-bar">
+          <p class="caption-en" id="captionEn"></p>
+          <p class="caption-zh" id="captionZh"></p>
+          <p class="caption-attr" id="captionAttr"></p>
+          <div class="word-row" id="wordRow"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <aside class="script-rail" aria-label="script">
+    <div class="rail-head">
+      <p class="eyebrow">Script</p>
+      <h1 id="railTitle">__TITLE__</h1>
+      <p class="meta">__DATE__ · 左录屏 / 中文案 / 右翻页 · L 左右对调</p>
+    </div>
+    <div class="script-list" id="scriptList"></div>
+  </aside>
+  <nav class="pager" aria-label="pager">
+    <div class="page-label" id="pageLabel">1/1</div>
+    <button type="button" class="nav" id="btnPrev" title="prev">↑</button>
+    <button type="button" class="nav" id="btnNext" title="next">↓</button>
+    <button type="button" class="guide" id="btnGuide" title="safe">安全区</button>
+    <button type="button" class="flip" id="btnFlip" title="swap layout">左右</button>
+  </nav>
+</div>
+<script type="application/json" id="speakData">__SLIDES_JSON__</script>
+<script>
+__SPEAK_NAV__
+</script>
+</body></html>

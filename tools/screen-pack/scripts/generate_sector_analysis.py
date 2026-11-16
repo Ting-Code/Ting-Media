@@ -740,7 +740,6 @@ def sector_slide(sector, page, chart_html):
     parts = []
     parts.append("<section class=" + q + "slide slide-chart" + q + " id=" + q + "slide-" + sector["id"] + q)
     parts.append(" data-page=" + q + str(page) + q + " data-title=" + q + title + q + " data-script=" + q + script + q + ">")
-    parts.append("<div class=" + q + "slide-tag" + q + "><span>" + str(page) + " / " + title + "</span><span>" + sector["asof"] + "</span></div>")
     parts.append("<div class=" + q + "slide-inner" + q + ">")
     parts.append("<h2>" + title + " <span style=" + q + "font-weight:500;color:var(--od-muted);font-size:.75em" + q + ">(" + code + ")</span></h2>")
     parts.append("<div class=" + q + "cards" + q + " style=" + q + "flex:0 0 auto;margin-bottom:4px" + q + ">")
@@ -802,10 +801,6 @@ def cover_slide(sectors, asof, page):
         + "本期主题：板块分析。&#10;先过宽基，再过热门细分（半导/光模块/应用软件等），最后申万一级。&#10;数据仅供参考。"
         + q + ">"
     )
-    parts.append(
-        "<div class=" + q + "slide-tag" + q + "><span>" + str(page)
-        + " / 封面</span><span>" + asof + "</span></div>"
-    )
     parts.append("<div class=" + q + "slide-inner" + q + ">")
     parts.append("<h1 class=" + q + "phone-title" + q + ">板块分析</h1>")
     parts.append(
@@ -821,7 +816,6 @@ def end_slide(page):
     q = chr(34)
     parts = []
     parts.append("<section class=" + q + "slide" + q + " id=" + q + "slide-end" + q + " data-page=" + q + str(page) + q + " data-title=" + q + "收尾说明" + q + " data-script=" + q + "重申：生成数据仅供参考。&#10;邀请观众自己核对官方披露。&#10;结束本页。" + q + ">")
-    parts.append("<div class=" + q + "slide-tag" + q + "><span>" + str(page) + " / 结尾</span><span>可口述带过</span></div>")
     parts.append("<div class=" + q + "slide-inner" + q + "><h2>说明</h2>")
     parts.append("<div class=" + q + "disclaimer" + q + ">生成数据仅供参考，不构成任何决策依据。数据来自第三方公开源，请以官方披露为准。板块历史点用当前权重回测，存在偏差。</div>")
     parts.append("<p class=" + q + "sub" + q + ">快捷键：空格/↓ 下一页 · ↑ 上一页 · G 安全区</p>")
