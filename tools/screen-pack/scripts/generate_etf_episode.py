@@ -4,6 +4,7 @@
 图表自己的显示规则（录屏规范只要求中间可用区显示全，不写死这些数）：
 - 窄屏左右轴留白 32/38，轴文字 11px，标签距轴 4px；主图与区间条共用同一左右边。不要沿用分析页桌面的 62/56。
 - 有区间条的长序列：主图默认最近约 5 年，区间条保留全部历史，可拖回全区间。短于 5 年的序列保持全长。
+- 估值页（PE/PB/点位）：三条独立纵轴，无 1Y/3Y 按钮，区间条拖选；轴刻度数字隐藏，数值看悬浮。
 """
 from __future__ import annotations
 
@@ -25,6 +26,7 @@ ensure_tool_srcs_on_path()
 from episode_path import episode_dir  # noqa: E402
 from etf_share import build_etf_market_share  # noqa: E402
 from render_report import _load_deck_template  # noqa: E402
+from etf_valuation import build_board_valuations  # noqa: E402
 
 KEEP_DRAW = {"draw", "drawAnomaly", "drawAnomalyBrush", "bindFlowBrush", "drawLineBrush"}
 MOUNT_JS = r"""
@@ -33,7 +35,11 @@ function paintOne(spec) {
   const range = spec.state.range;
   const rows = spec.points.slice(range.start, range.end + 1);
   if (!rows.length || !spec.plot.clientWidth) return;
-  if (spec.kind === "flow") {
+  if (spec.kind === "val") {
+    const hover = spec.hoverIndex == null ? null : {index: spec.hoverIndex};
+    drawVal(spec.plot, rows, spec.peNow, hover);
+    drawValBrush(spec.brush, spec.points, range);
+  } else if (spec.kind === "flow") {
     drawAnomaly(spec.plot, rows, spec.index);
     drawAnomalyBrush(spec.brush, spec.points, range);
   } else {
@@ -63,6 +69,7 @@ function mountCharts() {
     spec.paint = paint;
     paint();
     bindFlowBrush(spec.brush, spec.points, spec.state, paint);
+    if (spec.kind === "val") bindValHover(spec.plot, spec, paint);
   });
 }
 window.addEventListener("resize", () => charts.forEach((spec) => spec.paint && spec.paint()));
@@ -74,6 +81,210 @@ if (document.readyState === "complete") bootCharts();
 else window.addEventListener("load", bootCharts);
 """
 
+
+
+VAL_JS = r"""
+function finiteVals(values) {
+  return values.filter((v) => v != null && Number.isFinite(v));
+}
+function paddedRange(values, pad) {
+  const nums = finiteVals(values);
+  if (!nums.length) return null;
+  let lo = Math.min(...nums);
+  let hi = Math.max(...nums);
+  if (lo === hi) {
+    const delta = Math.abs(lo) * 0.1 || 1;
+    return {lo: lo - delta, hi: hi + delta};
+  }
+  const span = hi - lo;
+  return {lo: lo - span * pad, hi: hi + span * pad};
+}
+function drawVal(canvas, points, peNow, hover) {
+  const dpr = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  canvas.width = Math.max(1, Math.floor(width * dpr));
+  canvas.height = Math.max(1, Math.floor(height * dpr));
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const pad = {l: 16, r: 16, t: 28, b: 28};
+  const plotW = width - pad.l - pad.r;
+  const plotH = height - pad.t - pad.b;
+  const n = points.length;
+  const peRange = paddedRange(points.map((p) => p.pe), 0.08);
+  const pbRange = paddedRange(points.map((p) => p.pb), 0.08);
+  const priceRange = paddedRange(points.map((p) => p.price), 0.08);
+  if (peNow != null && peRange) {
+    peRange.lo = Math.min(peRange.lo, peNow);
+    peRange.hi = Math.max(peRange.hi, peNow);
+  }
+  const x = (i) => pad.l + (n < 2 ? plotW / 2 : (i / (n - 1)) * plotW);
+  const yOf = (range, v) => pad.t + (range.hi - v) / (range.hi - range.lo || 1) * plotH;
+  ctx.clearRect(0, 0, width, height);
+  ctx.strokeStyle = "rgba(62,68,81,.85)";
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + (plotH * i) / 4;
+    ctx.beginPath();
+    ctx.moveTo(pad.l, y);
+    ctx.lineTo(width - pad.r, y);
+    ctx.stroke();
+  }
+  if (peNow != null && peRange) {
+    const y = yOf(peRange, peNow);
+    ctx.setLineDash([6, 5]);
+    ctx.strokeStyle = "#ef5350";
+    ctx.beginPath();
+    ctx.moveTo(pad.l, y);
+    ctx.lineTo(width - pad.r, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  const series = [
+    {key: "pe", color: "#ef5350", range: peRange, name: "PE"},
+    {key: "pb", color: "#61afef", range: pbRange, name: "PB"},
+    {key: "price", color: "#98c379", range: priceRange, name: "点位"},
+  ];
+  series.forEach((item) => {
+    if (!item.range) return;
+    ctx.strokeStyle = item.color;
+    ctx.fillStyle = item.color;
+    ctx.lineWidth = 2;
+    let started = false;
+    ctx.beginPath();
+    points.forEach((p, i) => {
+      const v = p[item.key];
+      if (v == null || !Number.isFinite(v)) { started = false; return; }
+      const cx = x(i);
+      const cy = yOf(item.range, v);
+      if (!started) { ctx.moveTo(cx, cy); started = true; }
+      else ctx.lineTo(cx, cy);
+    });
+    ctx.stroke();
+    points.forEach((p, i) => {
+      const v = p[item.key];
+      if (v == null || !Number.isFinite(v)) return;
+      ctx.beginPath();
+      ctx.arc(x(i), yOf(item.range, v), 2.6, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  });
+  ctx.font = "11px Microsoft YaHei, sans-serif";
+  ctx.textBaseline = "top";
+  if (hover && points[hover.index]) {
+    const p = points[hover.index];
+    const cx = x(hover.index);
+    ctx.strokeStyle = "rgba(171,178,191,.45)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, pad.t);
+    ctx.lineTo(cx, pad.t + plotH);
+    ctx.stroke();
+    const pe = p.pe == null ? "—" : p.pe.toFixed(2);
+    const pb = p.pb == null ? "—" : p.pb.toFixed(2);
+    const price = p.price == null ? "—" : p.price.toFixed(2);
+    const flag = p.incomplete ? "  当季未结束" : "";
+    ctx.fillStyle = "#e6e6e6";
+    ctx.textAlign = "left";
+    ctx.fillText(p.date + "  PE " + pe + "  PB " + pb + "  点位 " + price + flag, pad.l, 6);
+  } else {
+    let lx = pad.l;
+    series.forEach((item) => {
+      ctx.fillStyle = item.color;
+      ctx.fillRect(lx, 9, 8, 8);
+      ctx.fillStyle = "#abb2bf";
+      ctx.textAlign = "left";
+      ctx.fillText(item.name, lx + 11, 6);
+      lx += 11 + ctx.measureText(item.name).width + 12;
+    });
+    if (peNow != null) {
+      ctx.fillStyle = "#ef5350";
+      ctx.textAlign = "right";
+      ctx.fillText("当前 PE " + peNow.toFixed(1), width - pad.r, 6);
+    }
+  }
+  ctx.fillStyle = "#9da5b4";
+  ctx.textBaseline = "alphabetic";
+  if (points.length) {
+    ctx.textAlign = "left";
+    ctx.fillText(points[0].date.slice(0, 7), pad.l, height - 8);
+    ctx.textAlign = "right";
+    ctx.fillText(points[points.length - 1].date.slice(0, 7), width - pad.r, height - 8);
+  }
+  canvas._geom = {n, x, pad, plotW, plotH};
+}
+function drawValBrush(canvas, points, range) {
+  const dpr = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  canvas.width = Math.max(1, Math.floor(width * dpr));
+  canvas.height = Math.max(1, Math.floor(height * dpr));
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const pad = {l: 16, r: 16, t: 6, b: 18};
+  const plotW = width - pad.l - pad.r;
+  const plotH = height - pad.t - pad.b;
+  const n = points.length;
+  const peRange = paddedRange(points.map((p) => p.pe), 0.08) || {lo: 0, hi: 1};
+  const x = (i) => pad.l + (n < 2 ? plotW / 2 : (i / (n - 1)) * plotW);
+  const y = (v) => pad.t + (peRange.hi - v) / (peRange.hi - peRange.lo || 1) * plotH;
+  ctx.clearRect(0, 0, width, height);
+  ctx.strokeStyle = "#ef5350";
+  ctx.lineWidth = 1.2;
+  let started = false;
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    if (p.pe == null || !Number.isFinite(p.pe)) { started = false; return; }
+    const cx = x(i);
+    const cy = y(p.pe);
+    if (!started) { ctx.moveTo(cx, cy); started = true; }
+    else ctx.lineTo(cx, cy);
+  });
+  ctx.stroke();
+  const x0 = x(range.start);
+  const x1 = x(range.end);
+  ctx.fillStyle = "rgba(97, 175, 239, 0.22)";
+  ctx.fillRect(x0, pad.t, Math.max(2, x1 - x0), plotH);
+  ctx.strokeStyle = "#61afef";
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(x0, pad.t, Math.max(2, x1 - x0), plotH);
+  ctx.fillStyle = "#61afef";
+  ctx.fillRect(x0 - 2, pad.t, 4, plotH);
+  ctx.fillRect(x1 - 2, pad.t, 4, plotH);
+  ctx.font = "11px Microsoft YaHei, sans-serif";
+  ctx.fillStyle = "#9da5b4";
+  if (points.length) {
+    ctx.textAlign = "left";
+    ctx.fillText(points[0].date.slice(0, 7), pad.l, height - 4);
+    ctx.textAlign = "right";
+    ctx.fillText(points[points.length - 1].date.slice(0, 7), width - pad.r, height - 4);
+  }
+  canvas._geom = {n, x, pad};
+}
+function bindValHover(plot, spec, paint) {
+  plot.addEventListener("mousemove", (event) => {
+    const geom = plot._geom;
+    const range = spec.state.range;
+    const rows = spec.points.slice(range.start, range.end + 1);
+    if (!geom || !rows.length) return;
+    const px = event.clientX - plot.getBoundingClientRect().left;
+    let nearest = 0, best = Infinity;
+    rows.forEach((_, i) => {
+      const dist = Math.abs(geom.x(i) - px);
+      if (dist < best) { best = dist; nearest = i; }
+    });
+    if (spec.hoverIndex !== nearest) {
+      spec.hoverIndex = nearest;
+      paint();
+    }
+  });
+  plot.addEventListener("mouseleave", () => {
+    if (spec.hoverIndex == null) return;
+    spec.hoverIndex = null;
+    paint();
+  });
+}
+"""
 
 
 def _tool_colors(draw_js: str) -> str:
@@ -253,12 +464,10 @@ def _pages(groups: list[dict]) -> tuple[list[dict], list[dict]]:
     return slides, charts
 
 
-def main() -> int:
-    groups = build_etf_market_share()
-    asof = pd.Timestamp(groups[0]["asof"]).strftime("%Y-%m-%d")
-    slides, charts = _pages(groups)
+
+def _render_episode(slides: list[dict], charts: list[dict], asof: str, out: Path, note: str) -> Path:
     body = "\n".join(
-        _slide(i, len(slides), page["title"], page["tag"], page["script"], i - 1)
+        _slide(i, len(slides), page["title"], page.get("tag") or "", page["script"], i - 1)
         for i, page in enumerate(slides, start=1)
     )
     template = _load_deck_template()
@@ -267,30 +476,84 @@ def main() -> int:
     if start < 0 or end < 0:
         raise RuntimeError("deck template markers missing")
     html_text = template[: start + len('<div class="deck" id="deck">')] + "\n" + body + "\n" + template[end:]
-    html_text = html_text.replace("__NAME__", "头部ETF").replace("__CODE__", "九张图").replace("__ASOF__", asof)
+    html_text = html_text.replace("__NAME__", "头部ETF").replace("__CODE__", "十二张图").replace("__ASOF__", asof)
     html_text = html_text.replace('<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>', "")
     data = json.dumps(charts, ensure_ascii=False).replace("<", "\\u003c")
     extra = (
         "<script>\n"
         + _tool_colors(_phone_pads(_source_draw_js()))
         + "\n"
+        + VAL_JS
+        + "\n"
         + MOUNT_JS.replace("__CHARTS__", data)
         + "\n</script>\n"
     )
     html_text = html_text.replace("</body>", extra + "</body>")
-    out = episode_dir(niche="finance", theme="头部ETF持有规模", day=date.today())
     out.mkdir(parents=True, exist_ok=True)
     page_path = out / "index.html"
     page_path.write_text(html_text, encoding="utf-8")
     meta = {
         "theme": "头部ETF持有规模",
-        "date": date.today().isoformat(),
+        "date": out.name.split("_", 1)[0],
         "asof": asof,
         "cache": "cache/etf_market_share_%s" % asof,
         "pages": [page["title"] for page in slides],
-        "note": "每张图一页，图用分析页原画法。生成数据仅供参考。",
+        "note": note,
     }
     (out / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+    return page_path
+
+
+def _append_valuations(slides: list[dict], charts: list[dict], asof: str) -> None:
+    for page in build_board_valuations(asof):
+        slides.append({"title": page["title"], "tag": page["tag"], "script": page["script"]})
+        charts.append(page["chart"])
+
+
+def _reuse_episode(folder: Path) -> tuple[list[dict], list[dict], str]:
+    import html as html_lib
+    import re
+
+    html_text = (folder / "index.html").read_text(encoding="utf-8")
+    meta = json.loads((folder / "meta.json").read_text(encoding="utf-8"))
+    match = re.search(r"const charts = (\[.*?\]);\s*function paintOne", html_text, re.S)
+    if not match:
+        raise RuntimeError("existing episode charts not found")
+    charts = [item for item in json.loads(match.group(1)) if item.get("kind") in {"ratio", "lots", "flow"}]
+    slides = []
+    for section in re.finditer(
+        r'<section class="slide slide-chart"[^>]*data-title="([^"]*)"[^>]*data-script="([^"]*)"',
+        html_text,
+    ):
+        title = html_lib.unescape(section.group(1))
+        if title.endswith("估值"):
+            continue
+        script = html_lib.unescape(section.group(2)).replace("&#10;", "\n")
+        slides.append({"title": title, "tag": "", "script": script})
+    if len(slides) != 9 or len(charts) != 9:
+        raise RuntimeError("expected 9 ETF pages, got %d slides, %d charts" % (len(slides), len(charts)))
+    return slides, charts, meta["asof"]
+
+
+def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    note = (
+        "前九页为头部 ETF 规模/份额/异动；后三页为对应板块估值（点位用官方指数，"
+        "PE/PB 用乐咕滚动加权；科创 PE/PB 为科创板整体，创业板 PE/PB 为创业板50）。生成数据仅供参考。"
+    )
+    if argv and argv[0] == "--reuse":
+        folder = Path(argv[1])
+        slides, charts, asof = _reuse_episode(folder)
+        _append_valuations(slides, charts, asof)
+        page_path = _render_episode(slides, charts, asof, folder, note)
+        print(page_path)
+        return 0
+    groups = build_etf_market_share()
+    asof = pd.Timestamp(groups[0]["asof"]).strftime("%Y-%m-%d")
+    slides, charts = _pages(groups)
+    _append_valuations(slides, charts, asof)
+    out = episode_dir(niche="finance", theme="头部ETF持有规模", day=date.today())
+    page_path = _render_episode(slides, charts, asof, out, note)
     print(page_path)
     return 0
 
