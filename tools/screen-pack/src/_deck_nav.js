@@ -142,5 +142,11 @@
   window.addEventListener("resize", function () {
     fitPlots(slides[index]);
   });
-  go(0, false);
+  var params = new URLSearchParams(location.search);
+  if (params.get("guides") === "1") {
+    guides.classList.add("on");
+    btnGuide.classList.add("on");
+  }
+  var pageParam = parseInt(params.get("page") || "", 10);
+  go(pageParam >= 1 ? pageParam - 1 : 0, false);
 })();

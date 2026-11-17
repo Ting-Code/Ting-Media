@@ -322,7 +322,7 @@ function draw(canvas, points, indexName, rightName, rightKey, rightKind) {
   canvas.height = Math.max(1, Math.floor(height * dpr));
   const ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const pad = {l: 62, r: 56, t: 18, b: 32};
+  const pad = {l: 32, r: 38, t: 18, b: 32};
   const plotW = width - pad.l - pad.r;
   const plotH = height - pad.t - pad.b;
   const n = points.length;
@@ -335,7 +335,7 @@ function draw(canvas, points, indexName, rightName, rightKey, rightKind) {
   ctx.clearRect(0, 0, width, height);
   ctx.strokeStyle = "rgba(62,68,81,.85)";
   ctx.lineWidth = 1;
-  ctx.font = "12px Microsoft YaHei, sans-serif";
+  ctx.font = "11px Microsoft YaHei, sans-serif";
   ctx.fillStyle = "#9da5b4";
   for (let k = 0; k < 4; k++) {
     const y = pad.t + (plotH * k) / 3;
@@ -346,11 +346,11 @@ function draw(canvas, points, indexName, rightName, rightKey, rightKind) {
     const price = pmax - (pmax - pmin) * k / 3;
     const share = smax - smax * k / 3;
     ctx.textAlign = "right";
-    ctx.fillText(price.toFixed(0), pad.l - 8, y + 4);
+    ctx.fillText(price.toFixed(0), pad.l - 4, y + 4);
     ctx.textAlign = "left";
     ctx.fillStyle = "#61afef";
     const rightText = rightKind === "pct" ? share.toFixed(2) + "%" : share.toFixed(0);
-    ctx.fillText(rightText, width - pad.r + 8, y + 4);
+    ctx.fillText(rightText, width - pad.r + 4, y + 4);
     ctx.fillStyle = "#9da5b4";
   }
   const body = Math.max(2, plotW / n * 0.62);
@@ -401,7 +401,7 @@ function drawAnomaly(canvas, points, indexName) {
   canvas.height = Math.max(1, Math.floor(height * dpr));
   const ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const pad = {l: 62, r: 64, t: 18, b: 32};
+  const pad = {l: 32, r: 38, t: 18, b: 32};
   const plotW = width - pad.l - pad.r;
   const plotH = height - pad.t - pad.b;
   const n = points.length;
@@ -439,15 +439,15 @@ function drawAnomaly(canvas, points, indexName) {
     else ctx.lineTo(cx, cy);
   });
   ctx.stroke();
-  ctx.font = "12px Microsoft YaHei, sans-serif";
+  ctx.font = "11px Microsoft YaHei, sans-serif";
   ctx.fillStyle = "#9da5b4";
   ctx.textAlign = "right";
-  ctx.fillText(pmax.toFixed(0), pad.l - 8, pad.t + 4);
-  ctx.fillText(pmin.toFixed(0), pad.l - 8, pad.t + plotH);
+  ctx.fillText(pmax.toFixed(0), pad.l - 4, pad.t + 4);
+  ctx.fillText(pmin.toFixed(0), pad.l - 4, pad.t + plotH);
   ctx.textAlign = "left";
   ctx.fillStyle = "#9d1c3d";
-  ctx.fillText(bmax.toFixed(0), width - pad.r + 8, yBar(bmax) + 4);
-  ctx.fillText(bmin.toFixed(0), width - pad.r + 8, yBar(bmin));
+  ctx.fillText(bmax.toFixed(0), width - pad.r + 4, yBar(bmax) + 4);
+  ctx.fillText(bmin.toFixed(0), width - pad.r + 4, yBar(bmin));
   ctx.fillStyle = "#5c6370";
   ctx.textAlign = "center";
   const step = Math.max(1, Math.round(n / 6));
@@ -468,7 +468,7 @@ function drawAnomalyBrush(canvas, points, range) {
   canvas.height = Math.max(1, Math.floor(height * dpr));
   const ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const pad = {l: 62, r: 64, t: 6, b: 18};
+  const pad = {l: 32, r: 38, t: 6, b: 18};
   const plotW = width - pad.l - pad.r;
   const plotH = height - pad.t - pad.b;
   const n = points.length;
@@ -579,7 +579,7 @@ function drawLineBrush(canvas, points, range, key) {
   canvas.height = Math.max(1, Math.floor(height * dpr));
   const ctx = canvas.getContext("2d");
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const pad = {l: 62, r: 56, t: 6, b: 18};
+  const pad = {l: 32, r: 38, t: 6, b: 18};
   const plotW = width - pad.l - pad.r;
   const plotH = height - pad.t - pad.b;
   const n = points.length;
@@ -631,12 +631,23 @@ function paintOne(spec) {
     drawLineBrush(spec.brush, spec.points, range, spec.rightKey);
   }
 }
+function defaultVisibleRange(points) {
+  const end = Math.max(0, points.length - 1);
+  if (!points.length) return {start: 0, end: 0};
+  const last = Date.parse(points[end].date);
+  const cutoff = last - 5 * 365.25 * 24 * 3600 * 1000;
+  let start = 0;
+  for (let i = 0; i <= end; i++) {
+    if (Date.parse(points[i].date) >= cutoff) { start = i; break; }
+  }
+  return {start, end};
+}
 function mountCharts() {
   document.querySelectorAll(".with-range").forEach((box) => {
     const spec = charts[Number(box.dataset.i)];
     spec.plot = box.querySelector(".plot");
     spec.brush = box.querySelector(".range");
-    spec.state = {range: {start: 0, end: Math.max(0, spec.points.length - 1)}};
+    spec.state = {range: defaultVisibleRange(spec.points)};
     const paint = () => paintOne(spec);
     spec.paint = paint;
     paint();

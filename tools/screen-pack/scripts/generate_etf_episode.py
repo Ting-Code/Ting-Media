@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""一期录屏：头部 ETF 九张图，每张一页。工作台用 screen-pack 母版，图用分析页原画法。"""
+"""一期录屏：头部 ETF 九张图，每张一页。工作台用 screen-pack 母版，图用分析页原画法。
+
+图表自己的显示规则（录屏规范只要求中间可用区显示全，不写死这些数）：
+- 窄屏左右轴留白 32/38，轴文字 11px，标签距轴 4px；主图与区间条共用同一左右边。不要沿用分析页桌面的 62/56。
+- 有区间条的长序列：主图默认最近约 5 年，区间条保留全部历史，可拖回全区间。短于 5 年的序列保持全长。
+"""
 from __future__ import annotations
 
 import html
@@ -36,12 +41,24 @@ function paintOne(spec) {
     drawLineBrush(spec.brush, spec.points, range, spec.rightKey);
   }
 }
+// 长序列主图默认最近约 5 年；区间条仍是全部历史。短于 5 年的保持全长。
+function defaultVisibleRange(points) {
+  const end = Math.max(0, points.length - 1);
+  if (!points.length) return {start: 0, end: 0};
+  const last = Date.parse(points[end].date);
+  const cutoff = last - 5 * 365.25 * 24 * 3600 * 1000;
+  let start = 0;
+  for (let i = 0; i <= end; i++) {
+    if (Date.parse(points[i].date) >= cutoff) { start = i; break; }
+  }
+  return {start, end};
+}
 function mountCharts() {
   document.querySelectorAll(".with-range").forEach((box) => {
     const spec = charts[Number(box.dataset.i)];
     spec.plot = box.querySelector(".plot");
     spec.brush = box.querySelector(".range");
-    spec.state = {range: {start: 0, end: Math.max(0, spec.points.length - 1)}};
+    spec.state = {range: defaultVisibleRange(spec.points)};
     const paint = () => paintOne(spec);
     spec.paint = paint;
     paint();
@@ -74,6 +91,25 @@ def _tool_colors(draw_js: str) -> str:
     )
     for old_color, new_color in swaps:
         draw_js = draw_js.replace(old_color, new_color)
+    return draw_js
+
+
+
+def _phone_pads(draw_js: str) -> str:
+    """按本文件图表规则，把分析页桌面轴边距收到窄屏 32/38，轴文字 11px，标签距轴 4px。"""
+    swaps = (
+        ("const pad = {l: 62, r: 56, t: 18, b: 32};", "const pad = {l: 32, r: 38, t: 18, b: 32};"),
+        ("const pad = {l: 62, r: 64, t: 18, b: 32};", "const pad = {l: 32, r: 38, t: 18, b: 32};"),
+        ("const pad = {l: 62, r: 64, t: 6, b: 18};", "const pad = {l: 32, r: 38, t: 6, b: 18};"),
+        ("const pad = {l: 62, r: 56, t: 6, b: 18};", "const pad = {l: 32, r: 38, t: 6, b: 18};"),
+        ('ctx.font = "12px Microsoft YaHei, sans-serif";', 'ctx.font = "11px Microsoft YaHei, sans-serif";'),
+        ("pad.l - 8", "pad.l - 4"),
+        ("width - pad.r + 8", "width - pad.r + 4"),
+    )
+    for old, new in swaps:
+        if old not in draw_js:
+            raise RuntimeError("分析页轴边距字面量缺失: %s" % old)
+        draw_js = draw_js.replace(old, new)
     return draw_js
 
 
@@ -236,7 +272,7 @@ def main() -> int:
     data = json.dumps(charts, ensure_ascii=False).replace("<", "\\u003c")
     extra = (
         "<script>\n"
-        + _tool_colors(_source_draw_js())
+        + _tool_colors(_phone_pads(_source_draw_js()))
         + "\n"
         + MOUNT_JS.replace("__CHARTS__", data)
         + "\n</script>\n"
