@@ -1,8 +1,17 @@
 # Ting-Tools
 
-自用 AI 工具合集：把常用工具放在一起，按需取数、出图或生成页面。
+这是我自用的一套 AI 工具，不是对外产品。用来按需取数、分析和生成页面，方便自己日常使用。
 
 仓库：[https://github.com/Ting-Code/Ting-Tools](https://github.com/Ting-Code/Ting-Tools)
+
+## 现有工具
+
+- `stock-data`：公开市场取数和指标序列
+- `stock-screener`：选股，以及基本面和估值分析
+- `screen-pack`：生成 9:16 录屏页
+- `speak-pack`：生成口播 / 跟读录屏页
+- `platform-trends`：跨平台热榜（B站 / 微博 / 抖音）
+- `interactive-pack`：互动离线 HTML（抖音 / B站 Toy / 小红书）
 
 ## 工作流
 
@@ -15,12 +24,12 @@ Ting-Tools/
 ├── AGENTS.md
 ├── episodes/<赛道>/YYYY-MM-DD_主题/
 └── tools/
-    ├── stock-data/        # 公开市场取数 / 指标序列
-    ├── screen-pack/       # 9:16 录屏页
-    ├── speak-pack/        # 口播 / 跟读 9:16 录屏页
-    ├── stock-screener/    # 全 A 技术面选股
-    ├── platform-trends/   # 跨平台热榜（B站/微博/抖音）
-    └── interactive-pack/  # 互动离线 HTML（抖音/B站Toy/小红书）
+    ├── stock-data/
+    ├── screen-pack/
+    ├── speak-pack/
+    ├── stock-screener/
+    ├── platform-trends/
+    └── interactive-pack/
 ```
 
 ### 示例
@@ -33,7 +42,6 @@ python scripts/generate_stock_html.py <名称或代码>
 # -> episodes/<赛道>/YYYY-MM-DD_主题/index.html
 ```
 
-
 跨平台热度（B站作品 / 微博热搜 / 抖音热词；默认只出数据摘要）：
 
 ```bash
@@ -42,14 +50,12 @@ pip install -r requirements.txt
 python scripts/analyze_trends.py
 ```
 
-
-
 互动离线包（写入同一期 `episodes/<赛道>/YYYY-MM-DD_主题/`）：
 
 ```bash
 cd tools/interactive-pack
-python scripts/cli.py --platform common generate 
-  --content examples/sample.json 
+python scripts/cli.py --platform common generate
+  --content examples/sample.json
   --theme 今日热度速览 --date 2026-11-05 --niche finance
 ```
 
