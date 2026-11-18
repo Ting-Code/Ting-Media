@@ -1,4 +1,4 @@
-"""Episode + analysis cache paths for Ting-Media.
+"""Episode + analysis cache paths for Ting-Tools.
 
 成片: episodes/<niche>/YYYY-MM-DD_theme/
 缓存: cache/<分析名>/   （仓库根目录，不放 tools/ 下）
@@ -41,7 +41,7 @@ def cache_dir(
     *,
     media_root: Path | None = None,
 ) -> Path:
-    """Root analysis cache: Ting-Media/cache/<分析名>/."""
+    """Root analysis cache: Ting-Tools/cache/<分析名>/."""
     root = media_root or MEDIA_ROOT
     return root / "cache" / _slug(name)
 

@@ -1,4 +1,4 @@
-"""Episode paths for Ting-Media speak-pack.
+"""Episode paths for Ting-Tools speak-pack.
 
 成片: episodes/<niche>/YYYY-MM-DD_theme/
 """

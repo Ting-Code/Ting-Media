@@ -79,7 +79,7 @@ def main() -> None:
     parser.add_argument("--niche", help="赛道目录，默认 english")
     parser.add_argument("--title", help="覆盖标题")
     parser.add_argument("--subtitle", help="覆盖副标题")
-    parser.add_argument("--media-root", type=Path, help="Ting-Media 根目录，默认自动检测")
+    parser.add_argument("--media-root", type=Path, help="Ting-Tools 根目录，默认自动检测")
     args = parser.parse_args()
 
     src = args.json.expanduser().resolve()

@@ -18,7 +18,7 @@ import plotly.graph_objects as go
 from plotly.offline import plot as plot_offline
 from plotly.subplots import make_subplots
 
-ROOT = Path(r"D:/project/ting/Ting-Media")
+ROOT = Path(r"D:/project/ting/Ting-Tools")
 OUT = ROOT / "episodes/finance" / f"{date.today().isoformat()}_恒生科技板块PE"
 CACHE = ROOT / "cache" / f"{date.today().isoformat()}_恒生科技板块PE"
 

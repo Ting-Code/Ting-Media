@@ -1,8 +1,8 @@
-# Ting-Media
+# Ting-Tools
 
-个人内容工作台：用工具取数、出图，生成可录屏的竖屏 HTML，并按期归档。
+自用 AI 工具合集：把常用工具放在一起，按需取数、出图或生成页面。
 
-仓库：[https://github.com/Ting-Code/Ting-Media](https://github.com/Ting-Code/Ting-Media)
+仓库：[https://github.com/Ting-Code/Ting-Tools](https://github.com/Ting-Code/Ting-Tools)
 
 ## 工作流
 
@@ -11,12 +11,13 @@
 3. **约定**：见根目录 [`AGENTS.md`](AGENTS.md)。勿手写整页 HTML。
 
 ```text
-Ting-Media/
+Ting-Tools/
 ├── AGENTS.md
 ├── episodes/<赛道>/YYYY-MM-DD_主题/
 └── tools/
-    ├── stock-data/       # 公开市场取数 / 指标序列
-    ├── screen-pack/    # 9:16 录屏页
+    ├── stock-data/        # 公开市场取数 / 指标序列
+    ├── screen-pack/       # 9:16 录屏页
+    ├── speak-pack/        # 口播 / 跟读 9:16 录屏页
     ├── stock-screener/    # 全 A 技术面选股
     ├── platform-trends/   # 跨平台热榜（B站/微博/抖音）
     └── interactive-pack/  # 互动离线 HTML（抖音/B站Toy/小红书）

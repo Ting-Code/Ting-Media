@@ -1,11 +1,11 @@
-# AGENTS.md — Ting-Media
+# AGENTS.md — Ting-Tools
 
-内容工作台。六个工具彼此独立；只有用户明确要做节目时，才用 `screen-pack` 出竖屏 HTML，或用 `speak-pack` 出口播 / 跟读录屏页。
+自用 AI 工具合集。六个工具彼此独立；只有用户明确要做节目时，才用 `screen-pack` 出竖屏 HTML，或用 `speak-pack` 出口播 / 跟读录屏页。
 
 ## 目录
 
 ```text
-Ting-Media/
+Ting-Tools/
 ├── AGENTS.md
 ├── episodes/<赛道>/YYYY-MM-DD_主题/
 └── tools/

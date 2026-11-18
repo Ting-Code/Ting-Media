@@ -1,9 +1,9 @@
 ---
-description: Ting-Media 共用上下文
+description: Ting-Tools 共用上下文
 alwaysApply: true
 ---
 
-# Ting-Media
+# Ting-Tools
 
 - 读 `AGENTS.md`。
 - 五个工具彼此独立：`stock-data` 取数、`stock-screener` 选股与 PE/基本面、`platform-trends` 热度、`screen-pack` 录屏、`interactive-pack` 互动包。不要串成默认流水线。
