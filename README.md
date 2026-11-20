@@ -10,6 +10,7 @@
 - `stock-screener`：选股，以及基本面和估值分析
 - `screen-pack`：生成 9:16 录屏页
 - `speak-pack`：生成口播 / 跟读录屏页
+- `english-pack`：自用英语跟读练习页（横版，一次一句）
 - `platform-trends`：跨平台热榜（B站 / 微博 / 抖音）
 - `interactive-pack`：互动离线 HTML（抖音 / B站 Toy / 小红书）
 
@@ -17,7 +18,7 @@
 
 1. **分析**：先查 `tools/` 是否已有能力并直接调用；同一需求反复出现再封装，避免冗余工具。
 2. **出一期**：用对应工具生成 HTML（数据 + 图表），写入 `episodes/<赛道>/YYYY-MM-DD_主题/`。
-3. **约定**：见根目录 [`AGENTS.md`](AGENTS.md)。勿手写整页 HTML。
+3. **约定**：见根目录 [`AGENTS.md`](AGENTS.md)。录屏 / 互动成片勿手写整页 HTML；`english-pack` 的可复用练习页不在此列。
 
 ```text
 Ting-Tools/
@@ -27,6 +28,7 @@ Ting-Tools/
     ├── stock-data/
     ├── screen-pack/
     ├── speak-pack/
+    ├── english-pack/
     ├── stock-screener/
     ├── platform-trends/
     └── interactive-pack/
@@ -57,6 +59,14 @@ cd tools/interactive-pack
 python scripts/cli.py --platform common generate
   --content examples/sample.json
   --theme 今日热度速览 --date 2026-11-05 --niche finance
+```
+
+英语跟读练习（自用横版页，不写入期次目录）：
+
+```bash
+cd tools/english-pack
+python scripts/generate_practice.py courses/frontend-workplace.json
+python scripts/serve_practice.py --port 8781
 ```
 
 ## 声明

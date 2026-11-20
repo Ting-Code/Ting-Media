@@ -1,6 +1,6 @@
 # AGENTS.md — Ting-Tools
 
-自用 AI 工具合集。六个工具彼此独立；只有用户明确要做节目时，才用 `screen-pack` 出竖屏 HTML，或用 `speak-pack` 出口播 / 跟读录屏页。
+自用 AI 工具合集。七个工具彼此独立；只有用户明确要做节目时，才用 `screen-pack` 出竖屏 HTML，或用 `speak-pack` 出口播 / 跟读录屏页。英语跟读自用练习走 `english-pack`，不要写成录屏期次。
 
 ## 目录
 
@@ -12,6 +12,7 @@ Ting-Tools/
     ├── stock-data/        # 取数；行情直读通达信，仅财报缓存（工具内）
     ├── screen-pack/       # 录屏 HTML；视觉规范已定稿
     ├── speak-pack/        # 口播 / 跟读 9:16 录屏 HTML
+    ├── english-pack/      # 自用英语跟读练习页（横版，不是录屏）
     ├── stock-screener/    # 选股 + 基本面/估值分析
     ├── platform-trends/   # 跨平台热榜；免 Key 三家
     └── interactive-pack/  # 抖音/B站Toy/小红书 离线互动 HTML
@@ -32,11 +33,11 @@ cache/<分析名>/                  # 分析/选股结果（仓库根）；财�
 ```
 
 分析名通常与期次文件夹同名（`YYYY-MM-DD_主题`）；未立题探数用如 `trends_2026-11-05`。  
-不要写到 `tools/*/output/` 或仓库根 `output/`。
+不要写到 `tools/*/output/` 或仓库根 `output/`。`english-pack` 的练习页写到该工具自己的 `practice/` 目录，不要放入 `episodes/`。
 
 ## 工具各自独立
 
-`stock-data`、`stock-screener`、`platform-trends`、`screen-pack`、`speak-pack`、`interactive-pack` 分开调用。热度默认只给数据；选股名单默认只给数据。单股 PE/基本面走 `analyze_symbol.py` 时**默认写出横版分析页** `cache/pe_<代码>_<行情日>/index.html`（主图 + 下方色带，画法见 `tools/stock-screener/docs/分析口径.md`），不是录屏 HTML。没必要不要调用 `screen-pack` 出竖屏 HTML；只有用户明确说「录屏 / 出一期 / 做节目」时才生成。口播 / 跟读页走 `speak-pack`，不要改 `screen-pack` 的股票录屏母版。
+`stock-data`、`stock-screener`、`platform-trends`、`screen-pack`、`speak-pack`、`interactive-pack`、`english-pack` 分开调用。热度默认只给数据；选股名单默认只给数据。单股 PE/基本面走 `analyze_symbol.py` 时**默认写出横版分析页** `cache/pe_<代码>_<行情日>/index.html`（主图 + 下方色带，画法见 `tools/stock-screener/docs/分析口径.md`），不是录屏 HTML。没必要不要调用 `screen-pack` 出竖屏 HTML；只有用户明确说「录屏 / 出一期 / 做节目」时才生成。口播 / 跟读录屏页走 `speak-pack`，不要改 `screen-pack` 的股票录屏母版。自用英语跟读练习走 `english-pack`，不要和 `speak-pack` 混用，也不要改已有期次。
 
 ## 工作流
 
@@ -51,8 +52,9 @@ cache/<分析名>/                  # 分析/选股结果（仓库根）；财�
 
 1. 跑 `tools/screen-pack` 流水线（取数 `stock-data`，分析 `stock-screener`）。
 2. 写入 `episodes/<赛道>/YYYY-MM-DD_主题/index.html`。
-3. **禁止**手写整页 HTML。布局 / 大小 / 主题以  
-   `tools/screen-pack/docs/9-16-录屏规范.md` 与母版为准——**换期只换内容**。
+3. **禁止**手写整页录屏 / 互动成片 HTML。布局 / 大小 / 主题以  
+   `tools/screen-pack/docs/9-16-录屏规范.md` 与母版为准——**换期只换内容**。  
+   这条约束只针对节目成片（`screen-pack` / `speak-pack` / `interactive-pack`），不要套用到 `english-pack` 的可复用练习页模板。
 
 ```bash
 cd tools/screen-pack
@@ -118,12 +120,23 @@ python scripts/generate_speak_html.py examples/sample.json --theme 跟读名言 
 python scripts/serve_episode.py ../../episodes/english/2026-11-16_跟读名言
 ```
 
+### 7）自用英语跟读练习
+
+横版练习页，一次一句：听原句、调语速、循环跟读，标出生词和中文意思，可隐藏字幕自测。「会了 / 再练」的进度存在本机浏览器。课程用 JSON，生成结果在 `tools/english-pack/practice/<课程id>/`，**不要**写入 `episodes/`。规范见 `tools/english-pack/docs/跟读练习规范.md`。练习页模板可在该工具 `src/` 里直接维护。
+
+```bash
+cd tools/english-pack
+python scripts/generate_practice.py courses/frontend-workplace.json
+python scripts/serve_practice.py --port 8781
+```
+
 ## 已定稿规范（勿擅自改画法）
 
 - 录屏视觉：`tools/screen-pack/docs/9-16-录屏规范.md` + deck 母版  
   单股/板块同一套：PE、PB、股价（或点位）**各用独立纵轴**，刻度可隐藏、悬浮看真值；禁止共用绝对刻度、禁止末点=100 归一
 - 口播 / 跟读录屏：`tools/speak-pack/docs/9-16-口播录屏规范.md` + speak 母版（与股票录屏母版分开）
 - 互动离线包：`tools/interactive-pack/docs/平台规范.md`（与录屏母版分开）
+- 自用英语跟读：`tools/english-pack/docs/跟读练习规范.md`（横版练习页，与录屏母版分开）
 - 取数：`tools/stock-data/`（缓存内化 `tools/stock-data/cache/`）
 - PE/基本面分析口径：`tools/stock-screener/docs/分析口径.md`
 

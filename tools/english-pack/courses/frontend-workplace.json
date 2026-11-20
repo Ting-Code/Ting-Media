@@ -1,0 +1,126 @@
+{
+  "id": "frontend-workplace",
+  "title": "前端与职场常用句",
+  "subtitle": "一句一句听，再跟读",
+  "description": "一组在前端开发和日常协作里常用的句子。先听原句，再跟读；进度保存在本机浏览器。",
+  "sentences": [
+    {
+      "id": "fw-01",
+      "en": "I'll take a look and get back to you.",
+      "zh": "我先看一下，稍后再回复你。",
+      "note": "收到消息或评审请求时",
+      "words": [
+        {"text": "take a look", "meaning": "看一下"},
+        {"text": "get back to you", "meaning": "稍后再回复你"}
+      ]
+    },
+    {
+      "id": "fw-02",
+      "en": "Can we hop on a quick call?",
+      "zh": "我们快速通个电话可以吗？",
+      "note": "想同步、又不想写很长的消息时",
+      "words": [
+        {"text": "hop on", "meaning": "加入、开始（通话）"},
+        {"text": "quick call", "meaning": "快速通话"}
+      ]
+    },
+    {
+      "id": "fw-03",
+      "en": "Let me double-check the requirements first.",
+      "zh": "我先再核对一遍需求。",
+      "note": "动手前确认范围",
+      "words": [
+        {"text": "double-check", "meaning": "再核对一遍"},
+        {"text": "requirements", "meaning": "需求"}
+      ]
+    },
+    {
+      "id": "fw-04",
+      "en": "The pull request is ready for review.",
+      "zh": "这个 pull request 可以开始评审了。",
+      "note": "提完代码、请同事看时",
+      "words": [
+        {"text": "pull request", "meaning": "合并请求"},
+        {"text": "ready for review", "meaning": "可以开始评审"}
+      ]
+    },
+    {
+      "id": "fw-05",
+      "en": "Could you walk me through the approach?",
+      "zh": "你能带我走一遍这个方案吗？",
+      "note": "想听清别人的思路时",
+      "words": [
+        {"text": "walk me through", "meaning": "带我走一遍"},
+        {"text": "approach", "meaning": "方案、思路"}
+      ]
+    },
+    {
+      "id": "fw-06",
+      "en": "This is still a work in progress.",
+      "zh": "这个还在进行中，还没做完。",
+      "note": "分享未完成的稿或页面时",
+      "words": [
+        {"text": "work in progress", "meaning": "尚未完成、进行中"}
+      ]
+    },
+    {
+      "id": "fw-07",
+      "en": "I'll follow up after the meeting.",
+      "zh": "开完会后我会再跟进。",
+      "note": "会上来不及收口时",
+      "words": [
+        {"text": "follow up", "meaning": "跟进"}
+      ]
+    },
+    {
+      "id": "fw-08",
+      "en": "Let's ship a minimal version first.",
+      "zh": "我们先上线一个最小可用版本。",
+      "note": "想先验证、再补齐细节时",
+      "words": [
+        {"text": "ship", "meaning": "上线、发布"},
+        {"text": "minimal version", "meaning": "最小可用版本"}
+      ]
+    },
+    {
+      "id": "fw-09",
+      "en": "I'm blocked on the API response.",
+      "zh": "我卡在接口返回这一步了。",
+      "note": "依赖别人的接口或数据时",
+      "words": [
+        {"text": "blocked on", "meaning": "被卡住、受阻于"},
+        {"text": "API response", "meaning": "接口返回"}
+      ]
+    },
+    {
+      "id": "fw-10",
+      "en": "Let's sync on this tomorrow morning.",
+      "zh": "我们明天上午同步一下这件事。",
+      "note": "今天先放下、约个时间对齐时",
+      "words": [
+        {"text": "sync on", "meaning": "就某件事同步一下"},
+        {"text": "tomorrow morning", "meaning": "明天上午"}
+      ]
+    },
+    {
+      "id": "fw-11",
+      "en": "I'll leave a comment on the pull request.",
+      "zh": "我会在这个 pull request 上留一条评论。",
+      "note": "评审时写下意见",
+      "words": [
+        {"text": "leave a comment", "meaning": "留一条评论"},
+        {"text": "pull request", "meaning": "合并请求"}
+      ]
+    },
+    {
+      "id": "fw-12",
+      "en": "The typo is fixed; I'll push the changes now.",
+      "zh": "笔误已经改好了，我现在就推送这些改动。",
+      "note": "改完小问题、准备提交时",
+      "words": [
+        {"text": "typo", "meaning": "笔误、拼写错误"},
+        {"text": "push the changes", "meaning": "推送这些改动"}
+      ]
+    }
+  ]
+}

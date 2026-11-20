@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>__PAGE_TITLE__</title>
+  <style>
+__PRACTICE_CSS__
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail" aria-label="课程句子列表">
+      <div class="brand">
+        <p class="brand-kicker">英语跟读</p>
+        <h1 id="course-title"></h1>
+        <p id="course-subtitle" class="brand-sub"></p>
+      </div>
+      <p class="progress-line" id="progress-line">已掌握 0 / 0</p>
+      <ol class="sentence-list" id="sentence-list"></ol>
+    </aside>
+
+    <main class="stage">
+      <p class="status-banner" id="status-banner" hidden></p>
+
+      <section class="card" aria-labelledby="sentence-label">
+        <div class="card-meta">
+          <p class="eyebrow" id="sentence-label">第 1 句</p>
+          <p class="note" id="sentence-note"></p>
+        </div>
+
+        <div class="subtitle-block" id="subtitle-block">
+          <p class="en" id="sentence-en" lang="en"></p>
+          <p class="zh" id="sentence-zh"></p>
+        </div>
+        <p class="recall-hint" id="recall-hint" hidden>字幕已隐藏，先自己说一遍，再说「显示字幕」对照。</p>
+
+        <ul class="vocab" id="vocab-list"></ul>
+
+        <div class="transport" role="group" aria-label="跟读控制">
+          <button type="button" class="btn primary" id="btn-play">播放原句</button>
+          <button type="button" class="btn" id="btn-loop" aria-pressed="false">循环跟读</button>
+          <label class="field">
+            <span>语速</span>
+            <input type="range" id="rate-range" min="0.7" max="1.15" step="0.05" value="1">
+            <output id="rate-value" for="rate-range">1.00×</output>
+          </label>
+          <label class="field field-voice">
+            <span>英语语音</span>
+            <select id="voice-select">
+              <option value="">检测中…</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn" id="btn-subs" aria-pressed="false">隐藏字幕</button>
+          <button type="button" class="btn" id="btn-retry">再练</button>
+          <button type="button" class="btn good" id="btn-master">会了</button>
+          <span class="spacer"></span>
+          <button type="button" class="btn" id="btn-prev">上一句</button>
+          <button type="button" class="btn" id="btn-next">下一句</button>
+        </div>
+      </section>
+
+      <p class="done-banner" id="done-banner" hidden>这课句子都标成「会了」。还可以点左侧任意一句再练。</p>
+
+      <footer class="disclaimer" id="disclaimer">
+        跟读使用浏览器自带的语音合成（speechSynthesis），不录音，也不评分。
+        能否听到英语、声音是否自然，取决于当前浏览器和操作系统是否已安装英语语音包。
+        若列表里没有英语语音，请到系统语音设置中安装后再刷新本页。
+        不支持语音合成的浏览器仍可看字幕练习，但播放和循环会不可用。
+        进度保存在本机浏览器（localStorage），不会上传。
+      </footer>
+    </main>
+  </div>
+  <script>
+  window.__ENGLISH_PACK_COURSE__ = __COURSE_JSON__;
+  </script>
+  <script>
+__PRACTICE_JS__
+  </script>
+</body>
+</html>

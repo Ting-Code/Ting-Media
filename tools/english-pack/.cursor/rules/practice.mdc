@@ -1,0 +1,11 @@
+---
+description: english-pack 自用跟读练习页
+alwaysApply: true
+---
+
+# english-pack
+
+- 这是自用横版跟读练习工具，不是 9:16 录屏，也不写入 `episodes/`。
+- 规范见 `docs/跟读练习规范.md`。换课只换课程 JSON；练习页模板可在 `src/` 直接维护，不要把「禁止手写整页 HTML」套用到本工具。
+- 语音只用浏览器 `speechSynthesis` 或课程里的本地音频。不录音、不评分，不调用付费 API。
+- 不要改 `speak-pack` / `screen-pack` 的母版或已有期次。

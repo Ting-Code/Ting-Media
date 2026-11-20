@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>前端与职场常用句 · 跟读练习</title>
+  <style>
+:root {
+  --bg: #ece6da;
+  --rail: #e4ddd0;
+  --paper: #fffdf8;
+  --ink: #1c2430;
+  --muted: #5d6570;
+  --line: #d9d1c3;
+  --accent: #1b6b66;
+  --accent-soft: #d7eeeb;
+  --mark: #f6e1b5;
+  --good: #2c7a4b;
+  --good-soft: #dcefe3;
+  --warn: #8a4b12;
+  --warn-soft: #f8e6d0;
+  --danger-soft: #f4d9d4;
+  --shadow: 0 18px 40px rgba(40, 32, 20, 0.08);
+  --font-ui: "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-en: "Palatino Linotype", Palatino, "Iowan Old Style", "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+}
+
+body {
+  min-height: 100vh;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.rail {
+  background: var(--rail);
+  border-right: 1px solid var(--line);
+  padding: 28px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.brand-kicker {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 650;
+}
+
+.brand-sub {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.progress-line {
+  margin: 0;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.sentence-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sentence-list button {
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.sentence-list button:hover {
+  background: rgba(255, 253, 248, 0.6);
+}
+
+.sentence-list button[aria-current="true"] {
+  background: var(--paper);
+  border-color: var(--line);
+  box-shadow: var(--shadow);
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-top: 6px;
+  background: #c5bdae;
+}
+
+.sentence-list button.is-mastered .dot {
+  background: var(--good);
+}
+
+.sentence-list .en-preview {
+  font-family: var(--font-en);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.stage {
+  padding: 28px 36px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1100px;
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 28px 32px 24px;
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.en {
+  margin: 0;
+  font-family: var(--font-en);
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+.en mark {
+  background: var(--mark);
+  color: inherit;
+  padding: 0 0.12em;
+  border-radius: 4px;
+  font-style: inherit;
+}
+
+.zh {
+  margin: 14px 0 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #334155;
+}
+
+.recall-hint {
+  margin: 8px 0 0;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.vocab {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0 0;
+  padding: 0;
+}
+
+.vocab li {
+  background: #f4efe6;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.vocab .term {
+  font-family: var(--font-en);
+  font-weight: 650;
+  margin-right: 6px;
+}
+
+.vocab .meaning {
+  color: var(--muted);
+}
+
+.transport, .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.actions {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.spacer { flex: 1; }
+
+.btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: #c8bead;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn.good {
+  background: var(--good);
+  border-color: var(--good);
+  color: #fff;
+}
+
+.btn[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: #9ec9c4;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.field-voice { min-width: 220px; }
+
+.field select, .field input[type="range"] {
+  accent-color: var(--accent);
+}
+
+.field select {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #fff;
+  color: var(--ink);
+  max-width: 280px;
+}
+
+.status-banner, .done-banner {
+  margin: 0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: var(--warn-soft);
+  color: var(--warn);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.done-banner {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.disclaimer {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  max-width: 80ch;
+}
+
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .rail {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .sentence-list {
+    max-height: 180px;
+  }
+  .stage {
+    padding: 20px;
+  }
+  .card {
+    padding: 20px;
+  }
+  .en {
+    font-size: 26px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail" aria-label="课程句子列表">
+      <div class="brand">
+        <p class="brand-kicker">英语跟读</p>
+        <h1 id="course-title"></h1>
+        <p id="course-subtitle" class="brand-sub"></p>
+      </div>
+      <p class="progress-line" id="progress-line">已掌握 0 / 0</p>
+      <ol class="sentence-list" id="sentence-list"></ol>
+    </aside>
+
+    <main class="stage">
+      <p class="status-banner" id="status-banner" hidden></p>
+
+      <section class="card" aria-labelledby="sentence-label">
+        <div class="card-meta">
+          <p class="eyebrow" id="sentence-label">第 1 句</p>
+          <p class="note" id="sentence-note"></p>
+        </div>
+
+        <div class="subtitle-block" id="subtitle-block">
+          <p class="en" id="sentence-en" lang="en"></p>
+          <p class="zh" id="sentence-zh"></p>
+        </div>
+        <p class="recall-hint" id="recall-hint" hidden>字幕已隐藏，先自己说一遍，再说「显示字幕」对照。</p>
+
+        <ul class="vocab" id="vocab-list"></ul>
+
+        <div class="transport" role="group" aria-label="跟读控制">
+          <button type="button" class="btn primary" id="btn-play">播放原句</button>
+          <button type="button" class="btn" id="btn-loop" aria-pressed="false">循环跟读</button>
+          <label class="field">
+            <span>语速</span>
+            <input type="range" id="rate-range" min="0.7" max="1.15" step="0.05" value="1">
+            <output id="rate-value" for="rate-range">1.00×</output>
+          </label>
+          <label class="field field-voice">
+            <span>英语语音</span>
+            <select id="voice-select">
+              <option value="">检测中…</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn" id="btn-subs" aria-pressed="false">隐藏字幕</button>
+          <button type="button" class="btn" id="btn-retry">再练</button>
+          <button type="button" class="btn good" id="btn-master">会了</button>
+          <span class="spacer"></span>
+          <button type="button" class="btn" id="btn-prev">上一句</button>
+          <button type="button" class="btn" id="btn-next">下一句</button>
+        </div>
+      </section>
+
+      <p class="done-banner" id="done-banner" hidden>这课句子都标成「会了」。还可以点左侧任意一句再练。</p>
+
+      <footer class="disclaimer" id="disclaimer">
+        跟读使用浏览器自带的语音合成（speechSynthesis），不录音，也不评分。
+        能否听到英语、声音是否自然，取决于当前浏览器和操作系统是否已安装英语语音包。
+        若列表里没有英语语音，请到系统语音设置中安装后再刷新本页。
+        不支持语音合成的浏览器仍可看字幕练习，但播放和循环会不可用。
+        进度保存在本机浏览器（localStorage），不会上传。
+      </footer>
+    </main>
+  </div>
+  <script>
+  window.__ENGLISH_PACK_COURSE__ = {
+  "id": "frontend-workplace",
+  "title": "前端与职场常用句",
+  "subtitle": "一句一句听，再跟读",
+  "description": "一组在前端开发和日常协作里常用的句子。先听原句，再跟读；进度保存在本机浏览器。",
+  "sentences": [
+    {
+      "id": "fw-01",
+      "en": "I'll take a look and get back to you.",
+      "zh": "我先看一下，稍后再回复你。",
+      "note": "收到消息或评审请求时",
+      "audio": "",
+      "words": [
+        {
+          "text": "take a look",
+          "meaning": "看一下"
+        },
+        {
+          "text": "get back to you",
+          "meaning": "稍后再回复你"
+        }
+      ]
+    },
+    {
+      "id": "fw-02",
+      "en": "Can we hop on a quick call?",
+      "zh": "我们快速通个电话可以吗？",
+      "note": "想同步、又不想写很长的消息时",
+      "audio": "",
+      "words": [
+        {
+          "text": "hop on",
+          "meaning": "加入、开始（通话）"
+        },
+        {
+          "text": "quick call",
+          "meaning": "快速通话"
+        }
+      ]
+    },
+    {
+      "id": "fw-03",
+      "en": "Let me double-check the requirements first.",
+      "zh": "我先再核对一遍需求。",
+      "note": "动手前确认范围",
+      "audio": "",
+      "words": [
+        {
+          "text": "double-check",
+          "meaning": "再核对一遍"
+        },
+        {
+          "text": "requirements",
+          "meaning": "需求"
+        }
+      ]
+    },
+    {
+      "id": "fw-04",
+      "en": "The pull request is ready for review.",
+      "zh": "这个 pull request 可以开始评审了。",
+      "note": "提完代码、请同事看时",
+      "audio": "",
+      "words": [
+        {
+          "text": "pull request",
+          "meaning": "合并请求"
+        },
+        {
+          "text": "ready for review",
+          "meaning": "可以开始评审"
+        }
+      ]
+    },
+    {
+      "id": "fw-05",
+      "en": "Could you walk me through the approach?",
+      "zh": "你能带我走一遍这个方案吗？",
+      "note": "想听清别人的思路时",
+      "audio": "",
+      "words": [
+        {
+          "text": "walk me through",
+          "meaning": "带我走一遍"
+        },
+        {
+          "text": "approach",
+          "meaning": "方案、思路"
+        }
+      ]
+    },
+    {
+      "id": "fw-06",
+      "en": "This is still a work in progress.",
+      "zh": "这个还在进行中，还没做完。",
+      "note": "分享未完成的稿或页面时",
+      "audio": "",
+      "words": [
+        {
+          "text": "work in progress",
+          "meaning": "尚未完成、进行中"
+        }
+      ]
+    },
+    {
+      "id": "fw-07",
+      "en": "I'll follow up after the meeting.",
+      "zh": "开完会后我会再跟进。",
+      "note": "会上来不及收口时",
+      "audio": "",
+      "words": [
+        {
+          "text": "follow up",
+          "meaning": "跟进"
+        }
+      ]
+    },
+    {
+      "id": "fw-08",
+      "en": "Let's ship a minimal version first.",
+      "zh": "我们先上线一个最小可用版本。",
+      "note": "想先验证、再补齐细节时",
+      "audio": "",
+      "words": [
+        {
+          "text": "ship",
+          "meaning": "上线、发布"
+        },
+        {
+          "text": "minimal version",
+          "meaning": "最小可用版本"
+        }
+      ]
+    },
+    {
+      "id": "fw-09",
+      "en": "I'm blocked on the API response.",
+      "zh": "我卡在接口返回这一步了。",
+      "note": "依赖别人的接口或数据时",
+      "audio": "",
+      "words": [
+        {
+          "text": "blocked on",
+          "meaning": "被卡住、受阻于"
+        },
+        {
+          "text": "API response",
+          "meaning": "接口返回"
+        }
+      ]
+    },
+    {
+      "id": "fw-10",
+      "en": "Let's sync on this tomorrow morning.",
+      "zh": "我们明天上午同步一下这件事。",
+      "note": "今天先放下、约个时间对齐时",
+      "audio": "",
+      "words": [
+        {
+          "text": "sync on",
+          "meaning": "就某件事同步一下"
+        },
+        {
+          "text": "tomorrow morning",
+          "meaning": "明天上午"
+        }
+      ]
+    },
+    {
+      "id": "fw-11",
+      "en": "I'll leave a comment on the pull request.",
+      "zh": "我会在这个 pull request 上留一条评论。",
+      "note": "评审时写下意见",
+      "audio": "",
+      "words": [
+        {
+          "text": "leave a comment",
+          "meaning": "留一条评论"
+        },
+        {
+          "text": "pull request",
+          "meaning": "合并请求"
+        }
+      ]
+    },
+    {
+      "id": "fw-12",
+      "en": "The typo is fixed; I'll push the changes now.",
+      "zh": "笔误已经改好了，我现在就推送这些改动。",
+      "note": "改完小问题、准备提交时",
+      "audio": "",
+      "words": [
+        {
+          "text": "typo",
+          "meaning": "笔误、拼写错误"
+        },
+        {
+          "text": "push the changes",
+          "meaning": "推送这些改动"
+        }
+      ]
+    }
+  ]
+};
+  </script>
+  <script>
+(function () {
+  "use strict";
+
+  var course = window.__ENGLISH_PACK_COURSE__;
+  if (!course || !Array.isArray(course.sentences) || !course.sentences.length) {
+    document.body.innerHTML = "<p style='padding:24px'>课程数据缺失，请重新生成练习页。</p>";
+    return;
+  }
+
+  var PREFS_KEY = "ting-tools.english-pack.prefs";
+  var progressKey = "ting-tools.english-pack.progress." + course.id;
+  var hasSpeech = typeof window.speechSynthesis === "object" && window.speechSynthesis !== null;
+  var SpeechUtterance = window.SpeechSynthesisUtterance;
+
+  var state = {
+    index: 0,
+    mastered: {},
+    hidden: false,
+    looping: false,
+    rate: 1,
+    voiceURI: "",
+    speaking: false
+  };
+
+  var els = {
+    title: document.getElementById("course-title"),
+    subtitle: document.getElementById("course-subtitle"),
+    progress: document.getElementById("progress-line"),
+    list: document.getElementById("sentence-list"),
+    banner: document.getElementById("status-banner"),
+    label: document.getElementById("sentence-label"),
+    note: document.getElementById("sentence-note"),
+    block: document.getElementById("subtitle-block"),
+    en: document.getElementById("sentence-en"),
+    zh: document.getElementById("sentence-zh"),
+    recall: document.getElementById("recall-hint"),
+    vocab: document.getElementById("vocab-list"),
+    play: document.getElementById("btn-play"),
+    loop: document.getElementById("btn-loop"),
+    rate: document.getElementById("rate-range"),
+    rateValue: document.getElementById("rate-value"),
+    voice: document.getElementById("voice-select"),
+    subs: document.getElementById("btn-subs"),
+    retry: document.getElementById("btn-retry"),
+    master: document.getElementById("btn-master"),
+    prev: document.getElementById("btn-prev"),
+    next: document.getElementById("btn-next"),
+    done: document.getElementById("done-banner")
+  };
+
+  var currentAudio = null;
+  var currentUtterance = null;
+  var loopTimer = 0;
+  var storageOk = true;
+
+  function showBanner(text, isError) {
+    if (!text) {
+      els.banner.hidden = true;
+      els.banner.textContent = "";
+      return;
+    }
+    els.banner.hidden = false;
+    els.banner.textContent = text;
+    els.banner.style.background = isError ? "var(--danger-soft)" : "var(--warn-soft)";
+    els.banner.style.color = isError ? "#8a2f24" : "var(--warn)";
+  }
+
+  function readJson(key, fallback) {
+    try {
+      var raw = window.localStorage.getItem(key);
+      if (!raw) return fallback;
+      var data = JSON.parse(raw);
+      return data && typeof data === "object" ? data : fallback;
+    } catch (err) {
+      storageOk = false;
+      return fallback;
+    }
+  }
+
+  function writeJson(key, value) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (err) {
+      storageOk = false;
+    }
+  }
+
+  function loadState() {
+    var prefs = readJson(PREFS_KEY, {});
+    if (typeof prefs.rate === "number" && prefs.rate >= 0.7 && prefs.rate <= 1.15) {
+      state.rate = prefs.rate;
+    }
+    if (typeof prefs.voiceURI === "string") state.voiceURI = prefs.voiceURI;
+    if (prefs.looping) state.looping = true;
+
+    var progress = readJson(progressKey, {});
+    if (Array.isArray(progress.mastered)) {
+      progress.mastered.forEach(function (id) { state.mastered[id] = true; });
+    }
+    if (progress.currentId) {
+      var found = course.sentences.findIndex(function (item) { return item.id === progress.currentId; });
+      if (found >= 0) state.index = found;
+    }
+  }
+
+  function savePrefs() {
+    writeJson(PREFS_KEY, {
+      rate: state.rate,
+      voiceURI: state.voiceURI,
+      looping: state.looping
+    });
+  }
+
+  function saveProgress() {
+    writeJson(progressKey, {
+      currentId: currentSentence().id,
+      mastered: Object.keys(state.mastered).filter(function (id) { return state.mastered[id]; }),
+      updatedAt: new Date().toISOString()
+    });
+  }
+
+  function currentSentence() {
+    return course.sentences[state.index];
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function escapeRe(text) {
+    return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function markEnglish(en, words) {
+    var source = en || "";
+    var items = (words || [])
+      .filter(function (word) { return word && word.text; })
+      .slice()
+      .sort(function (a, b) { return b.text.length - a.text.length; });
+    var ranges = [];
+    items.forEach(function (word) {
+      var re = new RegExp(escapeRe(word.text), "ig");
+      var match;
+      while ((match = re.exec(source)) !== null) {
+        var start = match.index;
+        var end = start + match[0].length;
+        var overlap = ranges.some(function (range) {
+          return !(end <= range.start || start >= range.end);
+        });
+        if (!overlap) {
+          ranges.push({ start: start, end: end, text: match[0] });
+        }
+      }
+    });
+    ranges.sort(function (a, b) { return a.start - b.start; });
+    var html = "";
+    var cursor = 0;
+    ranges.forEach(function (range) {
+      html += escapeHtml(source.slice(cursor, range.start));
+      html += "<mark>" + escapeHtml(range.text) + "</mark>";
+      cursor = range.end;
+    });
+    html += escapeHtml(source.slice(cursor));
+    return html;
+  }
+
+  function masteredCount() {
+    return course.sentences.filter(function (item) { return state.mastered[item.id]; }).length;
+  }
+
+  function renderList() {
+    els.list.innerHTML = "";
+    course.sentences.forEach(function (item, index) {
+      var li = document.createElement("li");
+      var btn = document.createElement("button");
+      btn.type = "button";
+      if (index === state.index) btn.setAttribute("aria-current", "true");
+      if (state.mastered[item.id]) btn.classList.add("is-mastered");
+      btn.innerHTML = '<span class="dot" aria-hidden="true"></span><p class="en-preview" lang="en"></p>';
+      btn.querySelector(".en-preview").textContent = item.en;
+      btn.addEventListener("click", function () { goTo(index); });
+      li.appendChild(btn);
+      els.list.appendChild(li);
+    });
+  }
+
+  function renderSentence() {
+    var item = currentSentence();
+    var total = course.sentences.length;
+    els.title.textContent = course.title;
+    els.subtitle.textContent = course.subtitle || "";
+    els.progress.textContent = "已掌握 " + masteredCount() + " / " + total;
+    els.label.textContent = "第 " + (state.index + 1) + " 句";
+    els.note.textContent = item.note || "";
+    els.en.innerHTML = markEnglish(item.en, item.words);
+    els.zh.textContent = item.zh || "";
+    els.block.hidden = state.hidden;
+    els.recall.hidden = !state.hidden;
+    els.subs.setAttribute("aria-pressed", state.hidden ? "true" : "false");
+    els.subs.textContent = state.hidden ? "显示字幕" : "隐藏字幕";
+    els.loop.setAttribute("aria-pressed", state.looping ? "true" : "false");
+    els.rate.value = String(state.rate);
+    els.rateValue.textContent = Number(state.rate).toFixed(2) + "×";
+    els.prev.disabled = state.index <= 0;
+    els.next.disabled = state.index >= total - 1;
+    els.master.textContent = state.mastered[item.id] ? "已会（可再点）" : "会了";
+
+    els.vocab.innerHTML = "";
+    (item.words || []).forEach(function (word) {
+      var li = document.createElement("li");
+      li.innerHTML = '<span class="term" lang="en"></span><span class="meaning"></span>';
+      li.querySelector(".term").textContent = word.text;
+      li.querySelector(".meaning").textContent = word.meaning || "";
+      els.vocab.appendChild(li);
+    });
+    els.vocab.hidden = state.hidden || !(item.words && item.words.length);
+
+    els.done.hidden = masteredCount() !== total;
+    renderList();
+  }
+
+  function englishVoices() {
+    if (!hasSpeech) return [];
+    return window.speechSynthesis.getVoices().filter(function (voice) {
+      return /^en([-_]|$)/i.test(voice.lang || "");
+    });
+  }
+
+  function selectedVoice() {
+    var voices = englishVoices();
+    if (!voices.length) return null;
+    return voices.find(function (voice) { return voice.voiceURI === state.voiceURI; }) || voices[0];
+  }
+
+  function fillVoices() {
+    var voices = englishVoices();
+    els.voice.innerHTML = "";
+    if (!hasSpeech) {
+      var missing = document.createElement("option");
+      missing.value = "";
+      missing.textContent = "当前浏览器不支持语音合成";
+      els.voice.appendChild(missing);
+      els.voice.disabled = true;
+      els.play.disabled = true;
+      els.loop.disabled = true;
+      showBanner("当前浏览器不支持语音合成。你可以查看字幕并自行跟读，播放和循环按钮已禁用。", true);
+      return;
+    }
+    if (!voices.length) {
+      var empty = document.createElement("option");
+      empty.value = "";
+      empty.textContent = "未检测到英语语音";
+      els.voice.appendChild(empty);
+      els.voice.disabled = true;
+      showBanner("已检测到语音合成，但当前没有可用的英语语音。请在系统或浏览器中安装英语语音包后刷新本页。你仍可先看字幕跟读；若点击播放，将使用系统默认语音，发音可能不是英语。", false);
+      return;
+    }
+    els.voice.disabled = false;
+    voices.forEach(function (voice) {
+      var opt = document.createElement("option");
+      opt.value = voice.voiceURI;
+      opt.textContent = (voice.name || "English") + "（" + voice.lang + "）";
+      els.voice.appendChild(opt);
+    });
+    var chosen = selectedVoice();
+    if (chosen) {
+      state.voiceURI = chosen.voiceURI;
+      els.voice.value = chosen.voiceURI;
+    }
+    showBanner("");
+    if (!storageOk) {
+      showBanner("当前浏览器无法写入本地进度（localStorage）。本次练习进度仅保留在这个标签页里。", false);
+    }
+  }
+
+  function stopPlayback() {
+    state.speaking = false;
+    if (loopTimer) {
+      window.clearTimeout(loopTimer);
+      loopTimer = 0;
+    }
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.removeAttribute("src");
+      currentAudio = null;
+    }
+    currentUtterance = null;
+    if (hasSpeech) {
+      window.speechSynthesis.cancel();
+    }
+    els.play.textContent = "播放原句";
+  }
+
+  function afterPlay() {
+    state.speaking = false;
+    currentUtterance = null;
+    currentAudio = null;
+    els.play.textContent = "播放原句";
+    if (state.looping) {
+      loopTimer = window.setTimeout(function () {
+        if (state.looping) playCurrent();
+      }, 450);
+    }
+  }
+
+  function speakWithTts(text) {
+    if (!hasSpeech || typeof SpeechUtterance !== "function") {
+      showBanner("当前浏览器不支持语音合成，无法播放原句。", true);
+      return;
+    }
+    var utter = new SpeechUtterance(text);
+    utter.rate = state.rate;
+    utter.lang = "en-US";
+    var voice = selectedVoice();
+    if (voice) {
+      utter.voice = voice;
+      utter.lang = voice.lang || "en-US";
+    }
+    utter.onend = function () {
+      if (currentUtterance === utter) afterPlay();
+    };
+    utter.onerror = function () {
+      if (currentUtterance === utter) {
+        stopPlayback();
+        showBanner("语音播放失败。请检查系统英语语音包，或换一个浏览器再试。", true);
+      }
+    };
+    currentUtterance = utter;
+    state.speaking = true;
+    els.play.textContent = "停止播放";
+    window.speechSynthesis.speak(utter);
+  }
+
+  function playCurrent() {
+    var item = currentSentence();
+    if (state.speaking) {
+      stopPlayback();
+      return;
+    }
+    stopPlayback();
+    if (item.audio) {
+      var audio = new Audio(item.audio);
+      audio.preload = "auto";
+      try { audio.playbackRate = state.rate; } catch (err) {}
+      currentAudio = audio;
+      state.speaking = true;
+      els.play.textContent = "停止播放";
+      audio.addEventListener("ended", function () {
+        if (currentAudio === audio) afterPlay();
+      });
+      audio.addEventListener("error", function () {
+        if (currentAudio === audio) {
+          stopPlayback();
+          speakWithTts(item.en);
+        }
+      });
+      var playPromise = audio.play();
+      if (playPromise && typeof playPromise.then === "function") {
+        playPromise.catch(function () {
+          stopPlayback();
+          speakWithTts(item.en);
+        });
+      }
+      return;
+    }
+    speakWithTts(item.en);
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= course.sentences.length) return;
+    stopPlayback();
+    state.index = index;
+    saveProgress();
+    renderSentence();
+  }
+
+  function toggleMastered() {
+    var id = currentSentence().id;
+    if (state.mastered[id]) {
+      delete state.mastered[id];
+      saveProgress();
+      renderSentence();
+      return;
+    }
+    state.mastered[id] = true;
+    saveProgress();
+    var nextUnmastered = course.sentences.findIndex(function (item, i) {
+      return i > state.index && !state.mastered[item.id];
+    });
+    if (nextUnmastered < 0) {
+      nextUnmastered = course.sentences.findIndex(function (item) {
+        return !state.mastered[item.id];
+      });
+    }
+    if (nextUnmastered >= 0) {
+      goTo(nextUnmastered);
+    } else {
+      renderSentence();
+    }
+  }
+
+  function retryCurrent() {
+    var id = currentSentence().id;
+    if (state.mastered[id]) delete state.mastered[id];
+    saveProgress();
+    renderSentence();
+    if (hasSpeech) playCurrent();
+  }
+
+  els.play.addEventListener("click", playCurrent);
+  els.loop.addEventListener("click", function () {
+    state.looping = !state.looping;
+    savePrefs();
+    renderSentence();
+    if (!state.looping) {
+      if (loopTimer) {
+        window.clearTimeout(loopTimer);
+        loopTimer = 0;
+      }
+    }
+  });
+  els.rate.addEventListener("input", function () {
+    state.rate = Number(els.rate.value);
+    if (currentAudio) {
+      try { currentAudio.playbackRate = state.rate; } catch (err) {}
+    }
+    els.rateValue.textContent = state.rate.toFixed(2) + "×";
+    savePrefs();
+  });
+  els.voice.addEventListener("change", function () {
+    state.voiceURI = els.voice.value;
+    savePrefs();
+  });
+  els.subs.addEventListener("click", function () {
+    state.hidden = !state.hidden;
+    renderSentence();
+  });
+  els.retry.addEventListener("click", retryCurrent);
+  els.master.addEventListener("click", toggleMastered);
+  els.prev.addEventListener("click", function () { goTo(state.index - 1); });
+  els.next.addEventListener("click", function () { goTo(state.index + 1); });
+
+  document.addEventListener("keydown", function (event) {
+    var tag = (event.target && event.target.tagName) || "";
+    if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+    if (event.code === "Space") {
+      event.preventDefault();
+      playCurrent();
+    } else if (event.key === "ArrowLeft") {
+      goTo(state.index - 1);
+    } else if (event.key === "ArrowRight") {
+      goTo(state.index + 1);
+    } else if (event.key === "h" || event.key === "H") {
+      state.hidden = !state.hidden;
+      renderSentence();
+    }
+  });
+
+  loadState();
+  els.title.textContent = course.title;
+  fillVoices();
+  if (hasSpeech) {
+    window.speechSynthesis.addEventListener("voiceschanged", fillVoices);
+    window.setTimeout(fillVoices, 300);
+  }
+  renderSentence();
+  if (!storageOk) {
+    showBanner("当前浏览器无法写入本地进度（localStorage）。本次练习进度仅保留在这个标签页里。", false);
+  }
+})();
+
+  </script>
+</body>
+</html>
